@@ -55,7 +55,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-950 via-blue-900 to-indigo-950 overflow-hidden relative">
       <StarBackground />
-      <Navbar />
+      <Navbar hideAuthButtons={true} />
       
       <main className="container mx-auto px-6 py-12 relative z-10">
         <div className="max-w-4xl mx-auto bg-black/30 backdrop-blur-md rounded-lg p-8 border border-blue-500/30">

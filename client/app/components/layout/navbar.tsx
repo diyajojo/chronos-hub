@@ -1,7 +1,10 @@
-
 import Link from 'next/link';
 
-const Navbar=()=> {
+interface NavbarProps {
+  hideAuthButtons?: boolean;
+}
+
+const Navbar = ({ hideAuthButtons = false }: NavbarProps) => {
   return (
     <nav className="px-6 py-4 bg-blue-950 bg-opacity-50 backdrop-blur border-b border-blue-500 border-opacity-20 sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center">
@@ -12,20 +15,22 @@ const Navbar=()=> {
           </h1>
         </div>
         
-        <div className="flex space-x-3">
-          <Link 
-            href="/login" 
-            className="px-4 py-2 rounded-lg text-blue-200 hover:text-white transition-colors duration-200"
-          >
-            Login
-          </Link>
-          <Link 
-            href="/signup" 
-            className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-500 transition-colors duration-200"
-          >
-            Sign Up
-          </Link>
-        </div>
+        {!hideAuthButtons && (
+          <div className="flex space-x-3">
+            <Link 
+              href="/login" 
+              className="px-4 py-2 rounded-lg text-blue-200 hover:text-white transition-colors duration-200"
+            >
+              Login
+            </Link>
+            <Link 
+              href="/signup" 
+              className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-500 transition-colors duration-200"
+            >
+              Sign Up
+            </Link>
+          </div>
+        )}
       </div>
     </nav>
   );
