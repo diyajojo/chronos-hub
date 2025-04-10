@@ -3,8 +3,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '../components/layout/navbar';
 import StarBackground from '../components/design/starbackground';
-import { handleImageUpload } from './utils/uploadImage';
+import { handleImageUpload } from './utils/imageupload';
 import { generateAIImage } from './utils/generateAIImage';
+import getRating from './utils/getrating';
 
 interface User {
   id: string;
@@ -73,6 +74,7 @@ export default function Dashboard() {
     }
   };
 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -91,6 +93,14 @@ export default function Dashboard() {
         finalImageUrl = await handleImageUpload(aiImageFile);
       }
 
+      // Get AI rating before submitting
+     {/* const ratingResult = await getRating(
+        timeLog.year,
+        timeLog.description,
+        finalImageUrl,
+        timeLog.survivalChance
+      ); */}
+
       // Submit log with AI rating and calculated survival chance
       const response = await fetch('http://localhost:8000/addlog', {
         method: 'POST',
@@ -101,9 +111,9 @@ export default function Dashboard() {
         body: JSON.stringify({
           year: timeLog.year,
           description: timeLog.description,
-          survivalChance: timeLog.survivalChance,
+          survivalChance:  timeLog.survivalChance,
           imageUrl: finalImageUrl,
-          rating: 0,
+          rating:  0,
           userId: user?.id,
         }),
       });
