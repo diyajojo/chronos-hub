@@ -6,9 +6,12 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "createbucket": "ts-node services/storage/createbucket.ts"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.4",
+    "cloudinary": "^2.6.0",
     "framer-motion": "^12.6.2",
     "jsonwebtoken": "^9.0.2",
     "next": "15.2.4",
@@ -22,6 +25,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }
