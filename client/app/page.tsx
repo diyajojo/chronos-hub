@@ -1,40 +1,22 @@
 "use client";
-
-import { useState, useEffect } from 'react';
 import Navbar from './components/layout/navbar';
 import HeroSection from './components/layout/hero';
-import TimeDial from './components/layout/featuresdial';
 import StarBackground from './components/design/starbackground';
 import TimeParticles from './components/design/timeparticles';
-
+import FloatingMagicalElements from './components/design/floatingelements';
 
 export default function LandingPage() {
-  const [activeEra, setActiveEra] = useState('future');
-  
-  // Rotate through different eras automatically
-  useEffect(() => {
-    const intervals = ['future', 'ancient', 'medieval', 'renaissance'];
-    let currentIndex = 0;
-    
-    const interval = setInterval(() => {
-      currentIndex = (currentIndex + 1) % intervals.length;
-      setActiveEra(intervals[currentIndex]);
-    }, 5000);
-    
-    return () => clearInterval(interval);
-  }, []);
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-950 via-blue-900 to-indigo-950 overflow-hidden relative">
-      <StarBackground/>
-      <Navbar />
-      
-      <main className="container mx-auto px-6 py-12 md:py-16 relative z-10">
-        <HeroSection />
-        <TimeDial activeEra={activeEra} setActiveEra={setActiveEra}  />
-      </main>
-      
+    <div className="h-screen bg-gradient-to-b from-blue-950 via-blue-900 to-indigo-950 overflow-hidden relative">
+      {/* Background Elements */}
+      <StarBackground />
+      <FloatingMagicalElements />
       <TimeParticles />
+      
+      <Navbar />
+      <main className="container mx-auto px-6 py-8 h-[calc(100vh-76px)] relative z-10">
+        <HeroSection />
+      </main>
       
       {/* Add styles for the star twinkling animation */}
       <style jsx global>{`
@@ -42,7 +24,20 @@ export default function LandingPage() {
           0% { opacity: 0.3; }
           100% { opacity: 1; }
         }
+        @keyframes float {
+          0% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+          100% { transform: translateY(0px); }
+        }
+        @keyframes pulse {
+          0% { transform: scale(1); opacity: 0.7; }
+          50% { transform: scale(1.05); opacity: 1; }
+          100% { transform: scale(1); opacity: 0.7; }
+        }
       `}</style>
     </div>
   );
 }
+
+
+

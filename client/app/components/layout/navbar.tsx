@@ -1,38 +1,41 @@
 import Link from 'next/link';
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
 
 interface NavbarProps {
-  hideAuthButtons?: boolean;
+  page?: string;
 }
 
-const Navbar = ({ hideAuthButtons = false }: NavbarProps) => {
+export default function Navbar({ page }: NavbarProps) {
   return (
-    <nav className="px-6 py-4 bg-blue-950 bg-opacity-50 backdrop-blur border-b border-blue-500 border-opacity-20 sticky top-0 z-50">
-      <div className="container mx-auto flex justify-between items-center">
-        <div className="flex items-center">
-          <span className="text-2xl mr-2">⏳</span>
-          <h1 className="text-2xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-indigo-200">
-            ChronoChronicles
-          </h1>
+    <nav className=" w-full h-16 backdrop-blur-sm border-b border-blue-500/20">
+      <div className="container h-full mx-auto px-4 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-0 text-2xl text-blue-200 font-semibold hover:text-blue-300 font-noto">
+          <Image
+            src="/assets/logo.png"
+            alt="ChronoHub Logo"
+            width={100}
+            height={200}
+          />
+          ChronosHub
+        </Link>
+        <div className="space-x-4">
+          {page !== 'login' && (
+            <Link href="/login">
+              <Button variant="ghost"  className="cursor-pointer text-blue-200 hover:text-blue-300 hover:bg-blue-900/30 font-noto">
+                Login
+              </Button>
+            </Link>
+          )}
+          {page !== 'signup' && (
+            <Link href="/signup">
+              <Button variant="ghost" className="cursor-pointer text-blue-200 hover:text-blue-300 hover:bg-blue-900/30 font-noto">
+                Sign Up
+              </Button>
+            </Link>
+          )}
         </div>
-        
-        {!hideAuthButtons && (
-          <div className="flex space-x-3">
-            <Link 
-              href="/login" 
-              className="px-4 py-2 rounded-lg text-blue-200 hover:text-white transition-colors duration-200"
-            >
-              Login
-            </Link>
-            <Link 
-              href="/signup" 
-              className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-500 transition-colors duration-200"
-            >
-              Sign Up
-            </Link>
-          </div>
-        )}
       </div>
     </nav>
   );
 }
-export default Navbar;

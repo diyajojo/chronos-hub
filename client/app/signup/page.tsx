@@ -1,22 +1,40 @@
 'use client';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import StarBackground from '../components/design/starbackground';
-import TimeParticles from '../components/design/timeparticles';
 
-const SignUp = () => {
+import { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import Navbar from '../components/layout/navbar';
+import StarBackground from '../components/design/starbackground';
+import { AnimatedBeam } from "@/components/magicui/animated-beam";
+import { MagicCard } from "@/components/magicui/magic-card";
+import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+export default function SignUp() {
   const router = useRouter();
+  const { theme } = useTheme();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    password: '',
+    password: ''
   });
   const [error, setError] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value
     });
   };
 
@@ -36,101 +54,158 @@ const SignUp = () => {
         throw new Error(data.error || 'Signup failed');
       }
 
-      // Redirect to login page on success
       window.location.href = '/login';
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
-    } 
+    }
+  };
+
+  // For animated beams
+  const containerRef = useRef<HTMLDivElement>(null);
+  const spaceshipRef = useRef<HTMLDivElement>(null);
+  const rocketRef = useRef<HTMLDivElement>(null);
+  const alienRef = useRef<HTMLDivElement>(null);
+  const planetRef = useRef<HTMLDivElement>(null);
+  const robotRef = useRef<HTMLDivElement>(null);
+  const crystalRef = useRef<HTMLDivElement>(null);
+  const cometRef = useRef<HTMLDivElement>(null);
+  const astronautRef = useRef<HTMLDivElement>(null);
+
+  // Custom component for space emoji icons
+  const SpaceEmoji = ({ emoji, size, ref, className }: 
+    { emoji: string; size: string; ref: React.RefObject<HTMLDivElement | null>; className?: string }) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          `flex items-center justify-center rounded-full bg-blue-950/60 border border-blue-500/30 
+           backdrop-blur-sm shadow-lg shadow-blue-500/20 ${size}`,
+          className
+        )}
+      >
+        <span className="text-xl sm:text-2xl">{emoji}</span>
+      </div>
+    );
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-950 via-blue-900 to-indigo-950 overflow-hidden relative">
       <StarBackground />
-      <div className="relative z-10 min-h-screen flex items-center justify-center">
-        <div className="bg-gray-900/80 backdrop-blur-sm p-8 rounded-lg shadow-xl w-full max-w-md">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-amber-500 mb-2">
-              Chrono Chronicles
-            </h1>
-            <p className="text-gray-300">Create your account</p>
+      <Navbar page="signup" />
+      
+      <div className="flex items-center justify-center w-full h-[calc(100vh-64px)]">
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8">
+            {/* Animated Beam Container - Left side */}
+            <div 
+              ref={containerRef}
+              className="relative h-96 sm:h-[28rem] w-full md:w-1/2 flex items-center justify-center overflow-hidden"
+            >
+              <div className="absolute inset-0 flex items-center justify-center">
+                <SpaceEmoji emoji="👨‍🚀" size="w-20 h-20" ref={astronautRef} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20" />
+                
+                <SpaceEmoji emoji="🛸" size="w-16 h-16" ref={spaceshipRef} className="absolute left-[20%] top-[20%]" />
+                <SpaceEmoji emoji="🚀" size="w-14 h-14" ref={rocketRef} className="absolute right-[25%] top-[15%]" />
+                <SpaceEmoji emoji="👽" size="w-12 h-12" ref={alienRef} className="absolute left-[15%] bottom-[25%]" />
+                <SpaceEmoji emoji="🤖" size="w-12 h-12" ref={robotRef} className="absolute right-[20%] bottom-[20%]" />
+                <SpaceEmoji emoji="🪐" size="w-16 h-16" ref={planetRef} className="absolute left-[30%] top-[50%]" />
+                <SpaceEmoji emoji="💎" size="w-10 h-10" ref={crystalRef} className="absolute right-[30%] top-[45%]" />
+                <SpaceEmoji emoji="☄️" size="w-14 h-14" ref={cometRef} className="absolute left-[40%] bottom-[15%]" />
+              </div>
+
+              {/* Beams connecting to the astronaut (center) */}
+              <AnimatedBeam containerRef={containerRef} fromRef={spaceshipRef} toRef={astronautRef} curvature={-30} />
+              <AnimatedBeam containerRef={containerRef} fromRef={rocketRef} toRef={astronautRef} curvature={30} />
+              <AnimatedBeam containerRef={containerRef} fromRef={alienRef} toRef={astronautRef} curvature={45} />
+              <AnimatedBeam containerRef={containerRef} fromRef={robotRef} toRef={astronautRef} curvature={-45} />
+              <AnimatedBeam containerRef={containerRef} fromRef={planetRef} toRef={astronautRef} curvature={15} />
+              <AnimatedBeam containerRef={containerRef} fromRef={crystalRef} toRef={astronautRef} curvature={-15} />
+              <AnimatedBeam containerRef={containerRef} fromRef={cometRef} toRef={astronautRef} curvature={60} />
+            </div>
+
+            {/* Magic Card Signup Form - Right side */}
+            <div className="flex items-center justify-center w-full md:w-1/2">
+              <Card className="p-0 w-full max-w-md shadow-none border-none bg-transparent">
+                <MagicCard
+                  gradientColor="#0f172a"
+                  gradientFrom="#1e3a8a"
+                  gradientTo="#312e81"
+                  gradientOpacity={0.3}
+                  className="p-0 bg-blue-950/30 backdrop-blur-sm border-blue-500/20 min-h-[500px]"
+                >
+                  <CardHeader className="border-b border-blue-500/20 p-6 [.border-b]:pb-6 space-y-4">
+                    <CardTitle className="text-blue-200 text-2xl">Create Your Account</CardTitle>
+                    <CardDescription className="text-blue-300/70">
+                      Join Chrono Chronicles and start your journey
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-6 space-y-6">
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                      <div className="grid gap-5">
+                        {error && (
+                          <div className="p-3 bg-red-500/20 border border-red-500/50 rounded-md">
+                            <p className="text-red-200 text-sm">{error}</p>
+                          </div>
+                        )}
+                        <div className="grid gap-3">
+                          <Label htmlFor="name" className="text-blue-200">Full Name</Label>
+                          <Input 
+                            id="name" 
+                            name="name"
+                            type="text" 
+                            placeholder="enter your full name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            required
+                            className="bg-blue-950/40 border-blue-500/30 text-blue-200 placeholder:text-blue-400/50"
+                          />
+                        </div>
+                        <div className="grid gap-3">
+                          <Label htmlFor="email" className="text-blue-200">Email Address</Label>
+                          <Input 
+                            id="email" 
+                            name="email"
+                            type="email" 
+                            placeholder="enter your email id"
+                            value={formData.email}
+                            onChange={handleChange}
+                            required
+                            className="bg-blue-950/40 border-blue-500/30 text-blue-200 placeholder:text-blue-400/50"
+                          />
+                        </div>
+                        <div className="grid gap-3">
+                          <Label htmlFor="password" className="text-blue-200">Password</Label>
+                          <Input 
+                            id="password" 
+                            name="password"
+                            type="password"
+                            placeholder="create a password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            required
+                            className="bg-blue-950/40 border-blue-500/30 text-blue-200"
+                          />
+                        </div>
+                      </div>
+                      <Button type="submit" className="w-full cursor-pointer bg-blue-800/30 hover:bg-blue-800/50 text-blue-200 border border-blue-500/30">
+                        Sign Up
+                      </Button>
+                    </form>
+                  </CardContent>
+                  <CardFooter className="p-6 border-t border-blue-500/20">
+                    <p className="text-center text-blue-300/70 text-sm w-full">
+                      Already have an account?{' '}
+                      <Link href="/login" className="text-blue-400 hover:text-blue-300">
+                        Sign in
+                      </Link>
+                    </p>
+                  </CardFooter>
+                </MagicCard>
+              </Card>
+            </div>
           </div>
-
-          {error && (
-            <div className="bg-red-500/80 backdrop-blur-sm text-white p-3 rounded mb-4 text-sm">
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-gray-200 mb-2" htmlFor="name">
-                Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full p-3 rounded bg-gray-800/80 text-white border border-gray-700 focus:border-amber-500 focus:outline-none"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-gray-200 mb-2" htmlFor="email">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full p-3 rounded bg-gray-800/80 text-white border border-gray-700 focus:border-amber-500 focus:outline-none"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-gray-200 mb-2" htmlFor="password">
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full p-3 rounded bg-gray-800/80 text-white border border-gray-700 focus:border-amber-500 focus:outline-none"
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-amber-500 text-white py-3 rounded hover:bg-amber-600 transition duration-300"
-            >
-              Sign Up
-            </button>
-          </form>
-
-          <p className="text-center mt-6 text-gray-300">
-            Already have an account?{' '}
-            <button
-              onClick={() => router.push('/login')}
-              className="text-amber-500 hover:text-amber-400"
-            >
-              Login
-            </button>
-          </p>
         </div>
       </div>
-
-
-      <TimeParticles />
     </div>
   );
 }
-
-export default SignUp;
