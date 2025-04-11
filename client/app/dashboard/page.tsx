@@ -87,7 +87,6 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-950 via-blue-900 to-indigo-950 overflow-hidden relative">
       <StarBackground />
-      <Navbar hideAuthButtons={true} />
 
       <main className="container mx-auto px-6 py-8 relative z-10">
         {!hasLogs ? (
