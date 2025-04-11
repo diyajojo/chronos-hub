@@ -1,17 +1,40 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import {Josefin_Sans,Urbanist,Oswald,Roboto,Noto_Sans_Cuneiform} from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const oswald=Oswald({
+  variable: "--font-oswald",
   subsets: ["latin"],
+  weight: ["200","300","400", "500", "600", "700"], 
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+
+const josefinSans=Josefin_Sans({
+  variable: "--font-josefinsans",
   subsets: ["latin"],
+  weight: ["100","200","300","400", "500", "600", "700"], 
 });
+
+const urbanist=Urbanist({
+  variable: "--font-urbanist",
+  subsets: ["latin"],
+  weight: ["100","200","300","400", "500", "600", "700","800","900"], 
+});
+
+const roboto=Roboto({
+  variable: "--font-roboto",
+  subsets: ["latin"],
+  weight: [ "700","400"], 
+});
+
+const noto=Noto_Sans_Cuneiform({
+  variable: "--font-noto",
+  subsets: ["latin"],
+  weight: ["400"], 
+});
+
+
 
 export const metadata: Metadata = {
   title: "CHRONOSHUB",
@@ -26,7 +49,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+            className={`  ${josefinSans.variable} ${urbanist.variable} ${noto.variable} ${roboto.variable} ${oswald.variable}antialiased`}
       >
         {children}
         <Toaster 
