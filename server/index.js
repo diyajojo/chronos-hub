@@ -6,7 +6,6 @@ const signup=require('./routes/auth/signup')
 const login=require('./routes/auth/login')
 const travelLog = require('./routes/database/addlog');
 const generateImage = require('./routes/ai/image/generateimg');
-const rateStory = require('./routes/ai/ratelog');
 const fetchUserLogs = require('./routes/database/fetchuserlog');
 const proxyImage = require('./routes/ai/image/utils/proxyimage');
 
@@ -30,7 +29,6 @@ app.post('/auth/signup', signup);
 app.post('/auth/login',login);
 app.post('/addlog', travelLog);
 app.post('/generateAIimage', generateImage);
-app.post('/rateStory', rateStory);
 app.post('/fetchLogs', fetchUserLogs);
 app.get('/proxy-image', proxyImage);
 

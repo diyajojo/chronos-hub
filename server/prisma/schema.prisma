@@ -27,7 +27,6 @@ model TravelLog {
   image       String   // URL or image path (image stored in supabase bucket gives a link)
 
   survivalChances Int
-  rating      Int
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

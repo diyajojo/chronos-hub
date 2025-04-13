@@ -18,7 +18,6 @@ interface TravelLogItem {
   story: string;
   image: string;
   survivalChances: number;
-  rating: number;
   createdAt: string;
 }
 

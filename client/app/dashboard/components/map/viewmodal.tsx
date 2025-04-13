@@ -6,7 +6,6 @@ interface TravelLogItem {
   story: string;
   image: string;
   survivalChances: number;
-  rating: number;
   createdAt: string;
 }
 
@@ -37,7 +36,7 @@ export const ViewModal = ({ log, isOpen, onClose }: ViewModalProps) => {
             <img 
               src={log.image || "/api/placeholder/600/400"}
               alt={`Time travel to ${log.yearVisited}`}
-              className="w-full h-64 object-cover"
+              className="w-full h-64 object-fit"
             />
           </div>
         </div>
@@ -52,9 +51,9 @@ export const ViewModal = ({ log, isOpen, onClose }: ViewModalProps) => {
         </div>
         
         {/* Stats */}
-        <div className="grid grid-cols-2 gap-4 p-6 pt-2 bg-indigo-950/60">
-          <div className="bg-indigo-900/40 p-3 rounded-lg border border-indigo-500/20">
-            <div className="text-xs text-indigo-300 mb-1">Survival Rating</div>
+        <div className="flex justify-center p-6 pt-2 bg-indigo-950/60">
+          <div className="bg-indigo-900/40 p-3 rounded-lg border border-indigo-500/20 w-full max-w-sm">
+            <div className="text-xs text-indigo-300 mb-1 text-center">Survival Chances</div>
             <div className="flex items-center">
               <div className="text-lg text-indigo-100 font-bold">{log.survivalChances}%</div>
               <div className="ml-2 flex-1 bg-indigo-950/60 h-2 rounded-full overflow-hidden">
@@ -62,22 +61,6 @@ export const ViewModal = ({ log, isOpen, onClose }: ViewModalProps) => {
                   className="h-full bg-gradient-to-r from-red-500 to-indigo-400"
                   style={{ width: `${log.survivalChances}%` }}
                 ></div>
-              </div>
-            </div>
-          </div>
-          <div className="bg-indigo-900/40 p-3 rounded-lg border border-indigo-500/20">
-            <div className="text-xs text-indigo-300 mb-1">Journey Rating</div>
-            <div className="flex items-center">
-              <div className="text-lg text-indigo-100 font-bold">{log.rating}/10</div>
-              <div className="ml-2 flex">
-                {Array.from({ length: 5 }, (_, i) => (
-                  <span 
-                    key={i} 
-                    className={`text-lg ${i < Math.round(log.rating/2) ? 'text-indigo-300' : 'text-indigo-950'}`}
-                  >
-                    ★
-                  </span>
-                ))}
               </div>
             </div>
           </div>

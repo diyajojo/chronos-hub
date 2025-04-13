@@ -27,7 +27,6 @@ interface TimeLog {
   description: string;
   survivalChance: number;
   imageUrl: string;
-  rating: number;
   imageFile: File | null;
   customFileName: string;
 }
@@ -45,7 +44,6 @@ export default function CreateLogModal({ onClose, user }: CreateLogModalProps) {
     description: '',
     survivalChance: 50,
     imageUrl: '',
-    rating: 0,
     imageFile: null,
     customFileName: '',
   });
@@ -161,7 +159,6 @@ export default function CreateLogModal({ onClose, user }: CreateLogModalProps) {
           description: timeLog.description.trim(),
           survivalChance: Number(timeLog.survivalChance),
           imageUrl: finalImageUrl,
-          rating: 0,
           userId: parseInt(user.id || '0'),
         }),
       });
