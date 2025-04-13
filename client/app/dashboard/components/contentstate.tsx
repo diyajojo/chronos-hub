@@ -1,6 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import CreateLogModal from './createmodal';
+import { AnimatePresence } from 'framer-motion';
+import FantasyTemporalMap from './map/map';
 
 interface TravelLogItem {
   id: number;
@@ -18,10 +20,14 @@ interface User {
   email: string;
 }
 
-export default function Content({ user }: { user: User }) {
+export default function Content({ user, otherLogs, userLogs }: { 
+  user: User, 
+  otherLogs:TravelLogItem[], 
+  userLogs: TravelLogItem[] 
+}) {
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [userLogs, setUserLogs] = useState<TravelLogItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [showMap, setShowMap] = useState(false);
+  const [loading, setLoading] = useState(false);  // Changed to false since we get data from props
   const [stats, setStats] = useState({
     totalTrips: 0,
     highestRated: { rating: 0, year: '' },
@@ -29,77 +35,7 @@ export default function Content({ user }: { user: User }) {
     totalLikes: 0
   });
 
-  // Fetch user logs
-  useEffect(() => {
-    const fetchLogs = async () => {
-      try {
-        const response = await fetch('http://localhost:8000/fetchlogs', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-          body: JSON.stringify({ userId: user.id }),
-        });
-        const data = await response.json();
-        
-        if (data.logs) {
-          setUserLogs(data.logs);
-          
-       {/*   // Calculate stats
-          const highestRatedLog = [...data.logs].sort((a, b) => b.rating - a.rating)[0];
-          setStats({
-            totalTrips: data.logs.length,
-            highestRated: highestRatedLog ? { 
-              rating: highestRatedLog.rating, 
-              year: highestRatedLog.yearVisited.toString() 
-            } : { rating: 0, year: '' },
-            rank: Math.floor(Math.random() * 100) + 1, // Placeholder for actual rank
-            totalLikes: data.logs.reduce((acc, log) => acc + (log.likes || 0), 0)
-          });  */}
-        }
-      } catch (error) {
-        console.error('Error fetching logs:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (user?.id) {
-      fetchLogs();
-    }
-  }, [user]);
-
-  // Get traveler badge based on average rating
-  const getTravelerBadge = () => {
-    if (userLogs.length === 0) return "Novice";
-    
-    const avgRating = userLogs.reduce((sum, log) => sum + log.rating, 0) / userLogs.length;
-    
-    if (avgRating >= 8) return "Master";
-    if (avgRating >= 6) return "Expert";
-    if (avgRating >= 4) return "Adventurer";
-    return "Rookie";
-  };
-
-  const badgeColor = () => {
-    const badge = getTravelerBadge();
-    switch(badge) {
-      case "Master": return "from-yellow-400 to-amber-600";
-      case "Expert": return "from-blue-400 to-indigo-600";
-      case "Adventurer": return "from-green-400 to-teal-600";
-      default: return "from-gray-400 to-slate-600";
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-
+  
   return (
     <div className="container mx-auto px-4 py-8 relative z-10">
       {/* User Panel */}
@@ -112,9 +48,6 @@ export default function Content({ user }: { user: User }) {
                 <div className="w-20 h-20 rounded-full bg-black/50 flex items-center justify-center text-3xl font-bold text-white">
                   {user.name.charAt(0).toUpperCase()}
                 </div>
-              </div>
-              <div className={`absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-gradient-to-r ${badgeColor()} text-white text-xs py-1 px-3 rounded-full`}>
-                {getTravelerBadge()}
               </div>
             </div>
           </div>
@@ -156,12 +89,21 @@ export default function Content({ user }: { user: User }) {
         {/* Left Column - Create Log Button and Featured Log */}
         <div className="lg:col-span-1 space-y-6">
           <div className="bg-black/30 backdrop-blur-md rounded-xl p-6 border border-blue-500/30">
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg text-white font-bold transition-all hover:shadow-glow"
-            >
-              Log New Journey
-            </button>
+            <div className="space-y-4">
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg text-white font-bold transition-all hover:shadow-glow"
+              >
+                Log New Journey
+              </button>
+              
+              <button
+                onClick={() => setShowMap(true)}
+                className="w-full py-4 px-6 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg text-white font-bold transition-all hover:shadow-glow"
+              >
+                🔍 Discover Other Journeys
+              </button>
+            </div>
             
             <div className="mt-6 border-t border-blue-500/20 pt-6">
               <h3 className="text-lg font-medium text-blue-300 mb-3">Next Destination Ideas</h3>
@@ -246,9 +188,19 @@ export default function Content({ user }: { user: User }) {
         </div>
       </div>
       
+      {/* Modals */}
       {showCreateModal && (
         <CreateLogModal onClose={() => setShowCreateModal(false)} user={user} />
       )}
+      
+      <AnimatePresence>
+        {showMap && (
+          <FantasyTemporalMap 
+            logs={otherLogs} 
+            onClose={() => setShowMap(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

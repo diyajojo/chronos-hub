@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Navbar from '../components/layout/navbar';
 import StarBackground from '../components/design/starbackground';
 import EmptyState from './components/emptystate';
 import Content from './components/contentstate';
@@ -17,6 +16,8 @@ export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasLogs, setHasLogs] = useState(false);
+  const [otherLogs, setOtherLogs] = useState([]);
+  const [userLogs, setUserLogs] = useState([]);
 
   // Check if user has any logs
   const checkUserLogs = async (userId: string) => {
@@ -31,14 +32,20 @@ export default function Dashboard() {
       });
       const data = await response.json();
       
-      if (data.logs && data.logs.length > 0) {
+      if (data.userLogs && data.userLogs.length > 0) {
         setHasLogs(true);
+        
+        setUserLogs(data.userLogs);
       } else {
         setHasLogs(false);
       }
+      console.log('other user logs:', data.otherLogs);
+      setOtherLogs(data.otherLogs || []);
     } catch (error) {
       console.error('Error checking user logs:', error);
       setHasLogs(false);
+      setOtherLogs([]);
+      setUserLogs([]);
     }
   };
 
@@ -91,10 +98,10 @@ export default function Dashboard() {
       <main className="container mx-auto px-6 py-8 relative z-10">
         {!hasLogs ? (
           // For new users with no logs
-          user && <EmptyState user={user} />
+          user && <EmptyState user={user} otherLogs={otherLogs} />
         ) : (
           // For users with existing logs
-          user && <Content user={user} />
+          user && <Content user={user} otherLogs={otherLogs} userLogs={userLogs} />
         )}
       </main>
     </div>

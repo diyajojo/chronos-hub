@@ -131,7 +131,8 @@ export default function CreateLogModal({ onClose, user }: CreateLogModalProps) {
     e.preventDefault();
     setError('');
 
-    if (!validateForm()) {
+    if (!validateForm()) 
+      {
       return;
     }
 
@@ -295,16 +296,16 @@ export default function CreateLogModal({ onClose, user }: CreateLogModalProps) {
                   onValueChange={(value) => setImageMode(value as 'upload' | 'ai')}
                   className="w-full"
                 >
-                  <TabsList className="grid grid-cols-2 w-full">
-                    <TabsTrigger value="upload">Upload Image</TabsTrigger>
-                    <TabsTrigger value="ai">Generate AI Image</TabsTrigger>
+                  <TabsList className="grid grid-cols-2 w-full bg-black/50 border border-blue-500/30">
+                    <TabsTrigger value="upload" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-300">Upload Image</TabsTrigger>
+                    <TabsTrigger value="ai" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-300">Generate AI Image</TabsTrigger>
                   </TabsList>
                   
                   <TabsContent value="upload" className="mt-4">
                     {!timeLog.imageFile ? (
                       <div className="border-2 border-dashed border-blue-500/30 rounded-lg p-8 text-center">
                         <p className="text-blue-300 mb-4">Upload a photo from your adventure</p>
-                        <Label htmlFor="image-upload" className="cursor-pointer inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                        <Label htmlFor="image-upload" className="cursor-pointer inline-block px-4 py-2 bg-black/50 border border-blue-500/30 text-blue-300 hover:bg-black/70 rounded-lg transition-colors">
                           <span>Choose an image</span>
                           <Input
                             id="image-upload"
@@ -380,7 +381,7 @@ export default function CreateLogModal({ onClose, user }: CreateLogModalProps) {
                         className={`w-full ${
                           generatingImage || !timeLog.description || !timeLog.year
                             ? 'bg-gray-600'
-                            : 'bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600'
+                            : 'bg-black/50 border border-blue-500/30 text-blue-300 hover:bg-black/70'
                         }`}
                       >
                         {generatingImage ? 'Conjuring Image...' : 'Generate Image from Story'}
