@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -25,11 +24,35 @@ model TravelLog {
   yearVisited Int
   story       String   @db.Text // Long text for the travel story
   image       String   // URL or image path (image stored in supabase bucket gives a link)
-
   survivalChances Int
-
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+   comments        Comment[]
+   reaction      Reaction[]
+}
+
+model Comment {
+  id          String    @id @default(uuid())
+  travelLogId Int
+  text        String
+  commenter   String
+  createdAt   DateTime  @default(now())
+  time        DateTime  @default(now())  // New field for comment time
+
+  travelLog   TravelLog @relation(fields: [travelLogId], references: [id], onDelete: Cascade)
+}
+
+model Reaction {
+  id          String    @id @default(uuid())
+  travelLogId Int
+  type        String    // "timeWarp", "mindBlown", or "paradox"
+  createdAt   DateTime  @default(now())
+  
+ 
+  travelLog   TravelLog @relation(fields: [travelLogId], references: [id], onDelete: Cascade)
+  
+  // Add a unique constraint to ensure a user can only react once with each reaction type per travel log
+  @@unique([ travelLogId, type])
 }

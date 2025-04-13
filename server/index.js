@@ -1,13 +1,14 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const axios = require('axios');
 const signup=require('./routes/auth/signup')
 const login=require('./routes/auth/login')
 const travelLog = require('./routes/database/addlog');
 const generateImage = require('./routes/ai/image/generateimg');
 const fetchUserLogs = require('./routes/database/fetchuserlog');
 const proxyImage = require('./routes/ai/image/utils/proxyimage');
+const addComment = require('./routes/database/addcomment');
+const fetchComments = require('./routes/database/fetchcomments');
 
 const app = express();
 const port = 8000;
@@ -31,6 +32,8 @@ app.post('/addlog', travelLog);
 app.post('/generateAIimage', generateImage);
 app.post('/fetchLogs', fetchUserLogs);
 app.get('/proxy-image', proxyImage);
+app.post('/addcomment', addComment);
+app.post('/fetchcomments', fetchComments);  // Changed from GET to POST
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

@@ -19,6 +19,8 @@ interface TravelLogItem {
   image: string;
   survivalChances: number;
   createdAt: string;
+  comments: any[];
+  reactions: any[];
 }
 
 export default function EmptyState({ user, otherLogs }: { user: User, otherLogs: TravelLogItem[] }) {
@@ -113,6 +115,7 @@ export default function EmptyState({ user, otherLogs }: { user: User, otherLogs:
         {showMap && (
           <MapModal
             logs={otherLogs} 
+            user={user}
             onClose={() => {
               setShowMap(false);
               setActiveSection('welcome');

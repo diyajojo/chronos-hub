@@ -10,9 +10,21 @@ interface TravelLogItem {
   image: string;
   survivalChances: number;
   createdAt: string;
+  comments: any[];
+  reactions: any;
 }
 
-const MapModal = ({ logs, onClose }: { logs: TravelLogItem[], onClose: () => void }) => {
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const MapModal = ({ logs, user, onClose }: { 
+  logs: TravelLogItem[], 
+  user: User,
+  onClose: () => void 
+}) => {
   const [selectedLog, setSelectedLog] = useState<TravelLogItem | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   
@@ -130,6 +142,7 @@ const MapModal = ({ logs, onClose }: { logs: TravelLogItem[], onClose: () => voi
         {/* View Modal */}
         <ViewModal
           log={selectedLog}
+          user={user}
           isOpen={isDetailsOpen}
           onClose={() => setIsDetailsOpen(false)}
         />

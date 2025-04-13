@@ -12,6 +12,8 @@ interface TravelLogItem {
   survivalChances: number;
   rating: number;
   createdAt: string;
+  comments: any[];
+  reactions: any[];
 }
 
 interface User {
@@ -197,6 +199,7 @@ export default function Content({ user, otherLogs, userLogs }: {
         {showMap && (
           <FantasyTemporalMap 
             logs={otherLogs} 
+            user={user}
             onClose={() => setShowMap(false)}
           />
         )}
