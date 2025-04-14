@@ -36,11 +36,15 @@ model TravelLog {
 model Comment {
   id          String    @id @default(uuid())
   travelLogId Int
+  parentId    String?   // null for top-level comments
   text        String
   commenter   String
   createdAt   DateTime  @default(now())
-  time        DateTime  @default(now())  // New field for comment time
+  time        DateTime  @default(now())
 
+  parent      Comment?  @relation("Replies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies     Comment[] @relation("Replies")
+  
   travelLog   TravelLog @relation(fields: [travelLogId], references: [id], onDelete: Cascade)
 }
 
@@ -56,3 +60,4 @@ model Reaction {
   // Add a unique constraint to ensure a user can only react once with each reaction type per travel log
   @@unique([ travelLogId, type])
 }
+

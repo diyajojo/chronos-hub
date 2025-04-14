@@ -12,11 +12,12 @@ interface TravelLogItem {
 }
 
 interface Comment {
-  id: number;
-  username: string;
+  id: string;
   text: string;
-  time: string;  // Changed from timestamp to time
-  commenter: string;  // Add commenter field
+  time: string;
+  commenter: string;
+  parentId: string | null;
+  replies: Comment[];
 }
 
 interface User {
@@ -30,26 +31,31 @@ interface ViewModalProps {
   user: User;
   isOpen: boolean;
   onClose: () => void;
-  currentUser?: string;
-  onAddComment?: (logId: number, comment: string) => void;
 }
+
+// Keep track of the direct parent for proper nesting
+type ReplyTarget = {
+  id: string;
+  commenter: string;
+};
 
 export const ViewModal = ({ 
   log, 
   user,
   isOpen, 
   onClose, 
-  currentUser,
-  onAddComment
 }: ViewModalProps) => {
   const [newComment, setNewComment] = useState('');
   const [comments, setComments] = useState<Comment[]>([]);
+  const [replyingTo, setReplyingTo] = useState<ReplyTarget | null>(null);
+  const [replyText, setReplyText] = useState('');
 
   useEffect(() => {
-    const fetchComments = async () => {
+    const fetchData = async () => {
       if (log && isOpen) {
         try {
-          const response = await fetch(`http://localhost:8000/fetchcomments`, {
+          // Fetch comments
+          const commentsResponse = await fetch(`http://localhost:8000/fetchcomments`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -58,17 +64,18 @@ export const ViewModal = ({
               travelLogId: log.id
             })
           });
-          if (response.ok) {
-            const data = await response.json();
-            setComments(data);
+
+          if (commentsResponse.ok) {
+            const commentsData = await commentsResponse.json();
+            setComments(commentsData);
           }
         } catch (error) {
-          console.error('Error fetching comments:', error);
+          console.error('Error fetching data:', error);
         }
       }
     };
 
-    fetchComments();
+    fetchData();
   }, [log?.id, isOpen]);
 
   if (!log) return null;
@@ -83,26 +90,22 @@ export const ViewModal = ({
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            travelLogId: log.id,
+            travelLogId: Number(log.id), // Ensure it's a number
             text: newComment,
-            commenter: user?.name
+            commenter: user?.name,
+            parentId: null
           }),
         });
 
         if (!response.ok) {
-          throw new Error('Failed to add comment');
+          const errorData = await response.json();
+          throw new Error(errorData.details || 'Failed to add comment');
         }
 
         const newCommentData = await response.json();
         
-        // Add the new comment to the comments state with correct time
-        setComments(prevComments => [...prevComments, {
-          id: newCommentData.id,
-          username: user?.name || '',
-          text: newCommentData.text,
-          time: newCommentData.time,
-          commenter: newCommentData.commenter
-        }]);
+        // Add the new comment to the comments state
+        setComments(prevComments => [...prevComments, newCommentData]);
         
         setNewComment('');
       } 
@@ -110,6 +113,77 @@ export const ViewModal = ({
         console.error('Error adding comment:', error);
       }
     }
+  };
+
+  const handleReplyClick = (comment: Comment) => {
+    // When clicking reply, store the direct parent's ID
+    setReplyingTo({
+      id: comment.id,
+      commenter: comment.commenter
+    });
+    setReplyText('');
+  };
+
+  const handleReplySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (replyText.trim() && replyingTo !== null) {
+      try {
+        // Use the direct parent's ID for proper nesting
+        const response = await fetch('http://localhost:8000/addcomment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            travelLogId: Number(log.id),
+            text: replyText,
+            commenter: user?.name,
+            parentId: replyingTo.id // This is the direct parent ID
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to add reply');
+        }
+
+        const newReplyData = await response.json();
+        
+        // Function to update comments with nested structure preserved
+        const updateCommentsWithReply = (comments: Comment[]): Comment[] => {
+          return comments.map(comment => {
+            // If this is the comment being replied to
+            if (comment.id === replyingTo.id) {
+              return {
+                ...comment,
+                replies: [...(comment.replies || []), newReplyData]
+              };
+            }
+            
+            // Check for the parent in nested replies
+            if (comment.replies && comment.replies.length > 0) {
+              return {
+                ...comment,
+                replies: updateCommentsWithReply(comment.replies)
+              };
+            }
+            
+            return comment;
+          });
+        };
+
+        setComments(prevComments => updateCommentsWithReply(prevComments));
+        setReplyText('');
+        setReplyingTo(null);
+      } 
+      catch (error) {
+        console.error('Error adding reply:', error);
+      }
+    }
+  };
+
+  const cancelReply = () => {
+    setReplyingTo(null);
+    setReplyText('');
   };
 
   return (
@@ -165,24 +239,166 @@ export const ViewModal = ({
           <h3 className="text-indigo-200 font-medium mb-3">Comments</h3>
           
           {/* Comment List */}
-          <div className="space-y-3 max-h-40 overflow-y-auto mb-4">
+          <div className="space-y-4 max-h-64 overflow-y-auto mb-4">
             {comments.length === 0 ? (
               <p className="text-indigo-400 text-sm italic">No temporal observations yet.</p>
             ) : (
               comments.map(comment => (
-                <div key={comment.id} className="bg-indigo-900/30 p-3 rounded-lg border border-indigo-500/10">
-                  <div className="flex justify-between items-start">
-                    <span className="font-medium text-indigo-300">{comment.commenter}</span>
-                    <span className="text-xs text-indigo-400">
-                      {new Date(comment.time).toLocaleString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </span>
+                <div key={comment.id} className="space-y-2">
+                  {/* Main Comment */}
+                  <div className="bg-indigo-900/30 p-3 rounded-lg border border-indigo-500/10">
+                    <div className="flex justify-between items-start">
+                      <span className="font-medium text-indigo-300">{comment.commenter}</span>
+                      <span className="text-xs text-indigo-400">
+                        {new Date(comment.time).toLocaleString('en-US', { 
+                          month: 'short', 
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </span>
+                    </div>
+                    <p className="text-indigo-100 text-sm mt-1">{comment.text}</p>
+                    <button 
+                      onClick={() => handleReplyClick(comment)}
+                      className="text-xs text-indigo-400 mt-2 hover:text-indigo-200"
+                    >
+                      Reply
+                    </button>
                   </div>
-                  <p className="text-indigo-100 text-sm mt-1">{comment.text}</p>
+                  
+                  {/* Show reply form for top-level comment */}
+                  {replyingTo?.id === comment.id && (
+                    <form onSubmit={handleReplySubmit} className="pl-4 mt-2">
+                      <div className="bg-indigo-900/20 p-2 rounded-lg border border-indigo-500/10">
+                        <div className="text-xs text-indigo-300 mb-2">
+                          Replying to <span className="font-medium">{comment.commenter}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <input
+                            type="text"
+                            value={replyText}
+                            onChange={e => setReplyText(e.target.value)}
+                            placeholder="Write your reply..."
+                            className="flex-1 bg-indigo-900/40 border border-indigo-500/30 rounded-lg py-1 px-3 text-indigo-100 placeholder-indigo-400 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                          />
+                        </div>
+                        <div className="flex justify-end mt-2 space-x-2">
+                          <button
+                            type="button"
+                            onClick={cancelReply}
+                            className="text-xs py-1 px-2 text-indigo-300 hover:text-indigo-100"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs py-1 px-3 rounded transition"
+                          >
+                            Reply
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  )}
+                  
+                  {/* Replies to this comment */}
+                  {comment.replies && comment.replies.length > 0 && (
+                    <div className="pl-4 space-y-2">
+                      {comment.replies.map(reply => (
+                        <div key={reply.id} className="space-y-2">
+                          <div 
+                            className="bg-indigo-900/20 p-2 rounded-lg border border-indigo-500/10 ml-4"
+                          >
+                            <div className="flex justify-between items-start">
+                              <span className="font-medium text-indigo-300 text-sm">{reply.commenter}</span>
+                              <span className="text-xs text-indigo-400">
+                                {new Date(reply.time).toLocaleString('en-US', { 
+                                  month: 'short', 
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </span>
+                            </div>
+                            <p className="text-indigo-100 text-sm mt-1">{reply.text}</p>
+                            <button 
+                              onClick={() => handleReplyClick(reply)}
+                              className="text-xs text-indigo-400 mt-2 hover:text-indigo-200"
+                            >
+                              Reply
+                            </button>
+                          </div>
+                          
+                          {/* Show reply form for this reply */}
+                          {replyingTo?.id === reply.id && (
+                            <form onSubmit={handleReplySubmit} className="pl-4 mt-2">
+                              <div className="bg-indigo-900/20 p-2 rounded-lg border border-indigo-500/10 ml-4">
+                                <div className="text-xs text-indigo-300 mb-2">
+                                  Replying to <span className="font-medium">{reply.commenter}</span>
+                                </div>
+                                <div className="flex items-center">
+                                  <input
+                                    type="text"
+                                    value={replyText}
+                                    onChange={e => setReplyText(e.target.value)}
+                                    placeholder="Write your reply..."
+                                    className="flex-1 bg-indigo-900/40 border border-indigo-500/30 rounded-lg py-1 px-3 text-indigo-100 placeholder-indigo-400 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                                  />
+                                </div>
+                                <div className="flex justify-end mt-2 space-x-2">
+                                  <button
+                                    type="button"
+                                    onClick={cancelReply}
+                                    className="text-xs py-1 px-2 text-indigo-300 hover:text-indigo-100"
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    type="submit"
+                                    className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs py-1 px-3 rounded transition"
+                                  >
+                                    Reply
+                                  </button>
+                                </div>
+                              </div>
+                            </form>
+                          )}
+                          
+                          {/* Render nested replies */}
+                          {reply.replies && reply.replies.length > 0 && (
+                            <div className="pl-4">
+                              {reply.replies.map(nestedReply => (
+                                <div 
+                                  key={nestedReply.id} 
+                                  className="bg-indigo-900/20 p-2 rounded-lg border border-indigo-500/10 ml-4"
+                                >
+                                  <div className="flex justify-between items-start">
+                                    <span className="font-medium text-indigo-300 text-sm">{nestedReply.commenter}</span>
+                                    <span className="text-xs text-indigo-400">
+                                      {new Date(nestedReply.time).toLocaleString('en-US', { 
+                                        month: 'short', 
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                      })}
+                                    </span>
+                                  </div>
+                                  <p className="text-indigo-100 text-sm mt-1">{nestedReply.text}</p>
+                                  <button 
+                                    onClick={() => handleReplyClick(nestedReply)}
+                                    className="text-xs text-indigo-400 mt-2 hover:text-indigo-200"
+                                  >
+                                    Reply
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))
             )}

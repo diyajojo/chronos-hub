@@ -33,7 +33,7 @@ app.post('/generateAIimage', generateImage);
 app.post('/fetchLogs', fetchUserLogs);
 app.get('/proxy-image', proxyImage);
 app.post('/addcomment', addComment);
-app.post('/fetchcomments', fetchComments);  // Changed from GET to POST
+app.post('/fetchcomments', fetchComments);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
