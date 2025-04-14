@@ -34,7 +34,17 @@ async function login(req, res) {
     }
 
     const token=jwt.sign(payLoad,JWT_SECRET,{expiresIn:'1h'})
-    return res.status(200).json({ "token": token});
+    
+    return res.status(200).json({ 
+      success: true,
+      token: token,
+      username: existingUser.name,
+      user: {
+        id: existingUser.id,
+        name: existingUser.name,
+        email: existingUser.email
+      }
+    });
   }
   catch (err) 
   {

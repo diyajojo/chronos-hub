@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     
     const cookieStore=await cookies();
 
-    cookieStore.set ({
+    cookieStore.set({
       name: 'token',
       value: data.token,
       httpOnly: true,
@@ -35,7 +35,10 @@ export async function POST(request: Request) {
       maxAge: 60 * 60,
     });
 
-    return NextResponse.json({ "success": true }, { status: 200 });
+    return NextResponse.json({ 
+      success: true, 
+      username: data.username 
+    }, { status: 200 });
 
   }
    catch (error) 

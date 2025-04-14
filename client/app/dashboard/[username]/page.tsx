@@ -1,9 +1,9 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import StarBackground from '../components/design/starbackground';
-import EmptyState from './components/emptystate';
-import Content from './components/contentstate';
+import { useParams, useRouter } from 'next/navigation';
+import StarBackground from '../../components/design/starbackground';
+import EmptyState from '../components/emptystate';
+import Content from '../components/contentstate';
 
 interface User {
   id: string;
@@ -13,6 +13,7 @@ interface User {
 
 export default function Dashboard() {
   const router = useRouter();
+  const params =useParams();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasLogs, setHasLogs] = useState(false);

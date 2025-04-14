@@ -46,6 +46,7 @@ export default function Login() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(formData),
       });
 
@@ -55,9 +56,8 @@ export default function Login() {
         throw new Error(data.error || 'Login failed');
       }
 
-      // Only redirect to dashboard after successful login confirmation
-      if (data.success) {
-        router.push('/dashboard');
+      if (data.success && data.username) {
+        router.push(`/dashboard/${data.username}`);
       } else {
         throw new Error('Authentication failed');
       }
