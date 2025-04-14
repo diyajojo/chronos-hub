@@ -1,10 +1,9 @@
 const prisma = require('../../utils/prisma');
 
-async function addLog(req, res) {
+const addLog = async (req, res) => {
   try {
     const { year, description, survivalChance, imageUrl, rating, userId } = req.body;
 
-    // Validate required fields
     if (!year || !description || !survivalChance || !userId) {
       return res.status(400).json({ 
         success: false, 
@@ -12,7 +11,6 @@ async function addLog(req, res) {
       });
     }
 
-    // Validate numeric fields
     if (isNaN(year) || isNaN(survivalChance) || isNaN(userId)) {
       return res.status(400).json({ 
         success: false, 
@@ -26,7 +24,6 @@ async function addLog(req, res) {
         story: description,
         survivalChances: parseFloat(survivalChance),
         image: imageUrl || null,
-        rating: rating ? parseInt(rating) : 0,
         userId: parseInt(userId)
       }
     });
@@ -35,7 +32,6 @@ async function addLog(req, res) {
   }
   catch (error) {
     console.error('Error creating travel log:', error);
-    // More specific error handling
     if (error.code === 'P2003') {
       return res.status(400).json({ 
         success: false, 
@@ -48,6 +44,38 @@ async function addLog(req, res) {
       details: error.message 
     });
   }
-}
+};
 
-module.exports = addLog;
+const fetchUserLogs = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    const userLogs = await prisma.travelLog.findMany({
+      where: {
+        userId: parseInt(userId)
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
+    const otherLogs = await prisma.travelLog.findMany({
+      where: {
+        NOT: {
+          userId: parseInt(userId)
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
+    return res.status(200).json({ userLogs, otherLogs });
+  } 
+  catch (error) {
+    console.error('Error fetching user logs:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+module.exports = { addLog, fetchUserLogs };

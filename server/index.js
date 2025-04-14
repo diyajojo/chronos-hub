@@ -1,14 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const signup=require('./routes/auth/signup')
-const login=require('./routes/auth/login')
-const travelLog = require('./routes/database/addlog');
+const signup = require('./routes/auth/signup');
+const login = require('./routes/auth/login');
+const { addLog, fetchUserLogs } = require('./routes/database/logs');
 const generateImage = require('./routes/ai/image/generateimg');
-const fetchUserLogs = require('./routes/database/fetchuserlog');
 const proxyImage = require('./routes/ai/image/utils/proxyimage');
-const addComment = require('./routes/database/addcomment');
-const fetchComments = require('./routes/database/fetchcomments');
+const { addComment, fetchComments } = require('./routes/database/comments');
+const { addReaction, fetchReactions } = require('./routes/database/reactions');
 
 const app = express();
 const port = 8000;
@@ -27,13 +26,15 @@ app.use(express.urlencoded({ extended: true }));
 
 //routes
 app.post('/auth/signup', signup);
-app.post('/auth/login',login);
-app.post('/addlog', travelLog);
-app.post('/generateAIimage', generateImage);
+app.post('/auth/login', login);
+app.post('/addlog', addLog);
 app.post('/fetchLogs', fetchUserLogs);
+app.post('/generateAIimage', generateImage);
 app.get('/proxy-image', proxyImage);
 app.post('/addcomment', addComment);
 app.post('/fetchcomments', fetchComments);
+app.post('/addreaction', addReaction);
+app.post('/fetchreactions', fetchReactions);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

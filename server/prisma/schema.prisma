@@ -51,13 +51,12 @@ model Comment {
 model Reaction {
   id          String    @id @default(uuid())
   travelLogId Int
-  type        String    // "timeWarp", "mindBlown", or "paradox"
+  type        String    
+  reactor     String    // Remove the @default("Anonymous")
   createdAt   DateTime  @default(now())
   
- 
   travelLog   TravelLog @relation(fields: [travelLogId], references: [id], onDelete: Cascade)
   
-  // Add a unique constraint to ensure a user can only react once with each reaction type per travel log
-  @@unique([ travelLogId, type])
+  @@unique([travelLogId, reactor]) // Change unique constraint to prevent multiple reactions from same user
 }
 

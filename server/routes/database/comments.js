@@ -1,21 +1,44 @@
 const prisma = require('../../utils/prisma');
 
+const addComment = async (req, res) => {
+    try {
+        const { travelLogId, text, commenter, parentId } = req.body;
+        const now = new Date();
+
+        const newComment = await prisma.comment.create({
+            data: {
+                travelLogId: parseInt(travelLogId),
+                text,
+                commenter,
+                parentId: parentId || null,
+                time: now
+            },
+            include: {
+                replies: true
+            }
+        });
+
+        res.status(201).json(newComment);
+    } catch (error) {
+        console.error('Error details:', error);
+        res.status(500).json({ error: 'Failed to add comment', details: error.message });
+    }
+};
+
 const fetchComments = async (req, res) => {
     try {
         const { travelLogId } = req.body;
         
-        // Get top-level comments
         const topLevelComments = await prisma.comment.findMany({
             where: {
                 travelLogId: parseInt(travelLogId),
-                parentId: null // Only fetch top-level comments
+                parentId: null
             },
             orderBy: {
                 createdAt: 'asc'
             }
         });
         
-        // Function to recursively fetch replies for a comment
         const getCommentWithReplies = async (commentId) => {
             const replies = await prisma.comment.findMany({
                 where: {
@@ -26,7 +49,6 @@ const fetchComments = async (req, res) => {
                 }
             });
             
-            // Recursively get replies for each reply
             const repliesWithNested = await Promise.all(
                 replies.map(async (reply) => {
                     const nestedReplies = await getCommentWithReplies(reply.id);
@@ -40,7 +62,6 @@ const fetchComments = async (req, res) => {
             return repliesWithNested;
         };
         
-        // Build the complete comment tree
         const commentsWithReplies = await Promise.all(
             topLevelComments.map(async (comment) => {
                 const replies = await getCommentWithReplies(comment.id);
@@ -58,4 +79,4 @@ const fetchComments = async (req, res) => {
     }
 };
 
-module.exports = fetchComments;
+module.exports = { addComment, fetchComments };
