@@ -16,7 +16,7 @@ import { toast } from "sonner";
 interface CreateLogModalProps {
   onClose: () => void;
   user: {
-    id: string;
+    id: number;
     name: string;
     email: string;
   };
@@ -159,7 +159,7 @@ export default function CreateLogModal({ onClose, user }: CreateLogModalProps) {
           description: timeLog.description.trim(),
           survivalChance: Number(timeLog.survivalChance),
           imageUrl: finalImageUrl,
-          userId: parseInt(user.id || '0'),
+          userId: user.id || '0',
         }),
       });
 

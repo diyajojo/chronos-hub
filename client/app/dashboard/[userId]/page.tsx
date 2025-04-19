@@ -1,0 +1,156 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import StarBackground from '../../components/design/starbackground';
+import EmptyState from '../components/emptystate';
+import Content from '../components/contentstate';
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+export default function Dashboard() {
+  const router = useRouter();
+  const params = useParams();
+  const userId = params.userId;
+  
+  const [user, setUser] = useState<User | null>(null);
+  const [profileUser, setProfileUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [hasLogs, setHasLogs] = useState(false);
+  const [otherLogs, setOtherLogs] = useState([]);
+  const [userLogs, setUserLogs] = useState([]);
+
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      setLoading(true);
+      try {
+        // Verify authentication
+        const authResponse = await fetch('/api/verify', {
+          credentials: 'include',
+        });
+        const authData = await authResponse.json();
+        
+        if (!authResponse.ok || !authData.authenticated) {
+          router.replace('/login');
+          return;
+        }
+        
+        setUser(authData.user);
+
+        // Check if userId is valid
+        if (!userId || userId === 'undefined') {
+          router.replace(`/dashboard/${authData.user.id}`);
+          return;
+        }
+
+        // Fetch profile user data
+        try {
+          const profileResponse = await fetch(`http://localhost:8000/user/${userId}`, {
+            credentials: 'include',
+          });
+          
+          if (!profileResponse.ok) {
+            console.error('Error fetching user profile');
+            router.replace(`/dashboard/${authData.user.id}`);
+            return;
+          }
+
+          const profileData = await profileResponse.json();
+          
+          if (!profileData.user) {
+            router.replace(`/dashboard/${authData.user.id}`);
+            return;
+          }
+          
+          setProfileUser(profileData.user);
+        } catch (profileError) {
+          console.error('Error fetching profile:', profileError);
+          router.replace(`/dashboard/${authData.user.id}`);
+          return;
+        }
+
+        // Fetch logs for the profile user
+        try {
+          const response = await fetch('http://localhost:8000/fetchlogs', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ userId }),
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to fetch logs');
+          }
+
+          const data = await response.json();
+          
+          if (data.userLogs && data.userLogs.length > 0) {
+            setHasLogs(true);
+            setUserLogs(data.userLogs);
+          } else {
+            setHasLogs(false);
+          }
+          setOtherLogs(data.otherLogs || []);
+        } catch (logsError) {
+          console.error('Error fetching logs:', logsError);
+          setHasLogs(false);
+          setOtherLogs([]);
+          setUserLogs([]);
+        }
+      } catch (error) {
+        console.error('Error loading dashboard:', error);
+        setHasLogs(false);
+        setOtherLogs([]);
+        setUserLogs([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadDashboardData();
+  }, [userId, router]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-blue-950 via-blue-900 to-indigo-950">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-white text-center">
+            <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-400 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+            <p className="mt-4 text-blue-300">Traveling through time...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-blue-950 via-blue-900 to-indigo-950 overflow-hidden relative">
+      <StarBackground />
+      
+      <main className="container mx-auto px-6 py-8 relative z-10">
+        {!hasLogs ? (
+          profileUser && (
+            <EmptyState 
+              user={profileUser}
+              otherLogs={otherLogs} 
+            />
+          )
+        ) : (
+          profileUser && (
+            <Content 
+              user={profileUser}
+              otherLogs={otherLogs} 
+              userLogs={userLogs} 
+            />
+          )
+        )}
+      </main>
+    </div>
+  );
+}

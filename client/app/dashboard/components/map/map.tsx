@@ -3,25 +3,39 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ViewModal } from './viewmodal';
 
-interface TravelLogItem {
+
+ interface TravelLogItem {
   id: number;
   yearVisited: number;
   story: string;
   image: string;
   survivalChances: number;
   createdAt: string;
-  comments: any[];
-  reactions: any;
+  comments: Comment[];
+  user: {
+    id: number;
+    name: string;
+    email: string;
+  };
 }
 
 interface User {
-  id: string;
+  id: number;
   name: string;
   email: string;
 }
 
+interface Comment {
+  id: string;
+  text: string;
+  time: string;
+  commenter: string;
+  parentId: string | null;
+  replies: Comment[];
+}
+
 const MapModal = ({ logs, user, onClose }: { 
-  logs: TravelLogItem[], 
+  logs: TravelLogItem[] , 
   user: User,
   onClose: () => void 
 }) => {
@@ -115,7 +129,7 @@ const MapModal = ({ logs, user, onClose }: {
                       className="relative group"
                     >
                       {/* Year label with improved visibility */}
-                      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-amber-200 font-bold text-xs bg-black/70 px-2 py-0.5 rounded-full z-10">
+                      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-amber-200 font-bold text-xs bg-black/70 px-2</div> py-0.5 rounded-full z-10">
                         {log.yearVisited}
                       </div>
                       

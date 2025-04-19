@@ -37,7 +37,11 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ 
       success: true, 
-      username: data.username 
+      user: {
+        id: data.user.id,
+        name: data.user.name,
+        email: data.user.email
+      }
     }, { status: 200 });
 
   }

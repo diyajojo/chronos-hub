@@ -1,7 +1,21 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import Link from 'next/link';
 import { useComments } from '../comments/comments';
 import { useReactions } from '../reactions/reactions';
 import { useEffect } from 'react';
+
+// Using the same interface definitions as in MapModal component
+interface Comment {
+  id: string;
+  text: string;
+  time: string;
+  commenter: string;
+  parentId: string | null;
+  replies: Comment[];
+  user: {
+    id: number;
+  };
+}
 
 interface TravelLogItem {
   id: number;
@@ -11,19 +25,15 @@ interface TravelLogItem {
   survivalChances: number;
   createdAt: string;
   comments: Comment[];
-}
-
-interface Comment {
-  id: string;
-  text: string;
-  time: string;
-  commenter: string;
-  parentId: string | null;
-  replies: Comment[];
+  user: {
+    id: number;
+    name: string;
+    email: string;
+  };
 }
 
 interface User {
-  id: string;
+  id: number;
   name: string;
   email: string;
 }
@@ -33,6 +43,9 @@ interface ReactionData {
     id: string;
     type: string;
     reactor: string;
+    user?: {
+      id: number;
+    };
   }[];
   counts: {
     [key: string]: number;
@@ -88,8 +101,18 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
             <DialogTitle className="text-2xl font-serif text-indigo-200">
               Journey to {log.yearVisited}
             </DialogTitle>
-            <DialogDescription className="text-indigo-300">
-              Logged on {new Date(log.createdAt).toLocaleDateString()}
+            <DialogDescription className="text-indigo-300 space-y-1">
+              <div>Logged on {new Date(log.createdAt).toLocaleDateString()}</div>
+              <div className="flex gap-2">
+                <span>Created by Time Traveller : 
+                  <Link 
+                    href={`/dashboard/${log.user.id}`} 
+                    className="text-indigo-200 hover:text-indigo-100 hover:underline cursor-pointer ml-1"
+                  >
+                    {log.user.name}
+                  </Link>
+                </span>
+              </div>
             </DialogDescription>
           </DialogHeader>
           
@@ -190,7 +213,12 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
                     {/* Main Comment */}
                     <div className="bg-indigo-900/30 p-3 rounded-lg border border-indigo-500/10">
                       <div className="flex justify-between items-start">
-                        <span className="font-medium text-indigo-300">{comment.commenter}</span>
+                        <Link 
+                          href={`/dashboard/${comment.user?.id}`}
+                          className="font-medium text-indigo-300 hover:text-indigo-200 hover:underline"
+                        >
+                          {comment.commenter}
+                        </Link>
                         <span className="text-xs text-indigo-400">
                           {new Date(comment.time).toLocaleString('en-US', { 
                             month: 'short', 
@@ -253,7 +281,12 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
                               className="bg-indigo-900/20 p-2 rounded-lg border border-indigo-500/10 ml-4"
                             >
                               <div className="flex justify-between items-start">
-                                <span className="font-medium text-indigo-300 text-sm">{reply.commenter}</span>
+                                <Link 
+                                  href={`/dashboard/${reply.user?.id}`}
+                                  className="font-medium text-indigo-300 text-sm hover:text-indigo-200 hover:underline"
+                                >
+                                  {reply.commenter}
+                                </Link>
                                 <span className="text-xs text-indigo-400">
                                   {new Date(reply.time).toLocaleString('en-US', { 
                                     month: 'short', 
@@ -316,7 +349,12 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
                                     className="bg-indigo-900/20 p-2 rounded-lg border border-indigo-500/10 ml-4"
                                   >
                                     <div className="flex justify-between items-start">
-                                      <span className="font-medium text-indigo-300 text-sm">{nestedReply.commenter}</span>
+                                      <Link 
+                                        href={`/dashboard/${nestedReply.user?.id}`}
+                                        className="font-medium text-indigo-300 text-sm hover:text-indigo-200 hover:underline"
+                                      >
+                                        {nestedReply.commenter}
+                                      </Link>
                                       <span className="text-xs text-indigo-400">
                                         {new Date(nestedReply.time).toLocaleString('en-US', { 
                                           month: 'short', 
@@ -383,7 +421,12 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
                 key={reaction.id} 
                 className="flex justify-between items-center p-3 bg-indigo-900/30 rounded-lg border border-indigo-500/10"
               >
-                <span className="text-indigo-200">{reaction.reactor}</span>
+                <Link
+                  href={`/dashboard/${reaction.user?.id}`}
+                  className="text-indigo-200 hover:text-indigo-100 hover:underline"
+                >
+                  {reaction.reactor}
+                </Link>
                 <span>{
                   reaction.type === 'enlightenment' ? '💡' : 
                   reaction.type === 'appreciation' ? '🤝' : '😯'

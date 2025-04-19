@@ -8,6 +8,7 @@ const generateImage = require('./routes/ai/image/generateimg');
 const proxyImage = require('./routes/ai/image/utils/proxyimage');
 const { addComment, fetchComments } = require('./routes/database/comments');
 const { addReaction, fetchReactions } = require('./routes/database/reactions');
+const { getUser } = require('./routes/database/profilefetch');
 
 const app = express();
 const port = 8000;
@@ -35,6 +36,8 @@ app.post('/addcomment', addComment);
 app.post('/fetchcomments', fetchComments);
 app.post('/addreaction', addReaction);
 app.post('/fetchreactions', fetchReactions);
+app.get('/user/:userId', getUser);
+
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

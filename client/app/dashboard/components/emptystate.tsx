@@ -7,7 +7,7 @@ import PortalVisual from '../../components/design/portalvisual';
 import MapModal from './map/map'; // Import the new component
 
 interface User {
-  id: string;
+  id: number;
   name: string;
   email: string;
 }
@@ -21,9 +21,14 @@ interface TravelLogItem {
   createdAt: string;
   comments: any[];
   reactions: any[];
+  user: {
+    id: number;
+    name: string;
+    email: string;
+  };
 }
 
-export default function EmptyState({ user, otherLogs }: { user: User, otherLogs: TravelLogItem[] }) {
+export default function EmptyState({ user, otherLogs ,}: { user: User, otherLogs: TravelLogItem[],}) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [activeSection, setActiveSection] = useState('welcome');

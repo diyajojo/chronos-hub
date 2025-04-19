@@ -8,6 +8,9 @@ interface Comment {
   commenter: string;
   parentId: string | null;
   replies: Comment[];
+  user?: {
+    id: string | number;
+  };
 }
 
 interface ReplyTarget {

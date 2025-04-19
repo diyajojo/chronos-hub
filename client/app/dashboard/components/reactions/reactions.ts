@@ -5,12 +5,14 @@ interface ReactionData {
     id: string;
     type: string;
     reactor: string;
+    user?: {
+      id: string | number;
+    };
   }[];
   counts: {
     [key: string]: number;
   };
 }
-
 
 export const useReactions = (logId: number, userName: string) => {
   const [selectedReaction, setSelectedReaction] = useState<string | null>(null);

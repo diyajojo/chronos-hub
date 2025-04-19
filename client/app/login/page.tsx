@@ -56,8 +56,9 @@ export default function Login() {
         throw new Error(data.error || 'Login failed');
       }
 
-      if (data.success && data.username) {
-        router.push(`/dashboard/${data.username}`);
+      if (data.success && data.user) {
+        const userId = data.user.id.toString();
+        router.push(`/dashboard/${userId}`);
       } else {
         throw new Error('Authentication failed');
       }

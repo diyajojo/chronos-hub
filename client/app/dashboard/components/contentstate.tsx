@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import CreateLogModal from './createmodal';
 import { AnimatePresence } from 'framer-motion';
-import FantasyTemporalMap from './map/map';
+import MapModal from './map/map';
 
 interface TravelLogItem {
   id: number;
@@ -10,14 +10,18 @@ interface TravelLogItem {
   story: string;
   image: string;
   survivalChances: number;
-  rating: number;
   createdAt: string;
   comments: any[];
   reactions: any[];
+  user: {
+    id: number;
+    name: string;
+    email: string;
+  };
 }
 
 interface User {
-  id: string;
+  id: number;
   name: string;
   email: string;
 }
@@ -152,10 +156,6 @@ export default function Content({ user, otherLogs, userLogs }: {
                         className="w-full h-48 object-cover"
                       />
                       <div className="absolute top-0 right-0 bg-black/70 py-1 px-3 rounded-bl-lg">
-                        <div className="flex items-center gap-1">
-                          <span className="text-yellow-400">★</span>
-                          <span className="text-white font-medium">{log.rating}/10</span>
-                        </div>
                       </div>
                     </div>
                     
@@ -197,7 +197,7 @@ export default function Content({ user, otherLogs, userLogs }: {
       
       <AnimatePresence>
         {showMap && (
-          <FantasyTemporalMap 
+          <MapModal 
             logs={otherLogs} 
             user={user}
             onClose={() => setShowMap(false)}
