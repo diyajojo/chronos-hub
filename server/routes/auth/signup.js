@@ -1,4 +1,4 @@
-const prisma = require("../../utils/prisma");
+const  { prisma } = require("../../utils/prisma");
 const bcrypt=require("bcrypt");
 
 async function signup(req,res){

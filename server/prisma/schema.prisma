@@ -7,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
   id        Int      @id @default(autoincrement())
   name      String
@@ -15,7 +14,22 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  travellog     TravelLog[]
+  travellog TravelLog[]
+
+  followers    Follows[] @relation("following")
+  following    Follows[] @relation("followers")
+}
+
+// many to many realationship
+model Follows {
+  followerId  Int
+  followingId Int
+  createdAt   DateTime @default(now())
+  follower    User     @relation("followers", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+
+// one user can follow another user only once but we dont use unique constraint instead because @@id serves as primary key but unique constraint cannot 
+  @@id([followerId, followingId])
 }
 
 model TravelLog {

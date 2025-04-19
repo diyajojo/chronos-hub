@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import CreateLogModal from './createmodal';
 import StarBackground from '../../components/design/starbackground';
 import PortalVisual from '../../components/design/portalvisual';
-import MapModal from './map/map'; // Import the new component
+import MapModal from './map/map'; 
 
 interface User {
   id: number;
@@ -28,13 +28,16 @@ interface TravelLogItem {
   };
 }
 
-export default function EmptyState({ user, otherLogs ,}: { user: User, otherLogs: TravelLogItem[],}) {
+export default function EmptyState({ user, otherLogs, currentUser }: { 
+  user: User, 
+  otherLogs: TravelLogItem[],
+  currentUser: User,
+}) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [activeSection, setActiveSection] = useState('welcome');
 
-  const toggleMap = () =>
-  {
+  const toggleMap = () => {
     setShowMap(!showMap);
   };
 
@@ -79,7 +82,7 @@ export default function EmptyState({ user, otherLogs ,}: { user: User, otherLogs
             <PortalVisual />
           </motion.div>
           
-          {/* Right side -  dynaimic rendering of buttons */}
+          {/* Right side - dynamic rendering of buttons */}
           <motion.div 
             className="md:w-3/5 flex items-center justify-center"
             initial={{ opacity: 0, x: 50 }}

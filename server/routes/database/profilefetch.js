@@ -30,11 +30,15 @@ const getUser = async (req, res) => {
       }
 
       return res.json({ user });
-    } catch (prismaError) {
+    } 
+    catch (prismaError) 
+    {
       console.error('Prisma error in getUser:', prismaError);
       return res.status(500).json({ error: 'Database error', details: prismaError.message });
     }
-  } catch (error) {
+  } 
+  catch (error) 
+  {
     console.error('Unexpected error in getUser route:', error);
     return res.status(500).json({ error: 'Internal server error', details: error.message });
   }

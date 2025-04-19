@@ -1,9 +1,9 @@
-const prisma = require("../../utils/prisma");
+const { prisma } = require('../../utils/prisma');
 const bcrypt = require('bcryptjs');
-const jwt=require('jsonwebtoken');
-const {JWT_SECRET}=process.env;
+const jwt = require('jsonwebtoken');
+const { JWT_SECRET } = process.env;
 
-async function login(req, res) {
+const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -21,21 +21,20 @@ async function login(req, res) {
 
     const isPasswordValid = await bcrypt.compare(password, existingUser.password);
 
-    if (!isPasswordValid) 
-      {
+    if (!isPasswordValid) {
       console.log("invalid password");
       return res.status(401).json({ "error": "invalid credentials" });
     }
 
-    const payLoad={
-      id:existingUser.id,
-      name:existingUser.name,
-      email:existingUser.email
+    const payLoad = {
+      id: existingUser.id,
+      name: existingUser.name,
+      email: existingUser.email
     }
 
-    const token=jwt.sign(payLoad,JWT_SECRET,{expiresIn:'1h'})
-    
-    return res.status(200).json({ 
+    const token = jwt.sign(payLoad, JWT_SECRET, { expiresIn: '1h' })
+
+    return res.status(200).json({
       success: true,
       token: token,
       user: {
@@ -45,11 +44,10 @@ async function login(req, res) {
       }
     });
   }
-  catch (err) 
-  {
+  catch (err) {
     console.log(err);
     return res.status(500).json({ "message": "internal server error" });
   }
-}
+};
 
 module.exports = login;

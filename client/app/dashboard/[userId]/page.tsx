@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import StarBackground from '../../components/design/starbackground';
@@ -10,19 +9,26 @@ interface User {
   id: number;
   name: string;
   email: string;
+  followers?: { followerId: number }[];
+  following?: { followingId: number }[];
 }
 
 export default function Dashboard() {
   const router = useRouter();
   const params = useParams();
   const userId = params.userId;
-  
+  // both is same if logged in user makes no visit to other user's profile 
   const [user, setUser] = useState<User | null>(null);
   const [profileUser, setProfileUser] = useState<User | null>(null);
+
   const [loading, setLoading] = useState(true);
   const [hasLogs, setHasLogs] = useState(false);
   const [otherLogs, setOtherLogs] = useState([]);
   const [userLogs, setUserLogs] = useState([]);
+  const [followData, setFollowData] = useState({
+    followers: 0,
+    following: 0
+  });
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -41,19 +47,21 @@ export default function Dashboard() {
         
         setUser(authData.user);
 
-        // Check if userId is valid
+        // Check if userId from params is valid , if not redirect to own dashboard
         if (!userId || userId === 'undefined') {
           router.replace(`/dashboard/${authData.user.id}`);
           return;
         }
 
-        // Fetch profile user data
+        // Fetch user data based on params id , if it is same as the logged in user , the response will be the same from api/verify
         try {
           const profileResponse = await fetch(`http://localhost:8000/user/${userId}`, {
             credentials: 'include',
           });
           
-          if (!profileResponse.ok) {
+          // if response is not ok , redirect to own dashboard
+          if (!profileResponse.ok) 
+          {
             console.error('Error fetching user profile');
             router.replace(`/dashboard/${authData.user.id}`);
             return;
@@ -61,12 +69,49 @@ export default function Dashboard() {
 
           const profileData = await profileResponse.json();
           
-          if (!profileData.user) {
+          // if response is not oke , redirect to own dashboard
+          if (!profileData.user || !profileData) {
             router.replace(`/dashboard/${authData.user.id}`);
             return;
           }
           
           setProfileUser(profileData.user);
+
+          // Fetch follow data
+          if (profileData.user) {
+            try {
+              const [followersRes, followingRes] = await Promise.all([
+                fetch('http://localhost:8000/followers/count', {
+                  method: 'POST',
+                  credentials: 'include',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ userId }),
+                }),
+                fetch('http://localhost:8000/following/count', {
+                  method: 'POST',
+                  credentials: 'include',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ userId }),
+                })
+              ]);
+
+              const [followersData, followingData] = await Promise.all([
+                followersRes.json(),
+                followingRes.json()
+              ]);
+
+              setFollowData({
+                followers: followersData.count,
+                following: followingData.count
+              });
+            } catch (error) {
+              console.error('Error fetching follow data:', error);
+            }
+          }
         } catch (profileError) {
           console.error('Error fetching profile:', profileError);
           router.replace(`/dashboard/${authData.user.id}`);
@@ -112,7 +157,7 @@ export default function Dashboard() {
         setLoading(false);
       }
     };
-    
+
     loadDashboardData();
   }, [userId, router]);
 
@@ -135,18 +180,21 @@ export default function Dashboard() {
       
       <main className="container mx-auto px-6 py-8 relative z-10">
         {!hasLogs ? (
-          profileUser && (
+          profileUser && user && (
             <EmptyState 
-              user={profileUser}
-              otherLogs={otherLogs} 
+              user={profileUser}      // The profile being viewed
+              otherLogs={otherLogs}
+              currentUser={user}      // The logged-in user
             />
           )
         ) : (
-          profileUser && (
+          profileUser && user && (
             <Content 
               user={profileUser}
               otherLogs={otherLogs} 
-              userLogs={userLogs} 
+              userLogs={userLogs}
+              currentUser={user}
+              followData={followData}
             />
           )
         )}
