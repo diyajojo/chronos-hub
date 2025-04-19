@@ -32,6 +32,9 @@ interface Comment {
   commenter: string;
   parentId: string | null;
   replies: Comment[];
+  user: {
+    id: number;
+  };
 }
 
 const MapModal = ({ logs, user, onClose }: { 
