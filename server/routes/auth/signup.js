@@ -33,7 +33,14 @@ const user=await prisma.user.create({
   }
 })
 
-return res.status(201).json({message: "user created succesfully"});
+return res.status(201).json({
+  message: "user created successfully",
+  user: {
+    id: user.id,
+    name: user.name,
+    email: user.email
+  }
+});
 }
 catch(err)
 {

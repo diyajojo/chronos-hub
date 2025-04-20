@@ -77,18 +77,18 @@ const unfollowUser = async (req, res) => {
 
 const getFollowersCount = async (req, res) => {
   try {
-    
-    const { userId } = req.body; // id of the user whose follower count we want 
+
+    const { userId } = req.body; // id of the user whose follower count we want
     const followerId = req.user?.id; // id of the logged-in user , recived from the cookie
 
     const [count, isFollowing] = await Promise.all([
-      // this gets the count of followers , where following is the userId
+      // Fix: Only count users who are following this user
       prisma.follows.count({
         where: {
-          followingId: parseInt(userId),
+          followingId: parseInt(userId), // This is correct - counts people following userId
         },
       }),
-      // this checks if the logged-in user is following the profile being viewed user 
+// this checks if the logged-in user is following the profile being viewed user 
       // returns true or false isFollowing
       // needed to show the follow/follwing button conditionally 
       followerId ? prisma.follows.findUnique({
@@ -101,7 +101,7 @@ const getFollowersCount = async (req, res) => {
       }) : Promise.resolve(null)
     ]);
 
-    // Double bang (!!) converts to boolean
+// Double bang (!!) converts to boolean
     // null/undefined -> false
     // existing record -> true
     res.json({ 
@@ -118,13 +118,16 @@ const getFollowersCount = async (req, res) => {
 const getFollowingCount = async (req, res) => {
   try {
     const { userId } = req.body;
+    // Fix: Only count users that this user is following
     const count = await prisma.follows.count({
       where: {
-        followerId: parseInt(userId),
+        followerId: parseInt(userId), // This is correct - counts people userId is following
       },
     });
     res.json({ count });
-  } catch (error) {
+  } 
+  catch (error) 
+  {
     res.status(400).json({ error: 'Error getting following count' });
   }
 };

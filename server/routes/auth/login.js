@@ -34,11 +34,13 @@ const login = async (req, res) => {
 
     const token = jwt.sign(payLoad, JWT_SECRET, { expiresIn: '1h' })
 
+   
+
     return res.status(200).json({
       success: true,
       token: token,
       user: {
-        id: existingUser.id, // Ensure ID is a string
+        id: existingUser.id,
         name: existingUser.name,
         email: existingUser.email
       }

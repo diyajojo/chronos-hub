@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import StarBackground from '../../components/design/starbackground';
 import EmptyState from '../components/emptystate';
 import Content from '../components/contentstate';
+import followService from '../utils/followsystem';
 
 interface User {
   id: number;
@@ -80,28 +81,9 @@ export default function Dashboard() {
           // Fetch follow data
           if (profileData.user) {
             try {
-              const [followersRes, followingRes] = await Promise.all([
-                fetch('http://localhost:8000/followers/count', {
-                  method: 'POST',
-                  credentials: 'include',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({ userId }),
-                }),
-                fetch('http://localhost:8000/following/count', {
-                  method: 'POST',
-                  credentials: 'include',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({ userId }),
-                })
-              ]);
-
               const [followersData, followingData] = await Promise.all([
-                followersRes.json(),
-                followingRes.json()
+                followService.checkFollowStatus(Number(userId)),
+                followService.checkFollowStatus(Number(userId))
               ]);
 
               setFollowData({
@@ -185,6 +167,7 @@ export default function Dashboard() {
               user={profileUser}      // The profile being viewed
               otherLogs={otherLogs}
               currentUser={user}      // The logged-in user
+              followData={followData}
             />
           )
         ) : (
