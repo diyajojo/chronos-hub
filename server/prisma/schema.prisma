@@ -8,17 +8,26 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
   name      String
-  email     String   @unique
+  email     String      @unique
   password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  travellog TravelLog[]
-
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  logs      TravelLog[]
+  badges    UserBadge[]
 }
 
 
+model UserBadge {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  badgeName String   @default("")
+  earnedAt  DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeName])
+}
 
 model TravelLog {
   id          Int      @id @default(autoincrement())
@@ -61,4 +70,3 @@ model Reaction {
   
   @@unique([travelLogId, reactor]) // Change unique constraint to prevent multiple reactions from same user
 }
-

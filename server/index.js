@@ -11,6 +11,7 @@ const { addComment, fetchComments } = require('./routes/database/comments');
 const { addReaction, fetchReactions } = require('./routes/database/reactions');
 const { getUser } = require('./routes/database/profilefetch');
 const { authenticateToken } = require('./middleware/auth');
+const { fetchUserBadges } = require('./routes/database/badges');
 
 const app = express();
 const port = 8000;
@@ -39,6 +40,7 @@ app.post('/addcomment', addComment);
 app.post('/fetchcomments', fetchComments);
 app.post('/addreaction', addReaction);
 app.post('/fetchreactions', fetchReactions);
+app.post('/userbadges', fetchUserBadges);
 app.get('/user/:userId', getUser);
 
 

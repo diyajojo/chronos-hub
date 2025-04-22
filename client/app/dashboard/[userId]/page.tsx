@@ -1,9 +1,9 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import StarBackground from '../../components/design/starbackground';
-import EmptyState from '../components/emptystate';
+import { useRouter, useParams } from 'next/navigation';
 import Content from '../components/contentstate';
+import EmptyState from '../components/emptystate';
+import StarBackground from '../../components/design/starbackground';
 
 interface User {
   id: number;
@@ -11,18 +11,21 @@ interface User {
   email: string;
 }
 
+interface UserBadge {
+  badgeName: string;
+}
+
 export default function Dashboard() {
   const router = useRouter();
   const params = useParams();
   const userId = params.userId;
-  // both is same if logged in user makes no visit to other user's profile 
   const [user, setUser] = useState<User | null>(null);
   const [profileUser, setProfileUser] = useState<User | null>(null);
-
   const [loading, setLoading] = useState(true);
   const [hasLogs, setHasLogs] = useState(false);
   const [otherLogs, setOtherLogs] = useState([]);
   const [userLogs, setUserLogs] = useState([]);
+  const [userBadges, setUserBadges] = useState<UserBadge[]>([]);
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -101,6 +104,25 @@ export default function Dashboard() {
             setHasLogs(false);
           }
           setOtherLogs(data.otherLogs || []);
+
+          // Fetch badges for the profile user
+          const badgesResponse = await fetch('http://localhost:8000/userbadges', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ userId }),
+          });
+
+          if (!badgesResponse.ok) {
+            throw new Error('Failed to fetch badges');
+          }
+
+          const badgesData = await badgesResponse.json();
+          if (badgesData.success) {
+            setUserBadges(badgesData.badges);
+          }
         } catch (logsError) {
           console.error('Error fetching logs:', logsError);
           setHasLogs(false);
@@ -119,6 +141,38 @@ export default function Dashboard() {
 
     loadDashboardData();
   }, [userId, router]);
+
+  const updateLogs = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/fetchlogs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ userId }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch logs');
+      }
+
+      const data = await response.json();
+      
+      if (data.userLogs && data.userLogs.length > 0) {
+        setHasLogs(true);
+        setUserLogs(data.userLogs);
+      } else {
+        setHasLogs(false);
+      }
+      setOtherLogs(data.otherLogs || []);
+    } catch (error) {
+      console.error('Error fetching logs:', error);
+      setHasLogs(false);
+      setOtherLogs([]);
+      setUserLogs([]);
+    }
+  };
 
   if (loading) {
     return (
@@ -141,9 +195,11 @@ export default function Dashboard() {
         {!hasLogs ? (
           profileUser && user && (
             <EmptyState 
-              user={profileUser}      // The profile being viewed
+              user={profileUser}
               otherLogs={otherLogs}
-              currentUser={user}      // The logged-in user
+              currentUser={user}
+              userBadges={userBadges}
+              onLogCreated={updateLogs}
             />
           )
         ) : (
@@ -153,6 +209,8 @@ export default function Dashboard() {
               otherLogs={otherLogs} 
               userLogs={userLogs}
               currentUser={user}
+              userBadges={userBadges}
+              onLogCreated={updateLogs}
             />
           )
         )}

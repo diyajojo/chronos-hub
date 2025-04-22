@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import CreateLogModal from './createmodal';
 import { AnimatePresence } from 'framer-motion';
 import MapModal from './map/map';
+import { BADGES } from '../utils/badges';
+import Image from 'next/image';
 
 interface TravelLogItem {
   id: number;
@@ -26,38 +28,86 @@ interface User {
   email: string;
 }
 
-export default function Content({ user, otherLogs, userLogs, currentUser }: { 
+interface UserBadge {
+  badgeName: string;
+}
+
+export default function Content({ 
+  user, 
+  otherLogs, 
+  userLogs, 
+  currentUser,
+  userBadges,
+  onLogCreated
+}: { 
   user: User, 
   otherLogs: TravelLogItem[], 
   userLogs: TravelLogItem[],
   currentUser: User,
+  userBadges: UserBadge[],
+  onLogCreated: () => Promise<void>
 }) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showMap, setShowMap] = useState(false);
-  const [loading, setLoading] = useState(false);  // Changed to false since we get data from props
+  const [loading, setLoading] = useState(false);
+  const [isFirstLog, setIsFirstLog] = useState(userLogs.length === 0);
   const [stats, setStats] = useState({
-    totalTrips: 0,
-    highestRated: { rating: 0, year: '' },
+    totalTrips: userLogs.length,
+    totalBadges: userBadges.length,
     rank: 0,
     totalLikes: 0
   });
   const [activeTab, setActiveTab] = useState('logs');
+
+  useEffect(() => {
+    const fetchUserBadges = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/fetchuserbadges', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ userId: user.id }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch badges');
+        }
+
+        const data = await response.json();
+        if (data.success) {
+          setStats(prev => ({
+            ...prev,
+            totalBadges: data.badges.length
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching badges:', error);
+      }
+    };
+
+    fetchUserBadges();
+  }, [user.id]);
 
   return (
     <div className="container mx-auto px-4 py-8 relative z-10">
       {/* User Panel */}
       <div className="bg-black/30 backdrop-blur-md rounded-xl p-6 border border-blue-500/30 mb-8">
         <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-          {/* Avatar and Badge */}
-          <div className="flex flex-col items-center">
-            <div className="relative">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-                <div className="w-20 h-20 rounded-full bg-black/50 flex items-center justify-center text-3xl font-bold text-white">
-                  {user.name.charAt(0).toUpperCase()}
-                </div>
-              </div>
-            </div>
-          </div>
+    {/* Avatar and Badge */}
+{/* Avatar and Badge */}
+<div className="flex flex-col items-center">
+  <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-blue-500/30">
+    <Image
+      src="/assets/pfp.png"
+      alt={`${user.name}'s profile`}
+      fill
+      sizes="96px"
+      className="object-cover"
+    />
+  </div>
+</div>
           
           {/* User Info and Stats */}
           <div className="flex-1">
@@ -82,9 +132,8 @@ export default function Content({ user, otherLogs, userLogs, currentUser }: {
                 <p className="text-2xl font-bold text-white">{stats.totalTrips}</p>
               </div>
               <div className="bg-black/40 p-4 rounded-lg border border-blue-500/20">
-                <p className="text-sm text-blue-300">Best Rating</p>
-                <p className="text-2xl font-bold text-white">{stats.highestRated.rating}/10</p>
-                <p className="text-xs text-blue-400">{stats.highestRated.year}</p>
+                <p className="text-sm text-blue-300">Badges Earned</p>
+                <p className="text-2xl font-bold text-white">{stats.totalBadges}</p>
               </div>
               <div className="bg-black/40 p-4 rounded-lg border border-blue-500/20">
                 <p className="text-sm text-blue-300">Traveler Rank</p>
@@ -94,6 +143,37 @@ export default function Content({ user, otherLogs, userLogs, currentUser }: {
                 <p className="text-sm text-blue-300">Engagement</p>
                 <p className="text-2xl font-bold text-white">{stats.totalLikes}</p>
                 <p className="text-xs text-blue-400">reactions</p>
+              </div>
+            </div>
+
+            {/* Badges Display */}
+            <div className="mt-6">
+              <h3 className="text-lg font-medium text-blue-300 mb-3">Your Badges</h3>
+              <div className="grid grid-cols-2 gap-4">
+                {userBadges.map(({ badgeName }) => {
+                  const badge = BADGES[badgeName as keyof typeof BADGES];
+                  if (!badge) return null;
+                  
+                  return (
+                    <div 
+                      key={badgeName}
+                      className="bg-black/40 p-4 rounded-lg border border-blue-500/20 flex items-center gap-4"
+                    >
+                      <div className="relative w-12 h-12">
+                        <Image
+                          src={badge.imageUrl}
+                          alt={badge.name}
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                      <div>
+                        <p className="text-white font-medium">{badge.name}</p>
+                        <p className="text-sm text-blue-300">{badge.description}</p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -204,7 +284,19 @@ export default function Content({ user, otherLogs, userLogs, currentUser }: {
       
       {/* Modals */}
       {showCreateModal && (
-        <CreateLogModal onClose={() => setShowCreateModal(false)} user={user} />
+        <CreateLogModal 
+          onClose={() => setShowCreateModal(false)} 
+          user={user}
+          isFirstLog={isFirstLog}
+          onLogCreated={async () => {
+            setIsFirstLog(false);
+            await onLogCreated();
+            setStats(prev => ({
+              ...prev,
+              totalTrips: prev.totalTrips + 1
+            }));
+          }}
+        />
       )}
       
       <AnimatePresence>
