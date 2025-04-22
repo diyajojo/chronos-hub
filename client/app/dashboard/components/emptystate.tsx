@@ -11,8 +11,6 @@ interface User {
   id: number;
   name: string;
   email: string;
-  followers?: { followerId: number }[];
-  following?: { followingId: number }[];
 }
 
 interface TravelLogItem {
@@ -31,25 +29,17 @@ interface TravelLogItem {
   };
 }
 
-interface FollowData {
-  followers: number;
-  following: number;
-}
-
-export default function EmptyState({ user, otherLogs, currentUser,followData }: { 
+export default function EmptyState({ user, otherLogs, currentUser }: { 
   user: User, 
   otherLogs: TravelLogItem[],
   currentUser: User,
-  followData: FollowData,
 }) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [activeSection, setActiveSection] = useState('welcome');
   const [welcomeComplete, setWelcomeComplete] = useState(false);
 
-
-
-const toggleMap = () => {
+  const toggleMap = () => {
     setShowMap(!showMap);
   };
 
@@ -81,15 +71,6 @@ const toggleMap = () => {
               <h1 className="text-2xl md:text-3xl font-bold text-white text-center md:text-left mb-4">
                 {user.name}
               </h1>
-              
-              <div className="flex gap-8 mb-6">
-                <span className="text-blue-400">
-                  0 Followers
-                </span>
-                <span className="text-blue-400">
-                  0 Following
-                </span>
-              </div>
               
               {/* Stats Grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -170,6 +151,5 @@ const toggleMap = () => {
         }} user={user} />
       )}
     </div>
-    
   );
 }

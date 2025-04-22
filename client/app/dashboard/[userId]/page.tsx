@@ -4,14 +4,11 @@ import { useParams, useRouter } from 'next/navigation';
 import StarBackground from '../../components/design/starbackground';
 import EmptyState from '../components/emptystate';
 import Content from '../components/contentstate';
-import followService from '../utils/followsystem';
 
 interface User {
   id: number;
   name: string;
   email: string;
-  followers?: { followerId: number }[];
-  following?: { followingId: number }[];
 }
 
 export default function Dashboard() {
@@ -26,10 +23,6 @@ export default function Dashboard() {
   const [hasLogs, setHasLogs] = useState(false);
   const [otherLogs, setOtherLogs] = useState([]);
   const [userLogs, setUserLogs] = useState([]);
-  const [followData, setFollowData] = useState({
-    followers: 0,
-    following: 0
-  });
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -78,22 +71,6 @@ export default function Dashboard() {
           
           setProfileUser(profileData.user);
 
-          // Fetch follow data
-          if (profileData.user) {
-            try {
-              const [followersData, followingData] = await Promise.all([
-                followService.checkFollowStatus(Number(userId)),
-                followService.checkFollowStatus(Number(userId))
-              ]);
-
-              setFollowData({
-                followers: followersData.count,
-                following: followingData.count
-              });
-            } catch (error) {
-              console.error('Error fetching follow data:', error);
-            }
-          }
         } catch (profileError) {
           console.error('Error fetching profile:', profileError);
           router.replace(`/dashboard/${authData.user.id}`);
@@ -167,7 +144,6 @@ export default function Dashboard() {
               user={profileUser}      // The profile being viewed
               otherLogs={otherLogs}
               currentUser={user}      // The logged-in user
-              followData={followData}
             />
           )
         ) : (
@@ -177,7 +153,6 @@ export default function Dashboard() {
               otherLogs={otherLogs} 
               userLogs={userLogs}
               currentUser={user}
-              followData={followData}
             />
           )
         )}

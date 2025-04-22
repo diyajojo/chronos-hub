@@ -3,8 +3,6 @@ import { useState, useEffect } from 'react';
 import CreateLogModal from './createmodal';
 import { AnimatePresence } from 'framer-motion';
 import MapModal from './map/map';
-import FollowsModal from './follows-modal';
-import followService  from '../utils/followsystem';
 
 interface TravelLogItem {
   id: number;
@@ -26,21 +24,13 @@ interface User {
   id: number;
   name: string;
   email: string;
-  followers?: { followerId: number }[];
-  following?: { followingId: number }[];
 }
 
-interface FollowData {
-  followers: number;
-  following: number;
-}
-
-export default function Content({ user, otherLogs, userLogs, currentUser, followData }: { 
+export default function Content({ user, otherLogs, userLogs, currentUser }: { 
   user: User, 
   otherLogs: TravelLogItem[], 
   userLogs: TravelLogItem[],
   currentUser: User,
-  followData: FollowData
 }) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showMap, setShowMap] = useState(false);
@@ -52,71 +42,6 @@ export default function Content({ user, otherLogs, userLogs, currentUser, follow
     totalLikes: 0
   });
   const [activeTab, setActiveTab] = useState('logs');
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [localFollowData, setLocalFollowData] = useState(followData);
-  const [showFollowsModal, setShowFollowsModal] = useState<'followers' | 'following' | null>(null);
-  const [followUsers, setFollowUsers] = useState<Array<{ id: number; name: string }>>([]);
-
-  useEffect(() => {
-    setLocalFollowData(followData);
-  }, [followData]);
-
-  useEffect(() => {
-    const checkFollowStatus = async () => {
-      try {
-        const data = await followService.checkFollowStatus(user.id);
-        setIsFollowing(data.isFollowing);
-      } 
-      catch (error)
-       {
-        console.error('Error checking follow status:', error);
-      }
-    };
-
-    if (currentUser && currentUser.id !== user.id) {
-      checkFollowStatus();
-    }
-  }, [currentUser, user.id]);
-
-  const handleFollow = async () => {
-    try {
-      const response = await followService.followUser(user.id);
-      if (response.success) {
-        setIsFollowing(true);
-        setLocalFollowData(prev => ({
-          ...prev,
-          followers: prev.followers + 1
-        }));
-      }
-    } catch (error) {
-      console.error('Error following user:', error);
-    }
-  };
-
-  const handleUnfollow = async () => {
-    try {
-      const response = await followService.unfollowUser(user.id);
-      if (response.success) {
-        setIsFollowing(false);
-        setLocalFollowData(prev => ({
-          ...prev,
-          followers: Math.max(0, prev.followers - 1)
-        }));
-      }
-    } catch (error) {
-      console.error('Error unfollowing user:', error);
-    }
-  };
-
-  const handleShowFollows = async (type: 'followers' | 'following') => {
-    try {
-      const data = await followService.getFollowList(type, user.id);
-      setFollowUsers(data.users);
-      setShowFollowsModal(type);
-    } catch (error) {
-      console.error(`Error fetching ${type}:`, error);
-    }
-  };
 
   return (
     <div className="container mx-auto px-4 py-8 relative z-10">
@@ -136,20 +61,8 @@ export default function Content({ user, otherLogs, userLogs, currentUser, follow
           
           {/* User Info and Stats */}
           <div className="flex-1">
-            <h1 className="text-2xl md:text-3xl font-bold text-white text-center md:text-left flex items-center gap-4">
+            <h1 className="text-2xl md:text-3xl font-bold text-white text-center md:text-left">
               {user.name}
-              {currentUser && currentUser.id !== user.id && (
-                <button
-                  onClick={isFollowing ? handleUnfollow : handleFollow}
-                  className={`px-4 py-1 rounded-full text-sm ${
-                    isFollowing 
-                      ? 'bg-blue-600 text-white' 
-                      : 'bg-blue-900/30 text-blue-300 border border-blue-500/30'
-                  }`}
-                >
-                  {isFollowing ? 'Following' : 'Follow'}
-                </button>
-              )}
             </h1>
             
             {/* Tabs */}
@@ -159,18 +72,6 @@ export default function Content({ user, otherLogs, userLogs, currentUser, follow
                 className={`${activeTab === 'logs' ? 'text-white' : 'text-blue-400'}`}
               >
                 Time Logs
-              </button>
-              <button 
-                onClick={() => handleShowFollows('followers')}
-                className={`${activeTab === 'followers' ? 'text-white' : 'text-blue-400'}`}
-              >
-                Followers ({localFollowData.followers})
-              </button>
-              <button 
-                onClick={() => handleShowFollows('following')}
-                className={`${activeTab === 'following' ? 'text-white' : 'text-blue-400'}`}
-              >
-                Following ({localFollowData.following})
               </button>
             </div>
             
@@ -200,32 +101,6 @@ export default function Content({ user, otherLogs, userLogs, currentUser, follow
       </div>
       
       {/* Tab Content */}
-      {activeTab === 'followers' && (
-        <div className="bg-black/30 backdrop-blur-md rounded-xl p-6 border border-blue-500/30">
-          <h2 className="text-2xl font-bold text-white mb-6">Followers</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {user.followers?.map((follow) => (
-              <div key={follow.followerId} className="bg-black/40 p-4 rounded-lg">
-                {/* Follower info here */}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'following' && (
-        <div className="bg-black/30 backdrop-blur-md rounded-xl p-6 border border-blue-500/30">
-          <h2 className="text-2xl font-bold text-white mb-6">Following</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {user.following?.map((follow) => (
-              <div key={follow.followingId} className="bg-black/40 p-4 rounded-lg">
-                {/* Following user info here */}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {activeTab === 'logs' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Create Log Button and Featured Log */}
@@ -338,13 +213,6 @@ export default function Content({ user, otherLogs, userLogs, currentUser, follow
             logs={otherLogs} 
             user={user}
             onClose={() => setShowMap(false)}
-          />
-        )}
-        {showFollowsModal && (
-          <FollowsModal
-            type={showFollowsModal}
-            users={followUsers}
-            onClose={() => setShowFollowsModal(null)}
           />
         )}
       </AnimatePresence>

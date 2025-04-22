@@ -10,7 +10,6 @@ const proxyImage = require('./routes/ai/image/utils/proxyimage');
 const { addComment, fetchComments } = require('./routes/database/comments');
 const { addReaction, fetchReactions } = require('./routes/database/reactions');
 const { getUser } = require('./routes/database/profilefetch');
-const { followUser, unfollowUser, getFollowersCount, getFollowingCount, getFollowersList, getFollowingList } = require('./routes/database/follow');
 const { authenticateToken } = require('./middleware/auth');
 
 const app = express();
@@ -41,12 +40,8 @@ app.post('/fetchcomments', fetchComments);
 app.post('/addreaction', addReaction);
 app.post('/fetchreactions', fetchReactions);
 app.get('/user/:userId', getUser);
-app.post('/follow', authenticateToken, followUser);
-app.post('/unfollow', authenticateToken, unfollowUser);  
-app.post('/followers/count', authenticateToken, getFollowersCount);  
-app.post('/following/count', authenticateToken, getFollowingCount);  
-app.post('/followers/list', authenticateToken, getFollowersList);
-app.post('/following/list', authenticateToken, getFollowingList);
+
+
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
