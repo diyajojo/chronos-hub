@@ -20,7 +20,6 @@ export default function Dashboard() {
   const params = useParams();
   const userId = params.userId;
   const [user, setUser] = useState<User | null>(null);
-  const [profileUser, setProfileUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasLogs, setHasLogs] = useState(false);
   const [otherLogs, setOtherLogs] = useState([]);
@@ -44,43 +43,13 @@ export default function Dashboard() {
         
         setUser(authData.user);
 
-        // Check if userId from params is valid , if not redirect to own dashboard
-        if (!userId || userId === 'undefined') {
+        // Redirect to own dashboard if userId doesn't match
+        if (userId !== authData.user.id.toString()) {
           router.replace(`/dashboard/${authData.user.id}`);
           return;
         }
 
-        // Fetch user data based on params id , if it is same as the logged in user , the response will be the same from api/verify
-        try {
-          const profileResponse = await fetch(`http://localhost:8000/user/${userId}`, {
-            credentials: 'include',
-          });
-          
-          // if response is not ok , redirect to own dashboard
-          if (!profileResponse.ok) 
-          {
-            console.error('Error fetching user profile');
-            router.replace(`/dashboard/${authData.user.id}`);
-            return;
-          }
-
-          const profileData = await profileResponse.json();
-          
-          // if response is not oke , redirect to own dashboard
-          if (!profileData.user || !profileData) {
-            router.replace(`/dashboard/${authData.user.id}`);
-            return;
-          }
-          
-          setProfileUser(profileData.user);
-
-        } catch (profileError) {
-          console.error('Error fetching profile:', profileError);
-          router.replace(`/dashboard/${authData.user.id}`);
-          return;
-        }
-
-        // Fetch logs for the profile user
+        // Fetch logs for the current user
         try {
           const response = await fetch('http://localhost:8000/fetchlogs', {
             method: 'POST',
@@ -88,7 +57,7 @@ export default function Dashboard() {
               'Content-Type': 'application/json',
             },
             credentials: 'include',
-            body: JSON.stringify({ userId }),
+            body: JSON.stringify({ userId: authData.user.id }),
           });
           
           if (!response.ok) {
@@ -105,35 +74,31 @@ export default function Dashboard() {
           }
           setOtherLogs(data.otherLogs || []);
 
-          // Fetch badges for the profile user
+          // Fetch badges
           const badgesResponse = await fetch('http://localhost:8000/userbadges', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             credentials: 'include',
-            body: JSON.stringify({ userId }),
+            body: JSON.stringify({ userId: authData.user.id }),
           });
 
-          if (!badgesResponse.ok) {
-            throw new Error('Failed to fetch badges');
+          if (badgesResponse.ok) {
+            const badgesData = await badgesResponse.json();
+            if (badgesData.success) {
+              setUserBadges(badgesData.badges);
+            }
           }
-
-          const badgesData = await badgesResponse.json();
-          if (badgesData.success) {
-            setUserBadges(badgesData.badges);
-          }
-        } catch (logsError) {
-          console.error('Error fetching logs:', logsError);
+        } catch (error) {
+          console.error('Error fetching data:', error);
           setHasLogs(false);
           setOtherLogs([]);
           setUserLogs([]);
         }
       } catch (error) {
         console.error('Error loading dashboard:', error);
-        setHasLogs(false);
-        setOtherLogs([]);
-        setUserLogs([]);
+        router.replace('/login');
       } finally {
         setLoading(false);
       }
@@ -193,9 +158,9 @@ export default function Dashboard() {
       
       <main className="container mx-auto px-6 py-8 relative z-10">
         {!hasLogs ? (
-          profileUser && user && (
+          user && (
             <EmptyState 
-              user={profileUser}
+              user={user}
               otherLogs={otherLogs}
               currentUser={user}
               userBadges={userBadges}
@@ -203,9 +168,9 @@ export default function Dashboard() {
             />
           )
         ) : (
-          profileUser && user && (
+          user && (
             <Content 
-              user={profileUser}
+              user={user}
               otherLogs={otherLogs} 
               userLogs={userLogs}
               currentUser={user}
