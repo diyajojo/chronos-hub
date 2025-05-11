@@ -20,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import BadgeNotification from '../dashboard/components/badgenotification';
-import {BadgeName} from  '/../utils/badges';
+import {BadgeName} from '../dashboard/utils/badges';
 
 export default function Login() {
   const router = useRouter();
