@@ -7,9 +7,9 @@ import { ViewModal } from './viewmodal';
  interface TravelLogItem {
   id: number;
   yearVisited: number;
+  title: string;
   story: string;
   image: string;
-  survivalChances: number;
   createdAt: string;
   comments: Comment[];
   user: {

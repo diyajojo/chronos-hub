@@ -162,7 +162,6 @@ export default function Dashboard() {
             <EmptyState 
               user={user}
               otherLogs={otherLogs}
-              currentUser={user}
               userBadges={userBadges}
               onLogCreated={updateLogs}
             />
@@ -173,7 +172,6 @@ export default function Dashboard() {
               user={user}
               otherLogs={otherLogs} 
               userLogs={userLogs}
-              currentUser={user}
               userBadges={userBadges}
               onLogCreated={updateLogs}
             />

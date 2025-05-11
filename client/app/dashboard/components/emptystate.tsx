@@ -1,11 +1,10 @@
 'use client';
-import { useState , useEffect} from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CreateLogModal from './createmodal';
 import StarBackground from '../../components/design/starbackground';
 import PortalVisual from '../../components/design/portalvisual';
 import MapModal from './map/map'; 
-import WelcomingState from './welcomingstate';
 import Image from 'next/image';
 import { BADGES } from '../utils/badges';
 
@@ -18,9 +17,9 @@ interface User {
 interface TravelLogItem {
   id: number;
   yearVisited: number;
+  title: string;
   story: string;
   image: string;
-  survivalChances: number;
   createdAt: string;
   comments: any[];
   reactions: any[];
@@ -38,13 +37,11 @@ interface UserBadge {
 export default function EmptyState({ 
   user, 
   otherLogs, 
-  currentUser,
   userBadges,
   onLogCreated
 }: { 
   user: User, 
   otherLogs: TravelLogItem[],
-  currentUser: User,
   userBadges: UserBadge[],
   onLogCreated: () => Promise<void>
 }) {
@@ -63,16 +60,6 @@ export default function EmptyState({
     setShowMap(!showMap);
   };
 
-  const handleWelcomeComplete = () => {
-    setWelcomeComplete(true);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('welcomeComplete', 'true');
-    }
-  };
-
-  if (!welcomeComplete) {
-    return <WelcomingState onComplete={handleWelcomeComplete} />;
-  }
 
   return (
     <div className="relative min-h-screen">
@@ -83,7 +70,6 @@ export default function EmptyState({
         <div className="bg-black/30 backdrop-blur-md rounded-xl p-6 border border-blue-500/30 mb-8">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
           {/* Avatar and Badge */}
-{/* Avatar and Badge */}
 <div className="flex flex-col items-center">
   <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-blue-500/30">
     <Image
@@ -111,10 +97,6 @@ export default function EmptyState({
                 <div className="bg-black/40 p-4 rounded-lg border border-blue-500/20">
                   <p className="text-sm text-blue-300">Badges Earned</p>
                   <p className="text-2xl font-bold text-white">{userBadges.length}</p>
-                </div>
-                <div className="bg-black/40 p-4 rounded-lg border border-blue-500/20">
-                  <p className="text-sm text-blue-300">Traveler Rank</p>
-                  <p className="text-2xl font-bold text-white">#0</p>
                 </div>
                 <div className="bg-black/40 p-4 rounded-lg border border-blue-500/20">
                   <p className="text-sm text-blue-300">Engagement</p>

@@ -33,9 +33,9 @@ model TravelLog {
   id          Int      @id @default(autoincrement())
   userId      Int
   yearVisited Int
+  title       String   // Added title field for the story title
   story       String   @db.Text // Long text for the travel story
   image       String   // URL or image path (image stored in supabase bucket gives a link)
-  survivalChances Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)

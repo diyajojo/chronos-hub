@@ -7,7 +7,6 @@ import Navbar from '../components/layout/navbar';
 import StarBackground from '../components/design/starbackground';
 import { AnimatedBeam } from "@/components/magicui/animated-beam";
 import { MagicCard } from "@/components/magicui/magic-card";
-import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,15 +19,18 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import BadgeNotification from '../dashboard/components/badgenotification';
+import {BadgeName} from  '/../utils/badges';
 
 export default function Login() {
   const router = useRouter();
-  const { theme } = useTheme();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
   const [error, setError] = useState('');
+  const [newBadge, setNewBadge] = useState<BadgeName | null>(null);
+  const [userData, setUserData] = useState<any>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -57,14 +59,25 @@ export default function Login() {
       }
 
       if (data.success && data.user) {
-        const userId = data.user.id.toString();
-        router.push(`/dashboard/${userId}`);
+        setUserData(data.user);
+        if (data.newBadge) {
+          setNewBadge(data.newBadge as BadgeName);
+        } else {
+          router.push(`/dashboard/${data.user.id}`);
+        }
       } else {
         throw new Error('Authentication failed');
       }
     } 
     catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
+    }
+  };
+
+  const handleBadgeClose = () => {
+    setNewBadge(null);
+    if (userData?.id) {
+      router.push(`/dashboard/${userData.id}`);
     }
   };
 
@@ -101,6 +114,15 @@ export default function Login() {
       <StarBackground />
       <Navbar page="login" />
       
+      {newBadge && (
+        <BadgeNotification
+          badgeName={newBadge}
+          onClose={handleBadgeClose}
+          isFirstLog={false}  // This is login badge, not first log badge
+          onLogCreated={async () => {}}  // Empty function since this is not log-related
+        />
+      )}
+
       <div className="flex items-center justify-center w-full h-[calc(100vh-64px)]">
         <div className="container mx-auto px-6 relative z-10">
           <div className="flex flex-col md:flex-row items-center justify-center gap-8">

@@ -8,7 +8,7 @@ const openai = new OpenAI({
 
 async function generateImage(req, res) {
   try {
-    const { prompt, year, survivalChance } = req.body;
+    const { prompt, year } = req.body;
     
     if (!prompt) {
       return res.status(400).json({
@@ -20,23 +20,8 @@ async function generateImage(req, res) {
     // Generate enhanced prompt
     const enhancedPrompt = enhancePrompt(year, prompt);
     
-    // Add survival chance context if provided
+    // Final prompt without survival context
     let finalPrompt = enhancedPrompt;
-    if (survivalChance !== undefined) {
-      let survivalContext = '';
-      
-      if (survivalChance < 30) {
-        survivalContext = 'extremely dangerous, chaotic scene with clear hazards';
-      } else if (survivalChance < 60) {
-        survivalContext = 'risky situation with visible challenges';
-      } else if (survivalChance < 85) {
-        survivalContext = 'moderately safe but with some uncertainties';
-      } else {
-        survivalContext = 'relatively safe, controlled environment';
-      }
-      
-      finalPrompt += ` The scene shows a ${survivalContext}, reflecting a survival chance of ${survivalChance}%.`;
-    }
     
     console.log("Enhanced prompt:", finalPrompt);
     

@@ -9,9 +9,9 @@ import Image from 'next/image';
 interface TravelLogItem {
   id: number;
   yearVisited: number;
+  title: string;
   story: string;
   image: string;
-  survivalChances: number;
   createdAt: string;
   comments: any[];
   reactions: any[];
@@ -35,15 +35,13 @@ interface UserBadge {
 export default function Content({ 
   user, 
   otherLogs, 
-  userLogs, 
-  currentUser,
+  userLogs,
   userBadges,
   onLogCreated
 }: { 
   user: User, 
   otherLogs: TravelLogItem[], 
   userLogs: TravelLogItem[],
-  currentUser: User,
   userBadges: UserBadge[],
   onLogCreated: () => Promise<void>
 }) {
@@ -96,7 +94,6 @@ export default function Content({
       <div className="bg-black/30 backdrop-blur-md rounded-xl p-6 border border-blue-500/30 mb-8">
         <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
     {/* Avatar and Badge */}
-{/* Avatar and Badge */}
 <div className="flex flex-col items-center">
   <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-blue-500/30">
     <Image
@@ -134,10 +131,6 @@ export default function Content({
               <div className="bg-black/40 p-4 rounded-lg border border-blue-500/20">
                 <p className="text-sm text-blue-300">Badges Earned</p>
                 <p className="text-2xl font-bold text-white">{stats.totalBadges}</p>
-              </div>
-              <div className="bg-black/40 p-4 rounded-lg border border-blue-500/20">
-                <p className="text-sm text-blue-300">Traveler Rank</p>
-                <p className="text-2xl font-bold text-white">#{stats.rank}</p>
               </div>
               <div className="bg-black/40 p-4 rounded-lg border border-blue-500/20">
                 <p className="text-sm text-blue-300">Engagement</p>
@@ -253,12 +246,8 @@ export default function Content({
                       <div className="p-4">
                         <div className="flex justify-between items-center mb-2">
                           <h3 className="text-xl font-bold text-white">Year {log.yearVisited}</h3>
-                          <span className={`px-2 py-1 rounded text-xs font-medium ${
-                            log.survivalChances > 70 ? 'bg-green-900/60 text-green-300' : 
-                            log.survivalChances > 40 ? 'bg-yellow-900/60 text-yellow-300' : 
-                            'bg-red-900/60 text-red-300'
-                          }`}>
-                            {log.survivalChances}% Survival
+                          <span className="px-2 py-1 rounded text-xs font-medium bg-blue-900/60 text-blue-300">
+                            {log.title}
                           </span>
                         </div>
                         

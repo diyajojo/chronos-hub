@@ -1,7 +1,6 @@
 interface GenerateImageParams {
   description: string;
   year: string;
-  survivalChance: number;
   setGeneratingImage: (loading: boolean) => void;
   setAiImageUrl: (url: string) => void;
   setTimeLog: (timeLog: any) => void;
@@ -12,7 +11,6 @@ interface GenerateImageParams {
 export const generateAIImage = async ({
   description,
   year,
-  survivalChance,
   setGeneratingImage,
   setAiImageUrl,
   setTimeLog,
@@ -21,7 +19,7 @@ export const generateAIImage = async ({
   try {
     setGeneratingImage(true);
     
-    if (!description || !year || !survivalChance) {
+    if (!description || !year) {
       throw new Error('Description and Year are required to generate an image');
     }
     
@@ -33,8 +31,7 @@ export const generateAIImage = async ({
       credentials: 'include',
       body: JSON.stringify({
         prompt: description,
-        year,
-        survivalChance
+        year
       }),
     });
     

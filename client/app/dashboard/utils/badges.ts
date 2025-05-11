@@ -3,7 +3,7 @@ export type BadgeName = keyof typeof BADGES;
 export const BADGES = {
   chronosprout: {
     name: 'Chronosprout',
-    description: 'First time traveler - Your journey begins!',
+    description: 'Time traveler in training',
     imageUrl: 'https://hkrxeroqgguchwhrclsr.supabase.co/storage/v1/object/public/user-badges//chronosprout.png'
   },
   chronoscribe: {
@@ -18,8 +18,8 @@ export const BADGES = {
   },
   chronoexplorer: {
     name: 'Chronoexplorer',
-    description: 'Explorer of multiple timelines',
+    description: 'Discovered time travel secrets during the mysterious evening hour (7 PM - 8 PM)',
     imageUrl: 'https://hkrxeroqgguchwhrclsr.supabase.co/storage/v1/object/public/user-badges//chronoexplorer.png'
   }
-} as const; 
+} as const;
 

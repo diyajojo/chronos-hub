@@ -15,17 +15,24 @@ export default function BadgeNotification({ badgeName, onClose, onLogCreated, is
   const badge = BADGES[badgeName];
 
   const handleClose = async () => {
-    // Update the state first
-    if (onLogCreated) {
-      await onLogCreated();
+    try {
+      // Update the state first
+      if (onLogCreated) {
+        await onLogCreated();
+      }
+      // Close the notification
+      onClose();
+    } catch (error) {
+      console.error('Error handling badge notification:', error);
+      // Still close the notification even if there's an error
+      onClose();
     }
-    // Close the notification
-    onClose();
   };
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       <motion.div
+        key="badge-notification"
         initial={{ opacity: 0, y: 50, scale: 0.3 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
@@ -76,4 +83,4 @@ export default function BadgeNotification({ badgeName, onClose, onLogCreated, is
       </motion.div>
     </AnimatePresence>
   );
-} 
+}

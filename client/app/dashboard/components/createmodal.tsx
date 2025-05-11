@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { handleImageUpload } from '../utils/imageupload';
 import { generateAIImage } from '../utils/generateAIImage';
-import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,7 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import BadgeNotification from './badgenotification';
-import { BADGES, BadgeName } from '../utils/badges';
+import { BadgeName } from '../utils/badges';
 
 interface CreateLogModalProps {
   onClose: () => void;
@@ -28,8 +27,8 @@ interface CreateLogModalProps {
 
 interface TimeLog {
   year: string;
+  title: string;
   description: string;
-  survivalChance: number;
   imageUrl: string;
   imageFile: File | null;
   customFileName: string;
@@ -47,8 +46,8 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
   
   const [timeLog, setTimeLog] = useState<TimeLog>({
     year: '',
+    title: '',
     description: '',
-    survivalChance: 50,
     imageUrl: '',
     imageFile: null,
     customFileName: '',
@@ -75,6 +74,18 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
         action: {
           label: "Fix",
           onClick: () => setStep(2),
+        },
+      });
+      return false;
+    }
+    if (!timeLog.title.trim()) {
+      setError('Please enter a title for your story');
+      toast.error("Missing Title", {
+        description: "Please enter a title for your time travel story",
+        duration: 5000,
+        action: {
+          label: "Fix",
+          onClick: () => setStep(1),
         },
       });
       return false;
@@ -115,7 +126,6 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
               generateAIImage({
                 description: timeLog.description,
                 year: timeLog.year,
-                survivalChance: timeLog.survivalChance,
                 setGeneratingImage,
                 setAiImageUrl,
                 setTimeLog,
@@ -161,8 +171,8 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
         credentials: 'include',
         body: JSON.stringify({
           year: parseInt(timeLog.year),
+          title: timeLog.title,
           description: timeLog.description.trim(),
-          survivalChance: Number(timeLog.survivalChance),
           imageUrl: finalImageUrl,
           userId: user.id || '0',
         }),
@@ -260,20 +270,16 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
                   </div>
                   
                   <div>
-                    <Label className="text-blue-300 mb-2 font-medium">Survival Chance: {timeLog.survivalChance}%</Label>
-                    <Slider
-                      min={0}
-                      max={100}
-                      step={1}
-                      value={[timeLog.survivalChance]}
-                      onValueChange={(value) => setTimeLog({ ...timeLog, survivalChance: value[0] })}
-                      className="my-4"
+                    <Label htmlFor="title" className="text-blue-300 mb-2 font-medium">Title of your story</Label>
+                    <Input
+                      id="title"
+                      type="text"
+                      className="bg-black/50 border border-blue-500/30 text-white"
+                      placeholder="Enter a title for your time travel story"
+                      value={timeLog.title}
+                      onChange={(e) => setTimeLog({ ...timeLog, title: e.target.value })}
+                      required
                     />
-                    <div className="flex justify-between text-sm text-blue-400 mt-1">
-                      <span>Dangerous</span>
-                      <span>Risky</span>
-                      <span>Safe</span>
-                    </div>
                   </div>
                 </div>
               )}
@@ -374,7 +380,7 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
                             generateAIImage({
                               description: timeLog.description,
                               year: timeLog.year,
-                              survivalChance: timeLog.survivalChance,
+    
                               setGeneratingImage,
                               setAiImageUrl,
                               setTimeLog,

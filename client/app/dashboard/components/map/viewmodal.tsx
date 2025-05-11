@@ -1,7 +1,8 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useComments } from '../comments/comments';
 import { useReactions } from '../reactions/reactions';
-import { useEffect } from 'react';
+import { useEffect, useState, useMemo } from 'react';
+import { UserProfileModal } from '../user-profile-modal';
 
 // Using the same interface definitions as in MapModal component
 interface Comment {
@@ -19,9 +20,9 @@ interface Comment {
 interface TravelLogItem {
   id: number;
   yearVisited: number;
+  title: string;
   story: string;
   image: string;
-  survivalChances: number;
   createdAt: string;
   comments: Comment[];
   user: {
@@ -59,6 +60,9 @@ interface ViewModalProps {
 }
 
 export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState<{ id: number, name: string }>({ id: 0, name: '' });
+  
   const {
     comments,
     newComment,
@@ -83,6 +87,15 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
     fetchReactions
   } = useReactions(log?.id || 0, user?.name);
 
+  // Organize comments into a hierarchy
+  const commentThreads = useMemo(() => {
+    if (!comments) return [];
+    
+    // Filter top-level comments
+    return comments.filter(comment => !comment.parentId);
+  }, [comments]);
+
+  // When modal opens, fetch data
   useEffect(() => {
     if (log && isOpen) {
       fetchComments();
@@ -90,70 +103,62 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
     }
   }, [log?.id, isOpen]);
 
+  const handleProfileClick = (clickedUser: { id: number, name: string }) => {
+    setSelectedProfile(clickedUser);
+    setProfileModalOpen(true);
+  };
+
   if (!log) return null;
 
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="bg-gradient-to-br from-indigo-950 to-blue-950 text-white border border-indigo-400/20 p-0 max-w-2xl">
-          <DialogHeader className="p-6 pb-3">
-            <DialogTitle className="text-2xl font-serif text-indigo-200">
+          <DialogHeader className="p-4 pb-2">
+            <DialogTitle className="text-xl font-serif text-indigo-200">
               Journey to {log.yearVisited}
             </DialogTitle>
-            <DialogDescription className="text-indigo-300 space-y-1">
+            <DialogDescription className="text-indigo-300 text-sm space-y-1">
               <div>Logged on {new Date(log.createdAt).toLocaleDateString()}</div>
               <div className="flex gap-2">
                 <span>Created by Time Traveller : 
-                  <span className="text-indigo-200 ml-1">
+                  <button 
+                    className="text-indigo-200 ml-1 hover:underline hover:text-indigo-100"
+                    onClick={() => handleProfileClick({ id: log.user.id, name: log.user.name })}
+                  >
                     {log.user.name}
-                  </span>
+                  </button>
                 </span>
               </div>
             </DialogDescription>
           </DialogHeader>
           
           {/* Image */}
-          <div className="px-6">
+          <div className="px-4">
             <div className="rounded-lg overflow-hidden mb-4 bg-indigo-950/70 border border-indigo-400/20">
-              <img
-                src={log.image || "/api/placeholder/600/400"}
-                alt={`Time travel to ${log.yearVisited}`}
-                className="w-full h-64 object-fit"
-              />
+              <div className="relative w-full h-56">
+                <img
+                  src={log.image || "/api/placeholder/600/400"}
+                  alt={`Time travel to ${log.yearVisited}`}
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
           </div>
           
           {/* Content */}
-          <div className="px-6 mb-4 max-h-48 overflow-y-auto">
-            <div className="prose prose-invert max-w-none">
-              <p className="text-indigo-100 leading-relaxed whitespace-pre-line">
-                {log.story}
-              </p>
-            </div>
+          <div className="mt-2 px-4">
+            <div className="text-xl font-bold text-white mb-1">Year {log.yearVisited}</div>
+            <div className="text-md text-blue-300 mb-2">{log.title}</div> 
+            <div className="text-white text-sm whitespace-pre-wrap max-h-40 overflow-y-auto">{log.story}</div>
           </div>
           
-          {/* Stats */}
-          <div className="flex justify-center p-6 pt-2 pb-4 bg-indigo-950/60">
-            <div className="bg-indigo-900/40 p-3 rounded-lg border border-indigo-500/20 w-full max-w-sm">
-              <div className="text-xs text-indigo-300 mb-1 text-center">Survival Chances</div>
-              <div className="flex items-center">
-                <div className="text-lg text-indigo-100 font-bold">{log.survivalChances}%</div>
-                <div className="ml-2 flex-1 bg-indigo-950/60 h-2 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-red-500 to-indigo-400"
-                    style={{ width: `${log.survivalChances}%` }}
-                  ></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Reactions Section */}
-          <div className="flex justify-between items-center px-6 py-2 border-t border-indigo-500/20">
-            <div className="flex space-x-4">
-              <button
+          <div className="flex justify-between items-center px-4 py-2 border-t border-indigo-500/20 mt-4">
+            <div className="flex space-x-3">
+              <button 
                 onClick={() => handleReactionClick('enlightenment')}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition ${
+                className={`flex items-center space-x-1 px-3 py-1 rounded-lg transition text-sm ${
                   selectedReaction === 'enlightenment' 
                     ? 'bg-indigo-600 text-white' 
                     : 'bg-indigo-900/40 hover:bg-indigo-800/40'
@@ -161,9 +166,9 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
               >
                 <span>💡</span>
               </button>
-              <button
+              <button 
                 onClick={() => handleReactionClick('appreciation')}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition ${
+                className={`flex items-center space-x-1 px-3 py-1 rounded-lg transition text-sm ${
                   selectedReaction === 'appreciation' 
                     ? 'bg-indigo-600 text-white' 
                     : 'bg-indigo-900/40 hover:bg-indigo-800/40'
@@ -171,9 +176,9 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
               >
                 <span>🤝</span>
               </button>
-              <button
+              <button 
                 onClick={() => handleReactionClick('wonderstruck')}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition ${
+                className={`flex items-center space-x-1 px-3 py-1 rounded-lg transition text-sm ${
                   selectedReaction === 'wonderstruck' 
                     ? 'bg-indigo-600 text-white' 
                     : 'bg-indigo-900/40 hover:bg-indigo-800/40'
@@ -185,33 +190,38 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
             
             <button
               onClick={() => setShowReactionsList(true)}
-              className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-indigo-900/40 hover:bg-indigo-800/40"
+              className="flex items-center space-x-1 px-3 py-1 rounded-lg bg-indigo-900/40 hover:bg-indigo-800/40 text-sm"
             >
-              <span className="text-indigo-200">Total Reactions</span>
-              <span className="bg-indigo-700 text-white px-2 py-0.5 rounded-full text-sm">
+              <span className="text-indigo-200 text-sm">Total Reactions</span>
+              <span className="bg-indigo-700 text-white px-2 py-0.5 rounded-full text-xs">
                 {totalReactions}
               </span>
             </button>
           </div>
           
-
           {/* Comments Section */}
-          <div className="border-t border-indigo-500/20 px-6 py-4">
-            <h3 className="text-indigo-200 font-medium mb-3">Comments</h3>
+          <div className="border-t border-indigo-500/20 px-4 py-3">
+            <h3 className="text-indigo-200 font-medium mb-2 text-sm">Comments</h3>
             
             {/* Comment List */}
-            <div className="space-y-4 max-h-64 overflow-y-auto mb-4">
-              {comments.length === 0 ? (
-                <p className="text-indigo-400 text-sm italic">No temporal observations yet.</p>
+            <div className="space-y-3 max-h-48 overflow-y-auto mb-3">
+              {!comments || comments.length === 0 ? (
+                <p className="text-indigo-400 text-xs italic">No temporal observations yet.</p>
               ) : (
                 comments.map(comment => (
                   <div key={comment.id} className="space-y-2">
                     {/* Main Comment */}
-                    <div className="bg-indigo-900/30 p-3 rounded-lg border border-indigo-500/10">
+                    <div className="bg-indigo-900/30 p-2 rounded-lg border border-indigo-500/10">
                       <div className="flex justify-between items-start">
-                        <span className="font-medium text-indigo-300">
+                        <button 
+                          onClick={() => handleProfileClick({ 
+                            id: comment.user?.id ? Number(comment.user.id) : 0, 
+                            name: comment.commenter 
+                          })}
+                          className="font-medium text-indigo-300 text-xs hover:underline hover:text-indigo-200"
+                        >
                           {comment.commenter}
-                        </span>
+                        </button>
                         <span className="text-xs text-indigo-400">
                           {new Date(comment.time).toLocaleString('en-US', { 
                             month: 'short', 
@@ -221,10 +231,10 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
                           })}
                         </span>
                       </div>
-                      <p className="text-indigo-100 text-sm mt-1">{comment.text}</p>
+                      <p className="text-indigo-100 text-xs mt-1">{comment.text}</p>
                       <button 
                         onClick={() => handleReplyClick(comment)}
-                        className="text-xs text-indigo-400 mt-2 hover:text-indigo-200"
+                        className="text-xs text-indigo-400 mt-1 hover:text-indigo-200"
                       >
                         Reply
                       </button>
@@ -232,9 +242,12 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
                     
                     {/* Show reply form for top-level comment */}
                     {replyingTo?.id === comment.id && (
-                      <form onSubmit={handleReplySubmit} className="pl-4 mt-2">
+                      <form onSubmit={(e) => {
+                        handleReplySubmit(e);
+                        setTimeout(() => fetchComments(), 500); // Fetch comments after submission
+                      }} className="pl-3 mt-1">
                         <div className="bg-indigo-900/20 p-2 rounded-lg border border-indigo-500/10">
-                          <div className="text-xs text-indigo-300 mb-2">
+                          <div className="text-xs text-indigo-300 mb-1">
                             Replying to <span className="font-medium">{comment.commenter}</span>
                           </div>
                           <div className="flex items-center">
@@ -243,20 +256,20 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
                               value={replyText}
                               onChange={e => setReplyText(e.target.value)}
                               placeholder="Write your reply..."
-                              className="flex-1 bg-indigo-900/40 border border-indigo-500/30 rounded-lg py-1 px-3 text-indigo-100 placeholder-indigo-400 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                              className="flex-1 bg-indigo-900/40 border border-indigo-500/30 rounded-lg py-1 px-2 text-indigo-100 placeholder-indigo-400 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-400"
                             />
                           </div>
-                          <div className="flex justify-end mt-2 space-x-2">
+                          <div className="flex justify-end mt-1 space-x-2">
                             <button
                               type="button"
                               onClick={cancelReply}
-                              className="text-xs py-1 px-2 text-indigo-300 hover:text-indigo-100"
+                              className="text-xs py-0.5 px-2 text-indigo-300 hover:text-indigo-100"
                             >
                               Cancel
                             </button>
                             <button
                               type="submit"
-                              className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs py-1 px-3 rounded transition"
+                              className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs py-0.5 px-2 rounded transition"
                             >
                               Reply
                             </button>
@@ -267,16 +280,22 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
                     
                     {/* Replies to this comment */}
                     {comment.replies && comment.replies.length > 0 && (
-                      <div className="pl-4 space-y-2">
+                      <div className="pl-3 space-y-2">
                         {comment.replies.map(reply => (
-                          <div key={reply.id} className="space-y-2">
+                          <div key={reply.id} className="space-y-1">
                             <div 
-                              className="bg-indigo-900/20 p-2 rounded-lg border border-indigo-500/10 ml-4"
+                              className="bg-indigo-900/20 p-2 rounded-lg border border-indigo-500/10 ml-2"
                             >
                               <div className="flex justify-between items-start">
-                                <span className="font-medium text-indigo-300 text-sm">
+                                <button 
+                                  onClick={() => handleProfileClick({ 
+                                    id: reply.user?.id ? Number(reply.user.id) : 0, 
+                                    name: reply.commenter 
+                                  })}
+                                  className="font-medium text-indigo-300 text-xs hover:underline hover:text-indigo-200"
+                                >
                                   {reply.commenter}
-                                </span>
+                                </button>
                                 <span className="text-xs text-indigo-400">
                                   {new Date(reply.time).toLocaleString('en-US', { 
                                     month: 'short', 
@@ -286,82 +305,14 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
                                   })}
                                 </span>
                               </div>
-                              <p className="text-indigo-100 text-sm mt-1">{reply.text}</p>
+                              <p className="text-indigo-100 text-xs mt-1">{reply.text}</p>
                               <button 
                                 onClick={() => handleReplyClick(reply)}
-                                className="text-xs text-indigo-400 mt-2 hover:text-indigo-200"
+                                className="text-xs text-indigo-400 mt-1 hover:text-indigo-200"
                               >
                                 Reply
                               </button>
                             </div>
-                            
-                            {/* Show reply form for this reply */}
-                            {replyingTo?.id === reply.id && (
-                              <form onSubmit={handleReplySubmit} className="pl-4 mt-2">
-                                <div className="bg-indigo-900/20 p-2 rounded-lg border border-indigo-500/10 ml-4">
-                                  <div className="text-xs text-indigo-300 mb-2">
-                                    Replying to <span className="font-medium">{reply.commenter}</span>
-                                  </div>
-                                  <div className="flex items-center">
-                                    <input
-                                      type="text"
-                                      value={replyText}
-                                      onChange={e => setReplyText(e.target.value)}
-                                      placeholder="Write your reply..."
-                                      className="flex-1 bg-indigo-900/40 border border-indigo-500/30 rounded-lg py-1 px-3 text-indigo-100 placeholder-indigo-400 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400"
-                                    />
-                                  </div>
-                                  <div className="flex justify-end mt-2 space-x-2">
-                                    <button
-                                      type="button"
-                                      onClick={cancelReply}
-                                      className="text-xs py-1 px-2 text-indigo-300 hover:text-indigo-100"
-                                    >
-                                      Cancel
-                                    </button>
-                                    <button
-                                      type="submit"
-                                      className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs py-1 px-3 rounded transition"
-                                    >
-                                      Reply
-                                    </button>
-                                  </div>
-                                </div>
-                              </form>
-                            )}
-                            
-                            {/* Render nested replies */}
-                            {reply.replies && reply.replies.length > 0 && (
-                              <div className="pl-4">
-                                {reply.replies.map(nestedReply => (
-                                  <div 
-                                    key={nestedReply.id} 
-                                    className="bg-indigo-900/20 p-2 rounded-lg border border-indigo-500/10 ml-4"
-                                  >
-                                    <div className="flex justify-between items-start">
-                                      <span className="font-medium text-indigo-300 text-sm">
-                                        {nestedReply.commenter}
-                                      </span>
-                                      <span className="text-xs text-indigo-400">
-                                        {new Date(nestedReply.time).toLocaleString('en-US', { 
-                                          month: 'short', 
-                                          day: 'numeric',
-                                          hour: '2-digit',
-                                          minute: '2-digit'
-                                        })}
-                                      </span>
-                                    </div>
-                                    <p className="text-indigo-100 text-sm mt-1">{nestedReply.text}</p>
-                                    <button 
-                                      onClick={() => handleReplyClick(nestedReply)}
-                                      className="text-xs text-indigo-400 mt-2 hover:text-indigo-200"
-                                    >
-                                      Reply
-                                    </button>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
                           </div>
                         ))}
                       </div>
@@ -372,18 +323,21 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
             </div>
             
             {/* Comment Input */}
-            <form onSubmit={handleCommentSubmit} className="mt-2">
+            <form onSubmit={(e) => {
+              handleCommentSubmit(e);
+              setTimeout(() => fetchComments(), 500); // Fetch comments after submission
+            }} className="mt-2">
               <div className="flex items-center">
                 <input
                   type="text"
                   value={newComment}
                   onChange={e => setNewComment(e.target.value)}
                   placeholder="Share your temporal observations..."
-                  className="flex-1 bg-indigo-900/40 border border-indigo-500/30 rounded-l-lg py-2 px-3 text-indigo-100 placeholder-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                  className="flex-1 bg-indigo-900/40 border border-indigo-500/30 rounded-l-lg py-1 px-2 text-indigo-100 placeholder-indigo-400 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-400"
                 />
                 <button
                   type="submit"
-                  className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-r-lg transition"
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1 rounded-r-lg transition text-xs"
                 >
                   Post
                 </button>
@@ -395,22 +349,28 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
 
       {/* Reactions List Modal */}
       <Dialog open={showReactionsList} onOpenChange={setShowReactionsList}>
-        <DialogContent className="bg-gradient-to-br from-indigo-950 to-blue-950 text-white border border-indigo-400/20 p-6 max-w-md">
+        <DialogContent className="bg-gradient-to-br from-indigo-950 to-blue-950 text-white border border-indigo-400/20 p-4 max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-xl font-serif text-indigo-200">
+            <DialogTitle className="text-lg font-serif text-indigo-200">
               All Reactions
             </DialogTitle>
           </DialogHeader>
           
-          <div className="mt-4 space-y-2 max-h-96 overflow-y-auto">
+          <div className="mt-3 space-y-2 max-h-64 overflow-y-auto">
             {reactionData?.reactions.map(reaction => (
               <div 
                 key={reaction.id} 
-                className="flex justify-between items-center p-3 bg-indigo-900/30 rounded-lg border border-indigo-500/10"
+                className="flex justify-between items-center p-2 bg-indigo-900/30 rounded-lg border border-indigo-500/10"
               >
-                <span className="text-indigo-200">
+                <button 
+                  onClick={() => handleProfileClick({ 
+                    id: reaction.user?.id ? Number(reaction.user.id) : 0, 
+                    name: reaction.reactor 
+                  })}
+                  className="text-indigo-200 text-sm hover:underline hover:text-indigo-100"
+                >
                   {reaction.reactor}
-                </span>
+                </button>
                 <span>{
                   reaction.type === 'enlightenment' ? '💡' : 
                   reaction.type === 'appreciation' ? '🤝' : '😯'
@@ -420,6 +380,13 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* User Profile Modal */}
+      <UserProfileModal 
+        isOpen={profileModalOpen}
+        onClose={() => setProfileModalOpen(false)}
+        user={selectedProfile}
+      />
     </>
   );
 };

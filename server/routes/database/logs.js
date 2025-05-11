@@ -3,16 +3,16 @@ const { prisma } = require('../../utils/prisma');
 
 const addLog = async (req, res) => {
   try {
-    const { year, description, survivalChance, imageUrl, userId } = req.body;
+    const { year, title, description, imageUrl, userId } = req.body;
 
-    if (!year || !description || !survivalChance || !userId) {
+    if (!year || !title || !description || !userId) {
       return res.status(400).json({ 
         success: false, 
         error: 'Missing required fields' 
       });
     }
 
-    if (isNaN(year) || isNaN(survivalChance) || isNaN(userId)) {
+    if (isNaN(year) || isNaN(userId)) {
       return res.status(400).json({ 
         success: false, 
         error: 'Invalid numeric values provided' 
@@ -30,8 +30,8 @@ const addLog = async (req, res) => {
     const travelLog = await prisma.travelLog.create({
       data: {
         yearVisited: parseInt(year),
+        title,
         story: description,
-        survivalChances: parseInt(survivalChance),
         image: imageUrl || '',
         userId: parseInt(userId)
       },
