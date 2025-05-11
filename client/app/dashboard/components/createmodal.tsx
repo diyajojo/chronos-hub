@@ -45,6 +45,8 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
   const [error, setError] = useState<string>('');
   const [showBadgeNotification, setShowBadgeNotification] = useState(false);
   const [earnedBadge, setEarnedBadge] = useState<BadgeName | null>(null);
+  const [earnedBadges, setEarnedBadges] = useState<BadgeName[]>([]);
+  const [currentBadgeIndex, setCurrentBadgeIndex] = useState(0);
   const [wordCount, setWordCount] = useState(0);
   
   const [timeLog, setTimeLog] = useState<TimeLog>({
@@ -218,13 +220,26 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
       
       if (data.success) {
         console.log('Log submitted successfully:', data);
-        // If a badge was earned, show the notification
-        if (data.badgeName) {
+        // Store all earned badges for reference
+        if (data.earnedBadges && data.earnedBadges.length > 0) {
+          setEarnedBadges(data.earnedBadges as BadgeName[]);
+          
+          // If multiple badges were earned, prioritize showing Chronoprodigy if it exists
+          if (data.earnedBadges.includes('chronoprodigy')) {
+            setEarnedBadge('chronoprodigy');
+            setShowBadgeNotification(true);
+          } else {
+            // Otherwise show the first badge earned
+            setEarnedBadge(data.earnedBadges[0] as BadgeName);
+            setShowBadgeNotification(true);
+          }
+        } else if (data.badgeName) {
+          // Legacy support for single badge
           setEarnedBadge(data.badgeName as BadgeName);
+          setEarnedBadges([data.badgeName as BadgeName]);
           setShowBadgeNotification(true);
-          // Don't update state here, let the badge notification handle it
         } else {
-          // Close the modal and update state if no badge was earned
+          // No badges earned, close modal
           await onLogCreated();
           onClose();
         }

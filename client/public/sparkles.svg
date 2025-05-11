@@ -1,0 +1,21 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="sparkle-pattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+      <!-- Small 4-point star -->
+      <path d="M20 20 L25 15 L30 20 L25 25 Z" fill="gold" opacity="0.7" />
+      <!-- Medium 4-point star -->
+      <path d="M60 30 L65 20 L70 30 L65 40 Z" fill="gold" opacity="0.5" />
+      <!-- Large 8-point star -->
+      <path d="M45 50 L50 40 L55 50 L50 60 Z" fill="gold" opacity="0.8" />
+      <path d="M40 55 L50 50 L60 55 L50 60 Z" fill="gold" opacity="0.8" />
+      <!-- Small 5-point star -->
+      <path d="M80 70 L82 67 L85 65 L82 63 L80 60 L78 63 L75 65 L78 67 Z" fill="gold" opacity="0.6" />
+      <!-- Tiny sparkle -->
+      <circle cx="15" cy="80" r="1" fill="white" />
+      <circle cx="85" cy="25" r="1" fill="white" />
+      <circle cx="35" cy="90" r="1" fill="white" />
+    </pattern>
+  </defs>
+  
+  <rect width="100%" height="100%" fill="url(#sparkle-pattern)" />
+</svg> 

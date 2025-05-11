@@ -52,6 +52,7 @@ const addLog = async (req, res) => {
 
     // Check for badges
     let badgeName = null;
+    let earnedBadges = [];
     
     // For first log, add chronosprout badge
     if (isFirstLog) {
@@ -62,7 +63,36 @@ const addLog = async (req, res) => {
             badgeName: "chronosprout"
           }
         });
-        badgeName = "chronosprout";
+        earnedBadges.push("chronosprout");
+        
+        // Special case: If first log AND exactly 100 words, award both chronoblink and chronoprodigy badges
+        if (countWords(description) === 100) {
+          try {
+            // Award Chronoblink badge
+            await prisma.userBadge.create({
+              data: {
+                userId: parseInt(userId),
+                badgeName: "chronoblink"
+              }
+            });
+            earnedBadges.push("chronoblink");
+            
+            // Award Chronoprodigy badge - special achievement for first log with exactly 100 words
+            await prisma.userBadge.create({
+              data: {
+                userId: parseInt(userId),
+                badgeName: "chronoprodigy"
+              }
+            });
+            earnedBadges.push("chronoprodigy");
+            console.log(`Chronoprodigy badge awarded to user ${userId} for first log with exactly 100 words`);
+          } catch (specialBadgeError) {
+            console.error("Error creating special badges:", specialBadgeError);
+            // Continue even if special badges fail
+          }
+        }
+        
+        badgeName = earnedBadges.length === 1 ? earnedBadges[0] : earnedBadges[0];
       } catch (error) {
         console.error("Error creating chronosprout badge:", error);
         // Don't fail the log creation if badge creation fails
@@ -87,6 +117,7 @@ const addLog = async (req, res) => {
             }
           });
           badgeName = "chronoblink";
+          earnedBadges.push("chronoblink");
           console.log(`Chronoblink badge awarded to user ${userId} for a 100-word story`);
         }
       } catch (error) {
@@ -97,7 +128,8 @@ const addLog = async (req, res) => {
     return res.status(201).json({ 
       success: true, 
       travelLog,
-      badgeName
+      badgeName,
+      earnedBadges
     });
   } 
   catch (error) {

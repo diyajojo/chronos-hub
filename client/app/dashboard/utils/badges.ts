@@ -9,17 +9,22 @@ export const BADGES = {
   chronodoppler: {
     name: 'Chronodoppler',
     description: 'A chrono-collision!',
-    imageUrl: 'https://hkrxeroqgguchwhrclsr.supabase.co/storage/v1/object/public/user-badges//chronoscribe.png'
+    imageUrl: 'https://hkrxeroqgguchwhrclsr.supabase.co/storage/v1/object/public/user-badges//chronocollision.png'
   },
   chronoblink: {
     name: 'Chronoblink',
     description: 'Precision storyteller - exactly 100 words',
-    imageUrl: 'https://hkrxeroqgguchwhrclsr.supabase.co/storage/v1/object/public/user-badges//chronolegend.png'
+    imageUrl: 'https://hkrxeroqgguchwhrclsr.supabase.co/storage/v1/object/public/user-badges//chronoblink.png'
   },
   chronoexplorer: {
     name: 'Chronoexplorer',
     description: 'Night owl explorer of time',
     imageUrl: 'https://hkrxeroqgguchwhrclsr.supabase.co/storage/v1/object/public/user-badges//chronoexplorer.png'
+  },
+  chronoprodigy: {
+    name: 'Chronoprodigy',
+    description: 'Mastered time and story in your first step',
+    imageUrl: 'https://hkrxeroqgguchwhrclsr.supabase.co/storage/v1/object/public/user-badges//chronolegend.png'
   }
 } as const;
 

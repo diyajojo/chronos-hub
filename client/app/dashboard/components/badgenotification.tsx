@@ -1,6 +1,6 @@
 'use client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BADGES } from '../utils/badges';
+import { BADGES, BadgeName } from '../utils/badges';
 import Image from 'next/image';
 import { ScratchToReveal } from "@/components/magicui/scratch-to-reveal";
 
@@ -20,21 +20,25 @@ export default function BadgeNotification({ badgeName, onClose, onLogCreated, is
   }
   
   const badge = BADGES[badgeName];
+  const isChronoProdigy = badgeName === 'chronoprodigy';
   console.log(`Showing badge notification for: ${badgeName}`, badge);
 
   // Determine the congratulation message based on the badge type
   const getCongratulationMessage = () => {
-    if (isFirstLog) 
+    if (isFirstLog && !isChronoProdigy) 
       {
       return "Congratulations on your first journey through time!";
     } else if (badgeName === 'chronoexplorer') {
-      return "You've discovered the secret of midnight  time travel!";
+      return "You've discovered the secret of midnight time travel!";
     } 
     else if (badgeName === 'chronodoppler') {
-      return "Another traveler posted from your year — you’ve triggered a Chronodoppler!";
+      return "Another traveler posted from your year — you've triggered a Chronodoppler!";
     }
     else if (badgeName === 'chronoblink') {
       return "A hundred words, a hundred moments — you blinked, and time stood still.";
+    }
+    else if (badgeName === 'chronoprodigy') {
+      return "Your very first time travel tale hit exactly 100 words — a mastery of precision and creativity!";
     }
     else {
       return "Congratulations! You've earned a new badge!";
@@ -71,9 +75,25 @@ export default function BadgeNotification({ badgeName, onClose, onLogCreated, is
         <ScratchToReveal
           width={500}
           height={350}
-          minScratchPercentage={70}
-          className="relative bg-gradient-to-br from-blue-900/90 to-purple-900/90 border border-blue-500/30 rounded-3xl p-8 shadow-2xl overflow-hidden"
+          minScratchPercentage={isChronoProdigy ? 40 : 70}
+          className={`relative bg-gradient-to-br ${
+            isChronoProdigy 
+              ? 'from-purple-800/90 to-indigo-900/90 border-2 border-yellow-500/80' 
+              : 'from-blue-900/90 to-purple-900/90 border border-blue-500/30'
+          } rounded-3xl p-8 shadow-2xl overflow-hidden`}
         >
+          {isChronoProdigy && (
+            <motion.div 
+              className="absolute inset-0 pointer-events-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0.5, 0.2, 0.7, 0.3, 0.8, 0.4, 1] }}
+              transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-purple-500/10" />
+              <div className="absolute inset-0 bg-[url('/sparkles.svg')] bg-repeat-space opacity-20" />
+            </motion.div>
+          )}
+
           <div className="absolute top-4 right-4 z-10">
             <button
               onClick={handleClose}
@@ -84,26 +104,75 @@ export default function BadgeNotification({ badgeName, onClose, onLogCreated, is
           </div>
 
           <div className="flex flex-col items-center text-center space-y-6">
-            <div className="relative w-32 h-32">
+            <motion.div 
+              className="relative w-32 h-32"
+              animate={isChronoProdigy ? {
+                scale: [1, 1.05, 1],
+                rotate: [0, -3, 0, 3, 0],
+              } : {}}
+              transition={isChronoProdigy ? { 
+                duration: 2.5, 
+                repeat: Infinity,
+                repeatType: "reverse" 
+              } : {}}
+            >
               <Image
                 src={badge.imageUrl}
                 alt={badge.name}
                 fill
                 sizes="(max-width: 768px) 100vw, 128px"
-                className="object-contain"
+                className={`object-contain ${isChronoProdigy ? 'drop-shadow-[0_0_10px_rgba(255,215,0,0.6)]' : ''}`}
               />
-            </div>
+            </motion.div>
 
             <div className="space-y-2">
-              <h3 className="text-2xl font-bold text-white">{badge.name}</h3>
-              <p className="text-blue-300">{badge.description}</p>
+              <h3 className={`text-2xl font-bold ${isChronoProdigy ? 'text-yellow-300' : 'text-white'}`}>
+                {isChronoProdigy && '✨ '}{badge.name}{isChronoProdigy && ' ✨'}
+              </h3>
+              <p className={isChronoProdigy ? 'text-yellow-200' : 'text-blue-300'}>
+                {badge.description}
+              </p>
+              {isChronoProdigy && (
+                <>
+                  <p className="text-xs text-yellow-300/80 mt-1">An extraordinarily rare achievement!</p>
+               
+                    <p className="text-xs text-yellow-100 mb-1">You've also unlocked these badges:</p>
+                    <div className="flex justify-center space-x-3">
+                      <div className="flex flex-col items-center">
+                        <div className="relative w-8 h-8 mb-1">
+                          <Image
+                            src={BADGES['chronosprout'].imageUrl}
+                            alt={BADGES['chronosprout'].name}
+                            fill
+                            sizes="32px"
+                            className="object-contain"
+                          />
+                        </div>
+                        
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <div className="relative w-8 h-8 mb-1">
+                          <Image
+                            src={BADGES['chronoblink'].imageUrl}
+                            alt={BADGES['chronoblink'].name}
+                            fill
+                            sizes="32px"
+                            className="object-contain"
+                          />
+                        </div>
+                      
+                      </div>
+                    </div>
+                 
+                </>
+              )}
             </div>
 
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="text-sm text-blue-400"
+              className={`text-sm ${isChronoProdigy ? 'text-yellow-300' : 'text-blue-400'}`}
             >
               {getCongratulationMessage()}
             </motion.div>
