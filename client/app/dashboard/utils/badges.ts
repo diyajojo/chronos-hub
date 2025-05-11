@@ -13,7 +13,7 @@ export const BADGES = {
   },
   chronoblink: {
     name: 'Chronoblink',
-    description: 'A blink, yet eternal.',
+    description: 'Precision storyteller - exactly 100 words',
     imageUrl: 'https://hkrxeroqgguchwhrclsr.supabase.co/storage/v1/object/public/user-badges//chronolegend.png'
   },
   chronoexplorer: {

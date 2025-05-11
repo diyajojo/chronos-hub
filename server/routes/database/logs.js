@@ -1,5 +1,9 @@
 const { prisma } = require('../../utils/prisma');
 
+// Helper function to count words in a string
+const countWords = (text) => {
+  return text.trim().split(/\s+/).length;
+};
 
 const addLog = async (req, res) => {
   try {
@@ -46,11 +50,13 @@ const addLog = async (req, res) => {
       }
     });
 
-    // For first log, add badge to UserBadge table
+    // Check for badges
     let badgeName = null;
+    
+    // For first log, add chronosprout badge
     if (isFirstLog) {
       try {
-        const userBadge = await prisma.userBadge.create({
+        await prisma.userBadge.create({
           data: {
             userId: parseInt(userId),
             badgeName: "chronosprout"
@@ -58,8 +64,33 @@ const addLog = async (req, res) => {
         });
         badgeName = "chronosprout";
       } catch (error) {
-        console.error("Error creating user badge:", error);
+        console.error("Error creating chronosprout badge:", error);
         // Don't fail the log creation if badge creation fails
+      }
+    } 
+    // Check for exactly 100 words to award chronoblink badge
+    else if (countWords(description) === 100) {
+      try {
+        // First check if user already has this badge
+        const existingBadge = await prisma.userBadge.findFirst({
+          where: {
+            userId: parseInt(userId),
+            badgeName: "chronoblink"
+          }
+        });
+        
+        if (!existingBadge) {
+          await prisma.userBadge.create({
+            data: {
+              userId: parseInt(userId),
+              badgeName: "chronoblink"
+            }
+          });
+          badgeName = "chronoblink";
+          console.log(`Chronoblink badge awarded to user ${userId} for a 100-word story`);
+        }
+      } catch (error) {
+        console.error("Error creating chronoblink badge:", error);
       }
     }
 
@@ -68,18 +99,12 @@ const addLog = async (req, res) => {
       travelLog,
       badgeName
     });
-  }
+  } 
   catch (error) {
-    console.error('Error creating travel log:', error);
-    if (error.code === 'P2003') {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Invalid user ID provided' 
-      });
-    }
+    console.error('Error adding log:', error);
     return res.status(500).json({ 
       success: false, 
-      error: 'Failed to create travel log',
+      error: 'Failed to add travel log',
       details: error.message 
     });
   }

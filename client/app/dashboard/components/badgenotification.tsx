@@ -33,6 +33,9 @@ export default function BadgeNotification({ badgeName, onClose, onLogCreated, is
     else if (badgeName === 'chronodoppler') {
       return "Another traveler posted from your year — you’ve triggered a Chronodoppler!";
     }
+    else if (badgeName === 'chronoblink') {
+      return "A hundred words, a hundred moments — you blinked, and time stood still.";
+    }
     else {
       return "Congratulations! You've earned a new badge!";
     }

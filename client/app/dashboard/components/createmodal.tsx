@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { handleImageUpload } from '../utils/imageupload';
 import { generateAIImage } from '../utils/generateAIImage';
 import { Label } from "@/components/ui/label";
@@ -40,9 +40,12 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
   const [imageMode, setImageMode] = useState<'upload' | 'ai'>('upload');
   const [generatingImage, setGeneratingImage] = useState(false);
   const [aiImageUrl, setAiImageUrl] = useState('');
+  const [aiImagePrompt, setAiImagePrompt] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [showBadgeNotification, setShowBadgeNotification] = useState(false);
   const [earnedBadge, setEarnedBadge] = useState<BadgeName | null>(null);
+  const [wordCount, setWordCount] = useState(0);
   
   const [timeLog, setTimeLog] = useState<TimeLog>({
     year: '',
@@ -154,14 +157,35 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
       setUploading(true);
 
       if (imageMode === 'upload' && timeLog.imageFile) {
-        finalImageUrl = await handleImageUpload(timeLog.imageFile);
+        try {
+          finalImageUrl = await handleImageUpload(timeLog.imageFile);
+        } catch (uploadError) {
+          console.error('Image upload error:', uploadError);
+          throw new Error('Failed to upload image. Please try again.');
+        }
       } else if (imageMode === 'ai' && aiImageUrl) {
-        const aiImageResponse = await fetch(aiImageUrl);
-        const aiImageBlob = await aiImageResponse.blob();
-        const aiImageFile = new File([aiImageBlob], 'ai-generated-image.png', { type: 'image/png' });
+        try {
+          const aiImageResponse = await fetch(aiImageUrl);
+          const aiImageBlob = await aiImageResponse.blob();
+          const aiImageFile = new File([aiImageBlob], 'ai-generated-image.png', { type: 'image/png' });
 
-        finalImageUrl = await handleImageUpload(aiImageFile);
+          finalImageUrl = await handleImageUpload(aiImageFile);
+        } catch (aiError) {
+          console.error('AI image processing error:', aiError);
+          throw new Error('Failed to process AI image. Please try again.');
+        }
       }
+
+      // Prepare the request payload
+      const payload = {
+        year: parseInt(timeLog.year),
+        title: timeLog.title,
+        description: timeLog.description.trim(),
+        imageUrl: finalImageUrl,
+        userId: user.id || '0',
+      };
+      
+      console.log('Submitting log with payload:', payload);
 
       const response = await fetch('http://localhost:8000/addlog', {
         method: 'POST',
@@ -169,22 +193,31 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({
-          year: parseInt(timeLog.year),
-          title: timeLog.title,
-          description: timeLog.description.trim(),
-          imageUrl: finalImageUrl,
-          userId: user.id || '0',
-        }),
+        body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
+      // Handle potential non-JSON response
+      let data;
+      try {
+        const textResponse = await response.text();
+        try {
+          data = JSON.parse(textResponse);
+        } catch (parseError) {
+          console.error('Server response is not valid JSON:', textResponse);
+          throw new Error('Server returned an invalid response');
+        }
+      } catch (responseError) {
+        console.error('Error reading response:', responseError);
+        throw new Error('Failed to read server response');
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to submit log');
+        console.error('Server error details:', data);
+        throw new Error(data.error || data.details || 'Failed to submit log');
       }
       
       if (data.success) {
+        console.log('Log submitted successfully:', data);
         // If a badge was earned, show the notification
         if (data.badgeName) {
           setEarnedBadge(data.badgeName as BadgeName);
@@ -220,6 +253,38 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
       case 2: return "Tell your story";
       case 3: return "Proof of travel";
       default: return "Log your journey";
+    }
+  };
+
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newDescription = e.target.value;
+    setTimeLog({ ...timeLog, description: newDescription });
+    // Count words by splitting on whitespace
+    const count = newDescription.trim().split(/\s+/).filter(word => word.length > 0).length;
+    setWordCount(count);
+  };
+
+  const handleGenerate = async () => {
+    if (!timeLog.description) {
+      setError('Please describe your trip first');
+      return;
+    }
+
+    setError('');
+    
+    try {
+      generateAIImage({
+        description: timeLog.description,
+        year: timeLog.year,
+        setGeneratingImage,
+        setAiImageUrl,
+        setTimeLog,
+        currentTimeLog: timeLog,
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to generate image';
+      setError(errorMessage);
+      toast.error('Failed to generate image: ' + errorMessage);
     }
   };
 
@@ -285,17 +350,22 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
               )}
               
               {step === 2 && (
-                <div>
-                  <Label htmlFor="description" className="text-blue-300 mb-2 font-medium">What did you experience?</Label>
-                  <Textarea
-                    id="description"
-                    className="bg-black/50 border border-blue-500/30 text-white h-48"
-                    placeholder="Tell us about your adventure... What did you see? Who did you meet? What dangers did you face?"
-                    value={timeLog.description}
-                    onChange={(e) => setTimeLog({ ...timeLog, description: e.target.value })}
-                    required
-                  />
-                  <p className="text-blue-400 text-sm mt-2">Be detailed - our AI will evaluate how believable your time travel is!</p>
+                <div className="space-y-4">
+                  <div className="grid gap-3">
+                    <Label htmlFor="description" className="text-blue-200">Your Time Travel Story</Label>
+                    <Textarea 
+                      id="description" 
+                      rows={8}
+                      placeholder="Describe what you saw and experienced on your journey..."
+                      value={timeLog.description}
+                      onChange={handleDescriptionChange}
+                      className=" mt-2 bg-blue-950/40 border-blue-500/30 text-blue-200 resize-none"
+                    />
+                    <div className="text-sm text-blue-400">
+                      <span>Word Count: {wordCount}</span>
+                    </div>
+                    <p className="text-xs text-blue-400/70 italic">Exactly 100 words may unlock a secret badge!</p>
+                  </div>
                 </div>
               )}
               
@@ -376,17 +446,7 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
                         <Button
                           type="button"
                           variant="default"
-                          onClick={() =>
-                            generateAIImage({
-                              description: timeLog.description,
-                              year: timeLog.year,
-    
-                              setGeneratingImage,
-                              setAiImageUrl,
-                              setTimeLog,
-                              currentTimeLog: timeLog,
-                            })
-                          }
+                          onClick={handleGenerate}
                           disabled={generatingImage || !timeLog.description || !timeLog.year}
                           className={`w-full ${
                             generatingImage || !timeLog.description || !timeLog.year
