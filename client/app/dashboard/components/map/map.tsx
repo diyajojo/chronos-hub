@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { ViewModal } from './viewmodal';
 
@@ -37,6 +37,13 @@ interface Comment {
   };
 }
 
+// New interface for grouped logs
+interface GroupedLogs {
+  year: number;
+  logs: TravelLogItem[];
+  position: { x: number; y: number };
+}
+
 const MapModal = ({ logs, user, onClose }: { 
   logs: TravelLogItem[] , 
   user: User,
@@ -44,6 +51,7 @@ const MapModal = ({ logs, user, onClose }: {
 }) => {
   const [selectedLog, setSelectedLog] = useState<TravelLogItem | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [expandedYear, setExpandedYear] = useState<number | null>(null);
   
   // Close with ESC key
   useEffect(() => {
@@ -51,6 +59,8 @@ const MapModal = ({ logs, user, onClose }: {
       if (event.key === 'Escape') {
         if (isDetailsOpen) {
           setIsDetailsOpen(false);
+        } else if (expandedYear !== null) {
+          setExpandedYear(null);
         } else {
           onClose();
         }
@@ -60,7 +70,7 @@ const MapModal = ({ logs, user, onClose }: {
     return () => {
       window.removeEventListener('keydown', handleEsc);
     };
-  }, [isDetailsOpen, onClose]);
+  }, [isDetailsOpen, onClose, expandedYear]);
 
 
   // Generate positions for year markers that stay within the map boundaries
@@ -74,6 +84,34 @@ const MapModal = ({ logs, user, onClose }: {
   const handleLogClick = (log: TravelLogItem) => {
     setSelectedLog(log);
     setIsDetailsOpen(true);
+  };
+
+  // Group logs by year
+  const groupedLogs = useMemo(() => {
+    const yearMap = new Map<number, TravelLogItem[]>();
+    
+    // Group logs by year
+    logs.forEach(log => {
+      if (!yearMap.has(log.yearVisited)) {
+        yearMap.set(log.yearVisited, []);
+      }
+      yearMap.get(log.yearVisited)?.push(log);
+    });
+    
+    // Convert map to array of grouped logs
+    return Array.from(yearMap.entries()).map(([year, yearLogs]) => ({
+      year,
+      logs: yearLogs,
+      position: getPositionForYear(year)
+    }));
+  }, [logs]);
+
+  const handleYearClick = (year: number) => {
+    if (expandedYear === year) {
+      setExpandedYear(null);
+    } else {
+      setExpandedYear(year);
+    }
   };
 
   return (
@@ -113,42 +151,130 @@ const MapModal = ({ logs, user, onClose }: {
               
               <div className="absolute inset-0 bg-gradient-to-br from-blue-900/15 to-purple-900/15"></div>
               
-              {logs.map(log => {
-                const position = getPositionForYear(log.yearVisited);
+              {/* Render grouped logs by year */}
+              {groupedLogs.map((groupedLog) => {
+                const { year, logs, position } = groupedLog;
+                const isExpanded = expandedYear === year;
+                const multipleLogsExist = logs.length > 1;
+                
+                // Determine pin color based on number of logs
+                const getPinColorClass = () => {
+                  if (logs.length >= 5) return "text-purple-500";
+                  if (logs.length >= 3) return "text-orange-500";
+                  if (logs.length >= 2) return "text-yellow-500";
+                  return "text-red-600";
+                };
+                
+                // Determine glow color based on number of logs
+                const getGlowColorClass = () => {
+                  if (logs.length >= 5) return "bg-purple-500";
+                  if (logs.length >= 3) return "bg-orange-500";
+                  if (logs.length >= 2) return "bg-yellow-500";
+                  return "bg-red-500";
+                };
+                
                 return (
                   <motion.div
-                    key={log.id}
+                    key={year}
                     className="absolute"
                     style={{ 
                       left: `${position.x}%`, 
-                      top: `${position.y}%` 
+                      top: `${position.y}%`,
+                      zIndex: isExpanded ? 20 : 10
                     }}
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
+                    animate={{ 
+                      scale: isExpanded ? 1.1 : 1,
+                      opacity: 1 
+                    }}
+                    initial={{ scale: 0, opacity: 0 }}
                     transition={{ type: 'spring', duration: 0.5 }}
                   >
+                    {/* Main year marker */}
                     <button
-                      onClick={() => handleLogClick(log)}
+                      onClick={() => multipleLogsExist ? handleYearClick(year) : handleLogClick(logs[0])}
                       className="relative group"
                     >
                       {/* Year label with improved visibility */}
-                      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-amber-200 font-bold text-xs bg-black/70 px-2</div> py-0.5 rounded-full z-10">
-                        {log.yearVisited}
+                      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-amber-200 font-bold text-xs bg-black/70 px-2 py-0.5 rounded-full z-10">
+                        {year}
                       </div>
                       
-                      {/* Pin emoji with enhanced glow */}
-                      <div className="relative text-2xl filter drop-shadow-lg">
-                        <span role="img" aria-label="map-pin" className="text-red-600">📍</span>
-                        <div className="absolute inset-0 animate-pulse bg-red-500 opacity-50 rounded-full blur-md -z-10"></div>
+                      {/* Pin indicator for all pins */}
+                      <div className="relative filter drop-shadow-lg">
+                        <div className="relative">
+                          {/* Pin with consistent size */}
+                          <span role="img" aria-label="map-pin" className={`text-3xl ${getPinColorClass()}`}>📍</span>
+                          
+                          {/* Glow effect that's more intense with more logs */}
+                          <div className={`absolute inset-0 animate-pulse ${getGlowColorClass()} opacity-50 rounded-full blur-md -z-10`} 
+                               style={{ animationDuration: `${1.5 - Math.min(logs.length * 0.1, 0.8)}s` }}></div>
+
+                          {/* Badge showing number of logs when there are multiple */}
+                          {multipleLogsExist && (
+                            <div className="absolute -right-2 -top-2 w-5 h-5 rounded-full bg-blue-700 border border-white text-white flex items-center justify-center text-xs font-bold">
+                              {logs.length}
+                            </div>
+                          )}
+                        </div>
                       </div>
 
                       {/* Tooltip */}
-                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-gray-900/90 text-white text-xs w-40 p-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity z-20">
-                        <div className="font-bold text-xs">Journey to {log.yearVisited}</div>
-                        <div className="truncate text-xs">{log.story.substring(0, 5)}...</div>
-                        <div className="text-blue-300 mt-0.5 text-center text-xs">Click to view</div>
-                      </div>
+                      {!isExpanded && (
+                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-gray-900/90 text-white text-xs w-40 p-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                          <div className="font-bold text-xs">{multipleLogsExist ? `${logs.length} journeys to ${year}` : `Journey to ${year}`}</div>
+                          {multipleLogsExist ? (
+                            <div className="text-blue-300 mt-0.5 text-center text-xs">Click to explore all</div>
+                          ) : (
+                            <>
+                              <div className="truncate text-xs">{logs[0].story.substring(0, 15)}...</div>
+                              <div className="text-blue-300 mt-0.5 text-center text-xs">Click to view</div>
+                            </>
+                          )}
+                        </div>
+                      )}
                     </button>
+
+                    {/* Expanded view for multiple logs in same year */}
+                    {isExpanded && (
+                      <motion.div 
+                        className="absolute top-full left-1/2 transform -translate-x-1/2 mt-4 bg-gray-900/95 rounded-lg border border-amber-500/50 shadow-xl p-3 w-64 z-30"
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <div className="flex justify-between items-center mb-2">
+                          <h3 className="text-amber-300 font-bold">Travellers to {year}</h3>
+                          <button 
+                            onClick={() => setExpandedYear(null)}
+                            className="text-gray-400 hover:text-white"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                        <div className="space-y-2 max-h-48 overflow-y-auto pr-1 thin-scrollbar">
+                          {logs.map((log, index) => (
+                            <motion.div 
+                              key={log.id}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.1 }}
+                              className="bg-black/50 border border-blue-500/30 rounded-lg p-2 cursor-pointer hover:bg-blue-900/30"
+                              onClick={() => handleLogClick(log)}
+                            >
+                              <div className="flex gap-2 items-center">
+                                <div className="rounded-full bg-blue-500/50 w-7 h-7 flex items-center justify-center text-xs text-white overflow-hidden">
+                                  {log.user.name.charAt(0).toUpperCase()}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-white font-medium text-xs truncate">{log.title}</p>
+                                  <p className="text-gray-400 text-xs truncate">By {log.user.name}</p>
+                                </div>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
                   </motion.div>
                 );
               })}
