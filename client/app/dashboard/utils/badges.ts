@@ -8,12 +8,12 @@ export const BADGES = {
   },
   chronodoppler: {
     name: 'Chronodoppler',
-    description: 'A chrono-collision!',
-    imageUrl: 'https://hkrxeroqgguchwhrclsr.supabase.co/storage/v1/object/public/user-badges//chronocollision.png'
+    description: 'A chrono-collision',
+    imageUrl: 'https://hkrxeroqgguchwhrclsr.supabase.co/storage/v1/object/public/user-badges//chronodoppler.png'
   },
   chronoblink: {
     name: 'Chronoblink',
-    description: 'Precision storyteller - exactly 100 words',
+    description: 'Crafted a perfect century of words ',
     imageUrl: 'https://hkrxeroqgguchwhrclsr.supabase.co/storage/v1/object/public/user-badges//chronoblink.png'
   },
   chronoexplorer: {
@@ -23,7 +23,7 @@ export const BADGES = {
   },
   chronoprodigy: {
     name: 'Chronoprodigy',
-    description: 'Mastered time and story in your first step',
+    description: 'First journey, perfect word count',
     imageUrl: 'https://hkrxeroqgguchwhrclsr.supabase.co/storage/v1/object/public/user-badges//chronolegend.png'
   }
 } as const;

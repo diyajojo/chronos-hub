@@ -4,14 +4,23 @@ import { BADGES, BadgeName } from '../utils/badges';
 import Image from 'next/image';
 import { ScratchToReveal } from "@/components/magicui/scratch-to-reveal";
 
+interface ChronodopplerInfo {
+  year: number;
+  travelers: {
+    name: string;
+    userId: number;
+  }[];
+}
+
 interface BadgeNotificationProps {
   badgeName: keyof typeof BADGES;
   onClose: () => void;
   onLogCreated?: () => Promise<void>;
   isFirstLog?: boolean;
+  chronodopplerInfo?: ChronodopplerInfo;
 }
 
-export default function BadgeNotification({ badgeName, onClose, onLogCreated, isFirstLog = false }: BadgeNotificationProps) {
+export default function BadgeNotification({ badgeName, onClose, onLogCreated, isFirstLog = false, chronodopplerInfo }: BadgeNotificationProps) {
   // Safety check to ensure badge exists in the BADGES object
   if (!BADGES[badgeName]) {
     console.error(`Badge "${badgeName}" not found in BADGES object`);
@@ -21,6 +30,7 @@ export default function BadgeNotification({ badgeName, onClose, onLogCreated, is
   
   const badge = BADGES[badgeName];
   const isChronoProdigy = badgeName === 'chronoprodigy';
+  const isChronoDoppler = badgeName === 'chronodoppler';
   console.log(`Showing badge notification for: ${badgeName}`, badge);
 
   // Determine the congratulation message based on the badge type
@@ -32,7 +42,9 @@ export default function BadgeNotification({ badgeName, onClose, onLogCreated, is
       return "You've discovered the secret of midnight time travel!";
     } 
     else if (badgeName === 'chronodoppler') {
-      return "Another traveler posted from your year — you've triggered a Chronodoppler!";
+      return chronodopplerInfo 
+        ? `You visited the year ${chronodopplerInfo.year} along with other time travelers!` 
+        : "Another traveler posted from your year — you've triggered a Chronodoppler!";
     }
     else if (badgeName === 'chronoblink') {
       return "A hundred words, a hundred moments — you blinked, and time stood still.";
@@ -132,6 +144,22 @@ export default function BadgeNotification({ badgeName, onClose, onLogCreated, is
               <p className={isChronoProdigy ? 'text-yellow-200' : 'text-blue-300'}>
                 {badge.description}
               </p>
+              
+              {isChronoDoppler && chronodopplerInfo && (
+                <div className="mt-3 bg-blue-900/30 p-2 rounded-lg border border-blue-500/20">
+                  <p className="text-sm text-blue-200 font-medium">
+                    Time travelers who also visited year {chronodopplerInfo.year}:
+                  </p>
+                  <div className="mt-2 space-y-1">
+                    {chronodopplerInfo.travelers.map((traveler, index) => (
+                      <p key={index} className="text-xs text-blue-300 font-semibold">
+                        {traveler.name}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
               {isChronoProdigy && (
                 <>
                   <p className="text-xs text-yellow-300/80 mt-1">An extraordinarily rare achievement!</p>

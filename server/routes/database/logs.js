@@ -53,6 +53,66 @@ const addLog = async (req, res) => {
     // Check for badges
     let badgeName = null;
     let earnedBadges = [];
+    let chronodopplerInfo = null;
+    
+    // Check for Chronodoppler badge - same year as other users
+    try {
+      // First check if user already has this badge
+      const existingDopplerBadge = await prisma.userBadge.findFirst({
+        where: {
+          userId: parseInt(userId),
+          badgeName: "chronodoppler"
+        }
+      });
+      
+      if (!existingDopplerBadge) {
+        // Find other users who have logs in the same year
+        const sameYearLogs = await prisma.travelLog.findMany({
+          where: {
+            yearVisited: parseInt(year),
+            userId: {
+              not: parseInt(userId)
+            }
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
+          },
+          take: 3 // Limit to 3 users for display purposes
+        });
+        
+        if (sameYearLogs.length > 0) {
+          // Award Chronodoppler badge
+          await prisma.userBadge.create({
+            data: {
+              userId: parseInt(userId),
+              badgeName: "chronodoppler"
+            }
+          });
+          
+          earnedBadges.push("chronodoppler");
+          badgeName = earnedBadges.length === 1 ? "chronodoppler" : badgeName;
+          
+          // Collect user names who traveled to the same year
+          chronodopplerInfo = {
+            year: parseInt(year),
+            travelers: sameYearLogs.map(log => ({
+              name: log.user.name,
+              userId: log.user.id
+            }))
+          };
+          
+          console.log(`Chronodoppler badge awarded to user ${userId} for year ${year} collision`);
+        }
+      }
+    } catch (dopplerError) {
+      console.error("Error checking for Chronodoppler badge:", dopplerError);
+      // Continue even if this check fails - don't stop other badges
+    }
     
     // For first log, add chronosprout badge
     if (isFirstLog) {
@@ -129,7 +189,8 @@ const addLog = async (req, res) => {
       success: true, 
       travelLog,
       badgeName,
-      earnedBadges
+      earnedBadges,
+      chronodopplerInfo  // Include collision info in the response
     });
   } 
   catch (error) {

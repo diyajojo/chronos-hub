@@ -48,6 +48,7 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
   const [earnedBadges, setEarnedBadges] = useState<BadgeName[]>([]);
   const [currentBadgeIndex, setCurrentBadgeIndex] = useState(0);
   const [wordCount, setWordCount] = useState(0);
+  const [chronodopplerInfo, setChronodopplerInfo] = useState<any>(null);
   
   const [timeLog, setTimeLog] = useState<TimeLog>({
     year: '',
@@ -224,9 +225,18 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
         if (data.earnedBadges && data.earnedBadges.length > 0) {
           setEarnedBadges(data.earnedBadges as BadgeName[]);
           
+          // Store chronodoppler info if available
+          if (data.chronodopplerInfo) {
+            setChronodopplerInfo(data.chronodopplerInfo);
+          }
+          
           // If multiple badges were earned, prioritize showing Chronoprodigy if it exists
           if (data.earnedBadges.includes('chronoprodigy')) {
             setEarnedBadge('chronoprodigy');
+            setShowBadgeNotification(true);
+          } else if (data.earnedBadges.includes('chronodoppler')) {
+            // Show chronodoppler badge if it was earned
+            setEarnedBadge('chronodoppler');
             setShowBadgeNotification(true);
           } else {
             // Otherwise show the first badge earned
@@ -551,6 +561,7 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
           }}
           onLogCreated={onLogCreated}
           isFirstLog={isFirstLog}
+          chronodopplerInfo={earnedBadge === 'chronodoppler' ? chronodopplerInfo : undefined}
         />
       )}
     </>
