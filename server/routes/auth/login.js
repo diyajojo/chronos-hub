@@ -15,7 +15,7 @@ const login = async (req, res) => {
     });
 
     if (!existingUser) {
-      console.timeLog("user doesnt exist , go signup");
+      console.log("user doesnt exist , go signup");
       return res.status(401).json({ "error": "invalid credentials" });
     }
 
@@ -34,12 +34,14 @@ const login = async (req, res) => {
 
     const token = jwt.sign(payLoad, JWT_SECRET, { expiresIn: '1h' });
 
-    // Check for evening login (10 PM)
+    // Check for afternoon login (5pm - 6pm)
     const currentHour = new Date().getHours();
     let newBadgeAwarded = false;
+    
+    console.log(`Current hour is: ${currentHour}`); // Debug current hour
 
-    // Check between 10 PM and 11 PM (22:00 - 22:59)
-    if (currentHour === 22) {
+    // Check between 5 PM and 6 PM (17:00 - 17:59)
+    if (currentHour === 17) {
       try {
         // Check if user already has the ChronoExplorer badge
         const existingBadge = await prisma.userBadge.findFirst({
@@ -51,17 +53,19 @@ const login = async (req, res) => {
           }
         });
 
+        console.log('Existing badge check:', existingBadge ? 'Badge already exists' : 'Badge not found'); // Debug
+
         if (!existingBadge) {
           // Award the badge
           await prisma.userBadge.create({
             data: {
               userId: existingUser.id,
               badgeName: 'chronoexplorer',
-              createdAt: new Date()
+              earnedAt: new Date() // Changed from createdAt to earnedAt to match the UserBadge schema
             }
           });
           newBadgeAwarded = true;
-          console.log('Badge awarded successfully');
+          console.log('Afternoon explorer badge awarded successfully');
         }
       } catch (badgeError) {
         console.error('Error handling badge:', badgeError);

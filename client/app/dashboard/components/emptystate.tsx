@@ -123,6 +123,7 @@ export default function EmptyState({
                             src={badge.imageUrl}
                             alt={badge.name}
                             fill
+                            sizes="(max-width: 768px) 100vw, 48px"
                             className="object-contain"
                           />
                         </div>

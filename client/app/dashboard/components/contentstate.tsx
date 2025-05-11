@@ -60,7 +60,7 @@ export default function Content({
   useEffect(() => {
     const fetchUserBadges = async () => {
       try {
-        const response = await fetch('http://localhost:8000/fetchuserbadges', {
+        const response = await fetch('http://localhost:8000/userbadges', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -100,7 +100,7 @@ export default function Content({
       src="/assets/pfp.png"
       alt={`${user.name}'s profile`}
       fill
-      sizes="96px"
+      sizes="(max-width: 768px) 100vw, 96px"
       className="object-cover"
     />
   </div>
@@ -112,15 +112,7 @@ export default function Content({
               {user.name}
             </h1>
             
-            {/* Tabs */}
-            <div className="flex gap-8 mb-6">
-              <button 
-                onClick={() => setActiveTab('logs')}
-                className={`${activeTab === 'logs' ? 'text-white' : 'text-blue-400'}`}
-              >
-                Time Logs
-              </button>
-            </div>
+          
             
             {/* Stats Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -157,6 +149,7 @@ export default function Content({
                           src={badge.imageUrl}
                           alt={badge.name}
                           fill
+                          sizes="(max-width: 768px) 100vw, 48px"
                           className="object-contain"
                         />
                       </div>

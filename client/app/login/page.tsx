@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -119,7 +118,11 @@ export default function Login() {
           badgeName={newBadge}
           onClose={handleBadgeClose}
           isFirstLog={false}  // This is login badge, not first log badge
-          onLogCreated={async () => {}}  // Empty function since this is not log-related
+          onLogCreated={async () => {
+            // Add an empty async function that resolves immediately
+            // This ensures the badge notification's onLogCreated handler won't cause issues
+            return Promise.resolve();
+          }}
         />
       )}
 

@@ -6,19 +6,19 @@ export const BADGES = {
     description: 'Time traveler in training',
     imageUrl: 'https://hkrxeroqgguchwhrclsr.supabase.co/storage/v1/object/public/user-badges//chronosprout.png'
   },
-  chronoscribe: {
-    name: 'Chronoscribe',
-    description: 'Master storyteller of time',
+  chronodoppler: {
+    name: 'Chronodoppler',
+    description: 'A chrono-collision!',
     imageUrl: 'https://hkrxeroqgguchwhrclsr.supabase.co/storage/v1/object/public/user-badges//chronoscribe.png'
   },
-  chronolegend: {
-    name: 'Chronolegend',
-    description: 'Legendary time traveler',
+  chronoblink: {
+    name: 'Chronoblink',
+    description: 'A blink, yet eternal.',
     imageUrl: 'https://hkrxeroqgguchwhrclsr.supabase.co/storage/v1/object/public/user-badges//chronolegend.png'
   },
   chronoexplorer: {
     name: 'Chronoexplorer',
-    description: 'Discovered time travel secrets during the mysterious evening hour (7 PM - 8 PM)',
+    description: 'Night owl explorer of time',
     imageUrl: 'https://hkrxeroqgguchwhrclsr.supabase.co/storage/v1/object/public/user-badges//chronoexplorer.png'
   }
 } as const;

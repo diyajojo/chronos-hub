@@ -75,20 +75,31 @@ export default function Dashboard() {
           setOtherLogs(data.otherLogs || []);
 
           // Fetch badges
-          const badgesResponse = await fetch('http://localhost:8000/userbadges', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({ userId: authData.user.id }),
-          });
+          try {
+            console.log('Fetching badges for user:', authData.user.id);
+            const badgesResponse = await fetch('http://localhost:8000/userbadges', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include',
+              body: JSON.stringify({ userId: authData.user.id }),
+            });
 
-          if (badgesResponse.ok) {
-            const badgesData = await badgesResponse.json();
-            if (badgesData.success) {
-              setUserBadges(badgesData.badges);
+            if (badgesResponse.ok) {
+              const badgesData = await badgesResponse.json();
+              if (badgesData.success) {
+                console.log('Badges fetched successfully:', badgesData.badges);
+                setUserBadges(badgesData.badges);
+              } else {
+                console.error('Failed to fetch badges:', badgesData.error);
+              }
+            } else {
+              console.error('Badge fetch response not ok:', badgesResponse.status);
             }
+          } catch (badgeError) {
+            console.error('Error fetching badges:', badgeError);
+            // Don't fail the whole dashboard if badges fail to load
           }
         } catch (error) {
           console.error('Error fetching data:', error);
@@ -131,6 +142,29 @@ export default function Dashboard() {
         setHasLogs(false);
       }
       setOtherLogs(data.otherLogs || []);
+      
+      // Also update badges
+      try {
+        console.log('Refreshing badges for user:', userId);
+        const badgesResponse = await fetch('http://localhost:8000/userbadges', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ userId }),
+        });
+
+        if (badgesResponse.ok) {
+          const badgesData = await badgesResponse.json();
+          if (badgesData.success) {
+            console.log('Badges refreshed successfully:', badgesData.badges);
+            setUserBadges(badgesData.badges);
+          }
+        }
+      } catch (badgeError) {
+        console.error('Error refreshing badges:', badgeError);
+      }
     } catch (error) {
       console.error('Error fetching logs:', error);
       setHasLogs(false);

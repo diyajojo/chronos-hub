@@ -12,10 +12,35 @@ interface BadgeNotificationProps {
 }
 
 export default function BadgeNotification({ badgeName, onClose, onLogCreated, isFirstLog = false }: BadgeNotificationProps) {
+  // Safety check to ensure badge exists in the BADGES object
+  if (!BADGES[badgeName]) {
+    console.error(`Badge "${badgeName}" not found in BADGES object`);
+    setTimeout(onClose, 100); // Close the notification if badge doesn't exist
+    return null;
+  }
+  
   const badge = BADGES[badgeName];
+  console.log(`Showing badge notification for: ${badgeName}`, badge);
+
+  // Determine the congratulation message based on the badge type
+  const getCongratulationMessage = () => {
+    if (isFirstLog) 
+      {
+      return "Congratulations on your first journey through time!";
+    } else if (badgeName === 'chronoexplorer') {
+      return "You've discovered the secret of midnight  time travel!";
+    } 
+    else if (badgeName === 'chronodoppler') {
+      return "Another traveler posted from your year — you’ve triggered a Chronodoppler!";
+    }
+    else {
+      return "Congratulations! You've earned a new badge!";
+    }
+  };
 
   const handleClose = async () => {
     try {
+      console.log('Badge notification closing, calling onLogCreated if available');
       // Update the state first
       if (onLogCreated) {
         await onLogCreated();
@@ -61,6 +86,7 @@ export default function BadgeNotification({ badgeName, onClose, onLogCreated, is
                 src={badge.imageUrl}
                 alt={badge.name}
                 fill
+                sizes="(max-width: 768px) 100vw, 128px"
                 className="object-contain"
               />
             </div>
@@ -76,7 +102,7 @@ export default function BadgeNotification({ badgeName, onClose, onLogCreated, is
               transition={{ delay: 0.5 }}
               className="text-sm text-blue-400"
             >
-              Congratulations! You've earned a new badge!
+              {getCongratulationMessage()}
             </motion.div>
           </div>
         </ScratchToReveal>

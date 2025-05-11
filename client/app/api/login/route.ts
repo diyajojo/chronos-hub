@@ -41,7 +41,8 @@ export async function POST(request: Request) {
         id: data.user.id,
         name: data.user.name,
         email: data.user.email
-      }
+      },
+      newBadge: data.newBadge
     }, { status: 200 });
 
   }
