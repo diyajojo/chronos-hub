@@ -22,6 +22,7 @@
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.6.2",
     "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.487.0",
     "motion": "^12.11.0",
     "next": "15.2.4",
@@ -35,6 +36,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/jsonwebtoken": "^9.0.9",
+    "@types/lodash": "^4.17.16",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
