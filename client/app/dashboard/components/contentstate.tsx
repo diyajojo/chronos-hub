@@ -50,14 +50,12 @@ export default function Content({
 }) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showMap, setShowMap] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [isFirstLog, setIsFirstLog] = useState(userLogs.length === 0);
   const [stats, setStats] = useState({
     totalTrips: userLogs.length,
     totalEngagement: 0
   });
-  const [activeTab, setActiveTab] = useState('logs');
-  const [isClientReady, setIsClientReady] = useState(false);
+  
 
   // Time greetings
   const getTimeGreeting = () => {
@@ -67,10 +65,7 @@ export default function Content({
     return "Good evening";
   };
 
-  // Initialize client-side state
-  useEffect(() => {
-    setIsClientReady(true);
-  }, []);
+ 
 
   useEffect(() => {
     // Calculate total engagement (reactions and comments)

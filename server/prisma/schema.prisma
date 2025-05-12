@@ -16,6 +16,9 @@ model User {
   updatedAt DateTime    @updatedAt
   logs      TravelLog[]
   badges    UserBadge[]
+  
+  sentFriendRequests     Friendship[] @relation("SentFriendRequests")
+  receivedFriendRequests Friendship[] @relation("ReceivedFriendRequests")
 }
 
 
@@ -69,4 +72,18 @@ model Reaction {
   travelLog   TravelLog @relation(fields: [travelLogId], references: [id], onDelete: Cascade)
   
   @@unique([travelLogId, reactor]) // Change unique constraint to prevent multiple reactions from same user
+}
+
+model Friendship {
+  id        Int      @id @default(autoincrement())
+  user1Id   Int
+  user2Id   Int
+  status    String   @default("pending") // "pending" or "accepted"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  user1     User     @relation("SentFriendRequests", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2     User     @relation("ReceivedFriendRequests", fields: [user2Id], references: [id], onDelete: Cascade)
+  
+  @@unique([user1Id, user2Id])
 }

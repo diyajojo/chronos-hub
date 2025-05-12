@@ -4,6 +4,8 @@ import { useRouter, useParams } from 'next/navigation';
 import Content from '../components/contentstate';
 import EmptyState from '../components/emptystate';
 import StarBackground from '../../components/design/starbackground';
+import FriendRequests from '../components/friendrequest';
+import FriendsList from '../components/friendslist';
 
 interface User {
   id: number;
@@ -27,6 +29,7 @@ export default function Dashboard() {
   const [userLogs, setUserLogs] = useState([]);
   const [userBadges, setUserBadges] = useState<UserBadge[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [friendsUpdated, setFriendsUpdated] = useState(0);
 
   // Mark component as hydrated (client-side)
   useEffect(() => {
@@ -147,7 +150,7 @@ export default function Dashboard() {
     };
 
     loadDashboardData();
-  }, [userId, router]);
+  }, [userId, router, friendsUpdated]);
 
   const updateLogs = async () => {
     try {
@@ -204,6 +207,11 @@ export default function Dashboard() {
     }
   };
 
+  const handleFriendRequestAction = () => {
+    // Trigger refresh of data when friend request is accepted or rejected
+    setFriendsUpdated(prev => prev + 1);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-blue-950 via-blue-900 to-indigo-950">
@@ -222,6 +230,14 @@ export default function Dashboard() {
       <StarBackground />
       
       <main className="container mx-auto px-6 py-8 relative z-10">
+        {/* Friend Requests and Friends List buttons */}
+        {user && (
+          <div className="absolute top-4 right-4 z-20 gap-10 flex items-center space-x-2">
+            <FriendsList userId={user.id} />
+            <FriendRequests userId={user.id} onRequestAction={handleFriendRequestAction} />
+          </div>
+        )}
+        
         {!hasLogs ? (
           user && isHydrated && (
             <EmptyState 

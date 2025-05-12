@@ -53,8 +53,43 @@ export function UserProfileModal({ isOpen, onClose, user, currentUserId }: UserP
     logs: true,
     stats: true
   });
-
+  const [friendshipStatus, setFriendshipStatus] = useState<string | null>(null);
+  const [friendshipId, setFriendshipId] = useState<number | null>(null);
+  const [friendActionLoading, setFriendActionLoading] = useState(false);
   
+  useEffect(() => {
+    if (isOpen && user.id && currentUserId && user.id !== currentUserId) {
+      // Fetch friendship status
+      const checkFriendshipStatus = async () => {
+        try {
+          const response = await fetch('http://localhost:8000/friendship/status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ 
+              user1Id: currentUserId, 
+              user2Id: user.id 
+            }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+              setFriendshipStatus(data.status);
+              if (data.friendship) {
+                setFriendshipId(data.friendship.id);
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error checking friendship status:', error);
+        }
+      };
+      
+      checkFriendshipStatus();
+    }
+  }, [isOpen, user.id, currentUserId]);
+
   useEffect(() => {
     if (isOpen && user.id) {
       // Fetch user badges
@@ -159,6 +194,123 @@ export function UserProfileModal({ isOpen, onClose, user, currentUserId }: UserP
     return "Legendary Time Master";
   } 
 
+  const handleSendFriendRequest = async () => {
+    if (!currentUserId || !user.id) return;
+    
+    setFriendActionLoading(true);
+    try {
+      const response = await fetch('http://localhost:8000/friendship/send-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ 
+          senderId: currentUserId, 
+          receiverId: user.id 
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setFriendshipStatus('pending');
+          setFriendshipId(data.friendship.id);
+        }
+      }
+    } catch (error) {
+      console.error('Error sending friend request:', error);
+    } finally {
+      setFriendActionLoading(false);
+    }
+  };
+
+  const handleAcceptFriendRequest = async () => {
+    if (!friendshipId) return;
+    
+    setFriendActionLoading(true);
+    try {
+      const response = await fetch('http://localhost:8000/friendship/accept-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ friendshipId }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setFriendshipStatus('accepted');
+        }
+      }
+    } catch (error) {
+      console.error('Error accepting friend request:', error);
+    } finally {
+      setFriendActionLoading(false);
+    }
+  };
+
+  const handleRejectFriendRequest = async () => {
+    if (!friendshipId) return;
+    
+    setFriendActionLoading(true);
+    try {
+      const response = await fetch('http://localhost:8000/friendship/reject-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ friendshipId }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setFriendshipStatus(null);
+          setFriendshipId(null);
+        }
+      }
+    } catch (error) {
+      console.error('Error rejecting friend request:', error);
+    } finally {
+      setFriendActionLoading(false);
+    }
+  };
+
+  const getFriendActionButton = () => {
+    // Check if current user is viewing their own profile
+    if (currentUserId === user.id) return null;
+    
+    if (friendActionLoading) {
+      return (
+        <button disabled className="bg-indigo-800 text-white px-3 py-1.5 rounded-md opacity-70 text-sm">
+          <span className="animate-pulse">Loading...</span>
+        </button>
+      );
+    }
+
+    switch (friendshipStatus) {
+      case 'pending':
+        return (
+          <button className="bg-violet-700 text-white px-3 py-1.5 rounded-md text-sm flex items-center gap-1 shadow-md">
+            <span className="text-xs">⏳</span> Request Sent
+          </button>
+        );
+      case 'accepted':
+        return (
+          <button className="bg-emerald-600 text-white px-3 py-1.5 rounded-md text-sm flex items-center gap-1 shadow-md">
+            <span>✓</span> Friends
+          </button>
+        );
+      default:
+        return (
+          <button 
+            onClick={handleSendFriendRequest} 
+            className="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-md transition text-sm flex items-center gap-1 shadow-md"
+          >
+            <span>+</span> Add Friend
+          </button>
+        );
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-gradient-to-br from-indigo-950 to-blue-950 text-white border border-indigo-400/20 p-0 max-w-2xl">
@@ -168,7 +320,7 @@ export function UserProfileModal({ isOpen, onClose, user, currentUserId }: UserP
         {/* Header with profile info */}
         <div className="p-6 border-b border-indigo-500/20">
           <div className="flex justify-between items-start mt-4">
-            <div className="flex items-center gap-4 ">
+            <div className="flex items-center gap-4">
               <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-indigo-500/50">
                 <Image
                   src={user.image || "/assets/pfp.png"}
@@ -182,11 +334,7 @@ export function UserProfileModal({ isOpen, onClose, user, currentUserId }: UserP
                 <p className="text-indigo-400 text-sm">Time Traveler</p>
               </div>
             </div>
-            {currentUserId !== user.id && (
-              <button className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-md transition flex items-center gap-2 mt-4">
-                <span>+</span> Add Friend
-              </button>
-            )}
+            {getFriendActionButton()}
           </div>
         </div>
 
@@ -214,7 +362,7 @@ export function UserProfileModal({ isOpen, onClose, user, currentUserId }: UserP
               </div>
             ) : userBadges.length > 0 ? (
               <div className="space-y-4">
-                {userBadges.map(({ badgeName, earnedAt }) => {
+                {userBadges.map(({ badgeName }) => {
                   const badge = BADGES[badgeName as keyof typeof BADGES];
                   if (!badge) return null;
                   

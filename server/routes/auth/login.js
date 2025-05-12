@@ -35,14 +35,14 @@ const login = async (req, res) => {
 
     const token = jwt.sign(payLoad, JWT_SECRET, { expiresIn: '1h' });
 
-    // Check for afternoon login (5pm - 6pm)
+    // Check for midnight login (12am - 1am)
     const currentHour = new Date().getHours();
     let newBadgeAwarded = false;
     
     console.log(`Current hour is: ${currentHour}`); // Debug current hour
 
-    // Check between 5 PM and 6 PM (17:00 - 17:59)
-    if (currentHour === 17) {
+    // Check for midnight (00:00 - 00:59)
+    if (currentHour === 0) {
       try {
         // Check if user already has the ChronoExplorer badge
         const existingBadge = await prisma.userBadge.findFirst({
@@ -66,7 +66,7 @@ const login = async (req, res) => {
             }
           });
           newBadgeAwarded = true;
-          console.log('Afternoon explorer badge awarded successfully');
+          console.log('Midnight explorer badge awarded successfully');
         }
       } catch (badgeError) {
         console.error('Error handling badge:', badgeError);

@@ -12,6 +12,7 @@ const { addReaction, fetchReactions } = require('./routes/database/reactions');
 const { fetchUserBadges } = require('./routes/database/badges');
 const { searchUsers } = require('./routes/database/users');
 const { getUser } = require('./routes/database/profilefetch');
+const friendshipRoutes = require('./routes/database/friendship');
 
 const app = express();
 const port = 8000;
@@ -43,6 +44,9 @@ app.post('/fetchreactions', fetchReactions);
 app.post('/userbadges', fetchUserBadges);
 app.post('/searchUsers', searchUsers);
 app.get('/user/:userId', getUser);
+
+// Friendship routes
+app.use('/friendship', friendshipRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
