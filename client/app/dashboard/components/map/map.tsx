@@ -44,15 +44,32 @@ interface GroupedLogs {
   position: { x: number; y: number };
 }
 
-const MapModal = ({ logs, user, onClose }: { 
-  logs: TravelLogItem[] , 
+const MapModal = ({ logs, user, userLogs = [], onClose }: { 
+  logs: TravelLogItem[], 
   user: User,
+  userLogs?: TravelLogItem[],
   onClose: () => void 
 }) => {
   const [selectedLog, setSelectedLog] = useState<TravelLogItem | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [expandedYear, setExpandedYear] = useState<number | null>(null);
+  const [activeView, setActiveView] = useState<'world' | 'user'>('world');
   
+  // Determine which logs to display based on active view
+  const displayLogs = activeView === 'world' ? logs : userLogs;
+  
+  // Reset expanded year when switching tabs
+  useEffect(() => {
+    setExpandedYear(null);
+  }, [activeView]);
+  
+  // Log data for debugging
+  useEffect(() => {
+    console.log('Active View:', activeView);
+    console.log('Display Logs Count:', displayLogs.length);
+    console.log('User Logs Count:', userLogs.length);
+  }, [activeView, displayLogs, userLogs]);
+
   // Close with ESC key
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
@@ -73,15 +90,35 @@ const MapModal = ({ logs, user, onClose }: {
   }, [isDetailsOpen, onClose, expandedYear]);
 
 
-  // Generate positions for year markers that stay within the map boundaries
+  // Generate positions for year markers that stay within the map boundaries and distribute them better
   const getPositionForYear = (year: number) => {
-    const seed = year % 100000;
-    const x = 15 + (seed % 70);
-    const y = 15 + ((seed * 13) % 70);
-    return { x, y };
+    // Use year value to create a deterministic but seemingly random position
+    // This ensures the same year always gets the same position
+    const absYear = Math.abs(year);
+    const seed = (absYear * 13) % 10000;
+    
+    // For prehistoric eras (negative years), place in left side of map
+    if (year < 0) {
+      const x = 5 + (seed % 30); // 5-35% from left
+      const y = 15 + ((seed * 17) % 70); // 15-85% from top
+      return { x, y };
+    }
+    // For future eras (2100+), place in right side of map
+    else if (year > 2100) {
+      const x = 65 + (seed % 30); // 65-95% from left
+      const y = 15 + ((seed * 23) % 70); // 15-85% from top
+      return { x, y };
+    }
+    // For historical and contemporary eras, distribute in middle area
+    else {
+      const x = 35 + (seed % 30); // 35-65% from left
+      const y = 15 + ((seed * 19) % 70); // 15-85% from top
+      return { x, y };
+    }
   };
 
   const handleLogClick = (log: TravelLogItem) => {
+    console.log('Log clicked:', log);
     setSelectedLog(log);
     setIsDetailsOpen(true);
   };
@@ -91,7 +128,7 @@ const MapModal = ({ logs, user, onClose }: {
     const yearMap = new Map<number, TravelLogItem[]>();
     
     // Group logs by year
-    logs.forEach(log => {
+    displayLogs.forEach(log => {
       if (!yearMap.has(log.yearVisited)) {
         yearMap.set(log.yearVisited, []);
       }
@@ -104,7 +141,7 @@ const MapModal = ({ logs, user, onClose }: {
       logs: yearLogs,
       position: getPositionForYear(year)
     }));
-  }, [logs]);
+  }, [displayLogs]);
 
   const handleYearClick = (year: number) => {
     if (expandedYear === year) {
@@ -135,6 +172,43 @@ const MapModal = ({ logs, user, onClose }: {
           ✕
         </button>
         
+        {/* Tab controls */}
+        <div className="absolute top-2 left-2 z-30 flex flex-col">
+          <div className="flex gap-2">
+            <button 
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                activeView === 'world' 
+                  ? 'bg-amber-500/80 text-white' 
+                  : 'bg-black/50 text-amber-300 hover:bg-black/70'
+              }`}
+              onClick={() => {
+                setActiveView('world');
+                console.log('Switching to World view');
+              }}
+            >
+              Worldwide Journeys
+            </button>
+            <button 
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                activeView === 'user' 
+                  ? 'bg-blue-500/80 text-white' 
+                  : 'bg-black/50 text-blue-300 hover:bg-black/70'
+              }`}
+              onClick={() => {
+                setActiveView('user');
+                console.log('Switching to User view');
+              }}
+            >
+              My Journeys
+            </button>
+          </div>
+          <div className="text-xs text-gray-300/80 mt-1 px-2">
+            {activeView === 'world' 
+              ? 'Exploring time journeys from all travelers' 
+              : 'Viewing only your personal time travels'}
+          </div>
+        </div>
+        
         {/* Map container */}
         <div className="relative w-full h-[95vh] overflow-hidden">
           <div className="relative h-full w-full flex items-center justify-center overflow-hidden">
@@ -150,6 +224,22 @@ const MapModal = ({ logs, user, onClose }: {
               />
               
               <div className="absolute inset-0 bg-gradient-to-br from-blue-900/15 to-purple-900/15"></div>
+              
+              {/* Display message if no logs to show */}
+              {displayLogs.length === 0 && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="bg-black/70 text-white p-6 rounded-lg max-w-sm text-center">
+                    <h3 className="text-lg font-bold mb-2">
+                      {activeView === 'user' ? 'No Personal Journeys Yet' : 'No Journeys Discovered'}
+                    </h3>
+                    <p className="text-amber-300">
+                      {activeView === 'user' 
+                        ? 'Your time travel adventures will appear here once you start logging journeys.' 
+                        : 'Time travelers have not recorded any journeys yet.'}
+                    </p>
+                  </div>
+                </div>
+              )}
               
               {/* Render grouped logs by year */}
               {groupedLogs.map((groupedLog) => {
@@ -259,7 +349,10 @@ const MapModal = ({ logs, user, onClose }: {
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: index * 0.1 }}
                               className="bg-black/50 border border-blue-500/30 rounded-lg p-2 cursor-pointer hover:bg-blue-900/30"
-                              onClick={() => handleLogClick(log)}
+                              onClick={() => {
+                                console.log('Expanded view log clicked:', log);
+                                handleLogClick(log);
+                              }}
                             >
                               <div className="flex gap-2 items-center">
                                 <div className="rounded-full bg-blue-500/50 w-7 h-7 flex items-center justify-center text-xs text-white overflow-hidden">
@@ -267,7 +360,11 @@ const MapModal = ({ logs, user, onClose }: {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-white font-medium text-xs truncate">{log.title}</p>
-                                  <p className="text-gray-400 text-xs truncate">By {log.user.name}</p>
+                                  <p className="text-gray-400 text-xs truncate">
+                                    {log.user.id === user.id ? 
+                                      "You" : 
+                                      `By ${log.user.name}`}
+                                  </p>
                                 </div>
                               </div>
                             </motion.div>

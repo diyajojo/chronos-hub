@@ -2,7 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useComments } from '../comments/comments';
 import { useReactions } from '../reactions/reactions';
 import { useEffect, useState, useMemo } from 'react';
-import { UserProfileModal } from '../user-profile-modal';
+import { UserProfileModal } from '../userprofile';
 
 // Using the same interface definitions as in MapModal component
 interface Comment {
@@ -104,6 +104,10 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
   }, [log?.id, isOpen]);
 
   const handleProfileClick = (clickedUser: { id: number, name: string }) => {
+    // Don't open profile modal if it's the current user
+    if (clickedUser.id === user.id) {
+      return;
+    }
     setSelectedProfile(clickedUser);
     setProfileModalOpen(true);
   };
@@ -118,19 +122,23 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
             <DialogTitle className="text-xl font-serif text-indigo-200">
               Journey to {log.yearVisited}
             </DialogTitle>
-            <DialogDescription className="text-indigo-300 text-sm space-y-1">
+            <div className="text-indigo-300 text-sm space-y-1">
               <div>Logged on {new Date(log.createdAt).toLocaleDateString()}</div>
               <div className="flex gap-2">
                 <span>Created by Time Traveller : 
-                  <button 
-                    className="text-indigo-200 ml-1 hover:underline hover:text-indigo-100"
-                    onClick={() => handleProfileClick({ id: log.user.id, name: log.user.name })}
-                  >
-                    {log.user.name}
-                  </button>
+                  {log.user.id === user.id ? (
+                    <span className="text-indigo-200 ml-1">You</span>
+                  ) : (
+                    <button 
+                      className="text-indigo-200 ml-1 hover:underline hover:text-indigo-100"
+                      onClick={() => handleProfileClick({ id: log.user.id, name: log.user.name })}
+                    >
+                      {log.user.name}
+                    </button>
+                  )}
                 </span>
               </div>
-            </DialogDescription>
+            </div>
           </DialogHeader>
           
           {/* Image */}
@@ -213,15 +221,19 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
                     {/* Main Comment */}
                     <div className="bg-indigo-900/30 p-2 rounded-lg border border-indigo-500/10">
                       <div className="flex justify-between items-start">
-                        <button 
-                          onClick={() => handleProfileClick({ 
-                            id: comment.user?.id ? Number(comment.user.id) : 0, 
-                            name: comment.commenter 
-                          })}
-                          className="font-medium text-indigo-300 text-xs hover:underline hover:text-indigo-200"
-                        >
-                          {comment.commenter}
-                        </button>
+                        {comment.user?.id && comment.user.id === user.id ? (
+                          <span className="font-medium text-indigo-300 text-xs">You</span>
+                        ) : (
+                          <button 
+                            onClick={() => handleProfileClick({ 
+                              id: comment.user?.id ? Number(comment.user.id) : 0, 
+                              name: comment.commenter 
+                            })}
+                            className="font-medium text-indigo-300 text-xs hover:underline hover:text-indigo-200"
+                          >
+                            {comment.commenter}
+                          </button>
+                        )}
                         <span className="text-xs text-indigo-400">
                           {new Date(comment.time).toLocaleString('en-US', { 
                             month: 'short', 
@@ -248,7 +260,9 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
                       }} className="pl-3 mt-1">
                         <div className="bg-indigo-900/20 p-2 rounded-lg border border-indigo-500/10">
                           <div className="text-xs text-indigo-300 mb-1">
-                            Replying to <span className="font-medium">{comment.commenter}</span>
+                            Replying to <span className="font-medium">
+                              {comment.user?.id && comment.user.id === user.id ? "yourself" : comment.commenter}
+                            </span>
                           </div>
                           <div className="flex items-center">
                             <input
@@ -287,15 +301,19 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
                               className="bg-indigo-900/20 p-2 rounded-lg border border-indigo-500/10 ml-2"
                             >
                               <div className="flex justify-between items-start">
-                                <button 
-                                  onClick={() => handleProfileClick({ 
-                                    id: reply.user?.id ? Number(reply.user.id) : 0, 
-                                    name: reply.commenter 
-                                  })}
-                                  className="font-medium text-indigo-300 text-xs hover:underline hover:text-indigo-200"
-                                >
-                                  {reply.commenter}
-                                </button>
+                                {reply.user?.id && reply.user.id === user.id ? (
+                                  <span className="font-medium text-indigo-300 text-xs">You</span>
+                                ) : (
+                                  <button 
+                                    onClick={() => handleProfileClick({ 
+                                      id: reply.user?.id ? Number(reply.user.id) : 0, 
+                                      name: reply.commenter 
+                                    })}
+                                    className="font-medium text-indigo-300 text-xs hover:underline hover:text-indigo-200"
+                                  >
+                                    {reply.commenter}
+                                  </button>
+                                )}
                                 <span className="text-xs text-indigo-400">
                                   {new Date(reply.time).toLocaleString('en-US', { 
                                     month: 'short', 
@@ -362,15 +380,19 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
                 key={reaction.id} 
                 className="flex justify-between items-center p-2 bg-indigo-900/30 rounded-lg border border-indigo-500/10"
               >
-                <button 
-                  onClick={() => handleProfileClick({ 
-                    id: reaction.user?.id ? Number(reaction.user.id) : 0, 
-                    name: reaction.reactor 
-                  })}
-                  className="text-indigo-200 text-sm hover:underline hover:text-indigo-100"
-                >
-                  {reaction.reactor}
-                </button>
+                {reaction.user?.id && reaction.user.id === user.id ? (
+                  <span className="text-indigo-200 text-sm">You</span>
+                ) : (
+                  <button 
+                    onClick={() => handleProfileClick({ 
+                      id: reaction.user?.id ? Number(reaction.user.id) : 0, 
+                      name: reaction.reactor 
+                    })}
+                    className="text-indigo-200 text-sm hover:underline hover:text-indigo-100"
+                  >
+                    {reaction.reactor}
+                  </button>
+                )}
                 <span>{
                   reaction.type === 'enlightenment' ? '💡' : 
                   reaction.type === 'appreciation' ? '🤝' : '😯'
@@ -386,6 +408,7 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
         isOpen={profileModalOpen}
         onClose={() => setProfileModalOpen(false)}
         user={selectedProfile}
+        currentUserId={user.id}
       />
     </>
   );
