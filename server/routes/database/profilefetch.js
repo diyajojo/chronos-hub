@@ -20,7 +20,8 @@ const getUser = async (req, res) => {
         select: {
           id: true,
           name: true,
-          email: true
+          email: true,
+          createdAt: true
         }
       });
 
@@ -29,7 +30,13 @@ const getUser = async (req, res) => {
         return res.status(404).json({ error: 'User not found' });
       }
 
-      return res.json({ user });
+      // Convert createdAt to ISO string if it exists
+      const userData = {
+        ...user,
+        createdAt: user.createdAt ? user.createdAt.toISOString() : undefined
+      };
+
+      return res.json({ user: userData });
     } 
     catch (prismaError) 
     {

@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@types/lodash": "^4.17.16",
+    "lodash": "^4.17.21"
+  }
+}

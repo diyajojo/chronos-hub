@@ -9,6 +9,7 @@ interface User {
   id: number;
   name: string;
   email: string;
+  createdAt?: string;
 }
 
 interface UserBadge {
@@ -25,9 +26,16 @@ export default function Dashboard() {
   const [otherLogs, setOtherLogs] = useState([]);
   const [userLogs, setUserLogs] = useState([]);
   const [userBadges, setUserBadges] = useState<UserBadge[]>([]);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Mark component as hydrated (client-side)
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   useEffect(() => {
     const loadDashboardData = async () => {
+      console.log("Dashboard loading started");
       setLoading(true);
       try {
         // Verify authentication
@@ -41,7 +49,30 @@ export default function Dashboard() {
           return;
         }
         
-        setUser(authData.user);
+        console.log('User data from auth:', JSON.stringify(authData.user));
+        
+        // Get full user profile from API with createdAt field
+        try {
+          const profileResponse = await fetch(`http://localhost:8000/user/${authData.user.id}`, {
+            credentials: 'include',
+          });
+          
+          if (profileResponse.ok) {
+            const profileData = await profileResponse.json();
+            console.log('User profile data:', JSON.stringify(profileData.user));
+            
+            // Set user with complete profile data
+            setUser(profileData.user);
+          } else {
+            // Fallback to auth data if profile fetch fails
+            setUser(authData.user);
+            console.error('Failed to fetch user profile, using auth data');
+          }
+        } catch (profileError) {
+          console.error('Error fetching user profile:', profileError);
+          // Fallback to auth data
+          setUser(authData.user);
+        }
 
         // Redirect to own dashboard if userId doesn't match
         if (userId !== authData.user.id.toString()) {
@@ -192,7 +223,7 @@ export default function Dashboard() {
       
       <main className="container mx-auto px-6 py-8 relative z-10">
         {!hasLogs ? (
-          user && (
+          user && isHydrated && (
             <EmptyState 
               user={user}
               otherLogs={otherLogs}
@@ -201,7 +232,7 @@ export default function Dashboard() {
             />
           )
         ) : (
-          user && (
+          user && isHydrated && (
             <Content 
               user={user}
               otherLogs={otherLogs} 

@@ -29,7 +29,8 @@ const login = async (req, res) => {
     const payLoad = {
       id: existingUser.id,
       name: existingUser.name,
-      email: existingUser.email
+      email: existingUser.email,
+      createdAt: existingUser.createdAt.toISOString()
     }
 
     const token = jwt.sign(payLoad, JWT_SECRET, { expiresIn: '1h' });
@@ -80,7 +81,8 @@ const login = async (req, res) => {
       user: {
         id: existingUser.id,
         name: existingUser.name,
-        email: existingUser.email
+        email: existingUser.email,
+        createdAt: existingUser.createdAt.toISOString()
       },
       newBadge: newBadgeAwarded ? 'chronoexplorer' : null
     };

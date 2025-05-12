@@ -1,11 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
 import CreateLogModal from './createmodal';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import MapModal from './map/map';
 import { BADGES } from '../utils/badges';
 import Image from 'next/image';
-import { ShimmerButton } from '@/components/magicui/shimmer-button';
+import { ShimmerButton } from '../../../components/magicui/shimmer-button';
+import { TypingAnimation } from '../../../components/magicui/typing-animation';
 
 interface TravelLogItem {
   id: number;
@@ -27,6 +28,7 @@ interface User {
   id: number;
   name: string;
   email: string;
+  createdAt?: string;
 }
 
 interface UserBadge {
@@ -55,6 +57,20 @@ export default function Content({
     totalEngagement: 0
   });
   const [activeTab, setActiveTab] = useState('logs');
+  const [isClientReady, setIsClientReady] = useState(false);
+
+  // Time greetings
+  const getTimeGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  };
+
+  // Initialize client-side state
+  useEffect(() => {
+    setIsClientReady(true);
+  }, []);
 
   useEffect(() => {
     // Calculate total engagement (reactions and comments)
@@ -78,43 +94,66 @@ export default function Content({
 
   return (
     <div className="container mx-auto px-4 py-8 relative z-10">
-      {/* User Panel */}
-      <div className="bg-black/30 backdrop-blur-md rounded-xl p-6 border border-blue-500/30 mb-8">
-        <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-    {/* Avatar and Badge */}
-<div className="flex flex-col items-center">
-  <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-blue-500/30">
-    <Image
-      src="/assets/pfp.png"
-      alt={`${user.name}'s profile`}
-      fill
-      sizes="(max-width: 768px) 100vw, 96px"
-      className="object-cover"
-    />
-  </div>
-</div>
-          
-          {/* User Info and Stats */}
-          <div className="flex-1">
-            <h1 className="text-2xl md:text-3xl font-bold text-white text-center md:text-left">
-              {user.name}
-            </h1>
-            
-          
-            
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
-              <div className="bg-black/40 p-4 rounded-lg border border-blue-500/20">
-                <p className="text-sm text-blue-300">Total Journeys</p>
-                <p className="text-2xl font-bold text-white">{stats.totalTrips}</p>
+      {/* Main Content Area with 2-column layout */}
+      <div className="mt-20 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* Left Column - User Profile and Badges */}
+        <div className="lg:col-span-1">
+          <div className="bg-black/30 backdrop-blur-md rounded-xl p-6 border border-blue-500/30 h-full">
+            {/* Avatar and User Info */}
+            <div className="flex flex-col items-center">
+              <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-blue-500/50 mb-4 shadow-lg shadow-blue-500/20">
+                <Image
+                  src="/assets/pfp.png"
+                  alt={`${user.name}'s profile`}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 128px"
+                  className="object-cover"
+                />
+              </div>
+              <h1 className="text-2xl md:text-3xl font-bold text-white text-center mb-2">
+                {user.name}
+              </h1>
+              
+              {/* Member Since Info */}
+              <div className="text-center mb-4">
+                <p className="text-sm text-blue-300">ChronosHub Member Since</p>
+                <div className="mt-2 bg-black/40 rounded-lg border border-blue-500/20 px-4 py-3 shadow-inner shadow-blue-500/10">
+                  {user.createdAt ? (
+                    <div className="flex items-center justify-center space-x-2">
+                      <span className="text-blue-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                          <line x1="16" y1="2" x2="16" y2="6"></line>
+                          <line x1="8" y1="2" x2="8" y2="6"></line>
+                          <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                      </span>
+                      <span className="text-lg font-medium text-white">
+                        {new Date(user.createdAt).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </span>
+                    </div>
+                  ) : (
+                    <p className="text-white text-opacity-80">Date unavailable</p>
+                  )}
+                </div>
               </div>
               
+              {/* Stats Card */}
+              <div className="mt-5 w-full bg-black/40 p-4 rounded-lg border border-blue-500/20 mb-6">
+                <p className="text-sm text-blue-300">Total Journeys</p>
+                <p className="text-3xl font-bold text-white">{stats.totalTrips}</p>
+              </div>
             </div>
 
             {/* Badges Display */}
             <div className="mt-6">
               <h3 className="text-lg font-medium text-blue-300 mb-3">Your Badges</h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 {userBadges.map(({ badgeName }) => {
                   const badge = BADGES[badgeName as keyof typeof BADGES];
                   if (!badge) return null;
@@ -122,7 +161,7 @@ export default function Content({
                   return (
                     <div 
                       key={badgeName}
-                      className="bg-black/40 p-4 rounded-lg border border-blue-500/20 flex items-center gap-4"
+                      className="bg-black/40 p-4 rounded-lg border border-blue-500/20 flex items-center gap-4 hover:bg-black/60 transition-all"
                     >
                       <div className="relative w-12 h-12">
                         <Image
@@ -144,38 +183,58 @@ export default function Content({
             </div>
           </div>
         </div>
-      </div>
-      
-      {/* Tab Content */}
-      {activeTab === 'logs' && (
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Left Column - Create Log Button and Map Button */}
-          <div className="lg:col-span-1">
-            
-              <div className="space-y-4">
-                <ShimmerButton
-                  onClick={() => setShowCreateModal(true)}
-                  className="w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold transition-all"
-                  shimmerColor="rgba(255, 255, 255, 0.2)"
-                  borderRadius="8px"
-                >
-                  ✍️ Log New Journey
-                </ShimmerButton>
-                
-                <ShimmerButton
-                  onClick={() => setShowMap(true)}
-                  className="w-full py-4 px-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold transition-all"
-                  shimmerColor="rgba(255, 255, 255, 0.2)"
-                  borderRadius="8px"
-                >
-                  🌍 Explore Time Map
-                </ShimmerButton>
-              </div>
-            </div>
-         
+        
+        {/* Right Column - Welcome Section + Action Buttons */}
+        <div className="lg:col-span-2 flex flex-col h-full">
+          {/* Top Right - Welcome Message */}
+          <div className="mb-12">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center"
+            >
+              <h2 className="text-4xl md:text-5xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300">
+                {getTimeGreeting()}, {user.name.split(' ')[0]}
+              </h2>
+              <p className="text-xl text-blue-200 mb-6 italic">
+                <TypingAnimation duration={100} delay={0}>
+                  Welcome back to ChronosHub
+                </TypingAnimation>
+              </p>
+            </motion.div>
+          </div>
           
+          {/* Bottom Right - Action Buttons */}
+          <div className="mt-auto flex flex-col items-center gap-4 max-w-xs mx-auto w-full">
+            <ShimmerButton
+              onClick={() => setShowCreateModal(true)}
+              className="w-full py-4 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold transition-all"
+              shimmerColor="rgba(255, 255, 255, 0.2)"
+              borderRadius="8px"
+            >
+              ✍️ Log New Journey
+            </ShimmerButton>
+            
+            <ShimmerButton
+              onClick={() => setShowMap(true)}
+              className="w-full py-4 px-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold transition-all"
+              shimmerColor="rgba(255, 255, 255, 0.2)"
+              borderRadius="8px"
+            >
+              🌍 Explore Time Map
+            </ShimmerButton>
+            
+            <ShimmerButton
+              className="w-full py-4 px-4 bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-bold transition-all"
+              shimmerColor="rgba(255, 255, 255, 0.2)"
+              borderRadius="8px"
+            >
+              👥 Meet Travellers
+            </ShimmerButton>
+          </div>
         </div>
-      )}
+      </div>
       
       {/* Modals */}
       {showCreateModal && (

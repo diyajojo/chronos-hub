@@ -29,12 +29,15 @@ export async function GET() {
       return NextResponse.json({ authenticated: false, error: 'Invalid token' }, { status: 401 });
     }
 
+    console.log('JWT payload:', JSON.stringify(user));
+
     return NextResponse.json({ 
       authenticated: true,
       user: {
         id: (user as JwtPayload).id,
         name: (user as JwtPayload).name,
-        email: (user as JwtPayload).email
+        email: (user as JwtPayload).email,
+        createdAt: (user as JwtPayload).createdAt
       }
     });
   } catch (error) {

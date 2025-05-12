@@ -40,7 +40,8 @@ export async function POST(request: Request) {
       user: {
         id: data.user.id,
         name: data.user.name,
-        email: data.user.email
+        email: data.user.email,
+        createdAt: data.user.createdAt
       },
       newBadge: data.newBadge
     }, { status: 200 });
