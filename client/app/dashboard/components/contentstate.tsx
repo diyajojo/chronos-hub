@@ -90,16 +90,16 @@ export default function Content({
   }, [userLogs]);
 
   return (
-    <div className="container mx-auto px-4 py-8 relative z-10">
+    <div className="container mx-auto px-4 py-4 relative z-10  flex flex-col">
       {/* Main Content Area with 2-column layout */}
-      <div className="mt-20 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="mt-16 grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow overflow-auto pb-4">
         
         {/* Left Column - User Profile and Badges */}
         <div className="lg:col-span-1">
-          <div className="bg-black/30 backdrop-blur-md rounded-xl p-6 border border-blue-500/30 h-full">
+          <div className="bg-black/30 backdrop-blur-md rounded-xl p-4 border border-blue-500/30 h-full overflow-auto">
             {/* Avatar and User Info */}
             <div className="flex flex-col items-center">
-              <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-blue-500/50 mb-4 shadow-lg shadow-blue-500/20">
+              <div className="relative w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden border-4 border-blue-500/50 mb-3 shadow-lg shadow-blue-500/20">
                 <Image
                   src="/assets/pfp.png"
                   alt={`${user.name}'s profile`}
@@ -108,14 +108,14 @@ export default function Content({
                   className="object-cover"
                 />
               </div>
-              <h1 className="text-2xl md:text-3xl font-bold text-white text-center mb-2">
+              <h1 className="text-xl md:text-2xl font-bold text-white text-center mb-2">
                 {user.name}
               </h1>
               
               {/* Member Since Info */}
-              <div className="text-center mb-4">
+              <div className="text-center mb-3">
                 <p className="text-sm text-blue-300">ChronosHub Member Since</p>
-                <div className="mt-2 bg-black/40 rounded-lg border border-blue-500/20 px-4 py-3 shadow-inner shadow-blue-500/10">
+                <div className="mt-1 bg-black/40 rounded-lg border border-blue-500/20 px-3 py-2 shadow-inner shadow-blue-500/10">
                   {user.createdAt ? (
                     <div className="flex items-center justify-center space-x-2">
                       <span className="text-blue-400">
@@ -141,16 +141,16 @@ export default function Content({
               </div>
               
               {/* Stats Card */}
-              <div className="mt-5 w-full bg-black/40 p-4 rounded-lg border border-blue-500/20 mb-6">
+              <div className="mt-2 w-full bg-black/40 p-3 rounded-lg border border-blue-500/20 mb-3">
                 <p className="text-sm text-blue-300">Total Journeys</p>
-                <p className="text-3xl font-bold text-white">{stats.totalTrips}</p>
+                <p className="text-2xl font-bold text-white">{stats.totalTrips}</p>
               </div>
             </div>
 
             {/* Badges Display */}
-            <div className="mt-6">
-              <h3 className="text-lg font-medium text-blue-300 mb-3">Your Badges</h3>
-              <div className="grid grid-cols-1 gap-4">
+            <div id="badges-card" className="mt-3">
+              <h3 className="text-base font-medium text-blue-300 mb-2">Your Badges</h3>
+              <div className="grid grid-cols-1 gap-3">
                 {userBadges.map(({ badgeName }) => {
                   const badge = BADGES[badgeName as keyof typeof BADGES];
                   if (!badge) return null;
@@ -158,9 +158,9 @@ export default function Content({
                   return (
                     <div 
                       key={badgeName}
-                      className="bg-black/40 p-4 rounded-lg border border-blue-500/20 flex items-center gap-4 hover:bg-black/60 transition-all"
+                      className="bg-black/40 p-3 rounded-lg border border-blue-500/20 flex items-center gap-3 hover:bg-black/60 transition-all"
                     >
-                      <div className="relative w-12 h-12">
+                      <div className="relative w-10 h-10">
                         <Image
                           src={badge.imageUrl}
                           alt={badge.name}
@@ -170,8 +170,8 @@ export default function Content({
                         />
                       </div>
                       <div>
-                        <p className="text-white font-medium">{badge.name}</p>
-                        <p className="text-sm text-blue-300">{badge.description}</p>
+                        <p className="text-white text-sm font-medium">{badge.name}</p>
+                        <p className="text-xs text-blue-300">{badge.description}</p>
                       </div>
                     </div>
                   );
@@ -184,17 +184,17 @@ export default function Content({
         {/* Right Column - Welcome Section + Action Buttons */}
         <div className="lg:col-span-2 flex flex-col h-full">
           {/* Top Right - Welcome Message */}
-          <div className="mb-12">
+          <div className="mb-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               className="text-center"
             >
-              <h2 className="text-4xl md:text-5xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300">
+              <h2 className="text-3xl md:text-4xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300">
                 {getTimeGreeting()}, {user.name.split(' ')[0]}
               </h2>
-              <p className="text-xl text-blue-200 mb-6 italic">
+              <p className="text-lg text-blue-200 mb-4 italic">
                 <TypingAnimation duration={100} delay={0}>
                   Welcome back to ChronosHub
                 </TypingAnimation>
@@ -202,34 +202,36 @@ export default function Content({
             </motion.div>
           </div>
           
-          {/* Bottom Right - Action Buttons */}
-          <div className="mt-auto flex flex-col items-center gap-4 max-w-xs mx-auto w-full">
-            <ShimmerButton
-              onClick={() => setShowCreateModal(true)}
-              className="w-full py-4 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold transition-all"
-              shimmerColor="rgba(255, 255, 255, 0.2)"
-              borderRadius="8px"
-            >
-              ✍️ Log New Journey
-            </ShimmerButton>
-            
-            <ShimmerButton
-              onClick={() => setShowMap(true)}
-              className="w-full py-4 px-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold transition-all"
-              shimmerColor="rgba(255, 255, 255, 0.2)"
-              borderRadius="8px"
-            >
-              🌍 Explore Time Map
-            </ShimmerButton>
-            
-            <ShimmerButton
-              onClick={() => setShowSearchModal(true)}
-              className="w-full py-4 px-4 bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-bold transition-all"
-              shimmerColor="rgba(255, 255, 255, 0.2)"
-              borderRadius="8px"
-            >
-              👥 Meet Travellers
-            </ShimmerButton>
+          {/* Action Buttons - Centered in the layout */}
+          <div className="flex flex-col items-center justify-center flex-grow">
+            <div className="w-full max-w-sm">
+              <ShimmerButton
+                onClick={() => setShowCreateModal(true)}
+                className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold transition-all mb-3"
+                shimmerColor="rgba(255, 255, 255, 0.2)"
+                borderRadius="8px"
+              >
+                ✍️ Log New Journey
+              </ShimmerButton>
+              
+              <ShimmerButton
+                onClick={() => setShowMap(true)}
+                className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold transition-all mb-3"
+                shimmerColor="rgba(255, 255, 255, 0.2)"
+                borderRadius="8px"
+              >
+                🌍 Explore Time Map
+              </ShimmerButton>
+              
+              <ShimmerButton
+                onClick={() => setShowSearchModal(true)}
+                className="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-bold transition-all"
+                shimmerColor="rgba(255, 255, 255, 0.2)"
+                borderRadius="8px"
+              >
+                👥 Meet Travellers
+              </ShimmerButton>
+            </div>
           </div>
         </div>
       </div>

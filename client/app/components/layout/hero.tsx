@@ -1,10 +1,8 @@
 "use client";
-
-import { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ShimmerButton } from '@/components/magicui/shimmer-button';
+
 
 function HeroSection() {
   const [activeEra, setActiveEra] = useState<number | null>(null);
@@ -108,9 +106,6 @@ function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <ShimmerButton onClick={() => router.push('/explore')} className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-noto">
-              Explore Timelines
-            </ShimmerButton>
           </motion.div>
         </div>
 

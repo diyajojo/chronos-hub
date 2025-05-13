@@ -7,6 +7,7 @@ import StarBackground from '../../components/design/starbackground';
 import FriendRequests from '../components/friendrequest';
 import FriendsList from '../components/friendslist';
 import { toast } from "sonner";
+import UserGuide from '../components/userguide';
 
 interface User {
   id: number;
@@ -261,9 +262,12 @@ export default function Dashboard() {
       <StarBackground />
       
       <main className="container mx-auto px-6 py-8 relative z-10">
-        {/* Friend Requests and Friends List buttons - hide when intro is active */}
+        {/* Friend Requests, Friends List, and User Guide buttons - hide when intro is active */}
         {user && showSocialIcons && (
-          <div className="absolute top-4 right-4 z-20 gap-10 flex items-center space-x-2">
+          <div className="absolute top-4 right-4 z-20 flex items-center space-x-6">
+            <div id="instruction-guide">
+              <UserGuide />
+            </div>
             <FriendsList userId={user.id} />
             <FriendRequests userId={user.id} onRequestAction={handleFriendRequestAction} />
           </div>

@@ -64,7 +64,12 @@ const TOUR_STEPS = [
     content: 'View and manage your time-traveling friends. Visit their profiles and see their journeys!',
   },
   {
-    target: 'badges-section',
+    target: 'instruction-guide',
+    title: '📖 Time Traveler\'s Guide',
+    content: 'Access the guidebook anytime you need help navigating ChronosHub. Contains information about all features!',
+  },
+  {
+    target: 'badges-card',
     title: '🏆 Achievement Badges',
     content: 'Collect special badges as you create logs, make friends, and engage with the community!',
   }
@@ -183,7 +188,7 @@ export default function EmptyState({
     <div className="relative min-h-screen">
       <StarBackground />
       
-      <div className="container mx-auto px-4 py-8 relative z-10">
+      <div className="container mx-auto px-4 py-4 relative z-10 h-screen flex flex-col">
         {/* Intro Overlay */}
         <AnimatePresence>
           {showIntro && (
@@ -396,7 +401,7 @@ export default function EmptyState({
                 style={{
                   ...(() => {
                     const step = TOUR_STEPS[currentTourStep];
-                    if (step.target === 'badges-section') {
+                    if (step.target === 'badges-card') {
                       // Position tooltip on the left side under the total journeys area
                       return {
                         left: Math.max(20, targetElement.left - 40), // Keep it from going off-screen
@@ -407,6 +412,12 @@ export default function EmptyState({
                       return {
                         left: targetElement.left + targetElement.width / 2 - 160,
                         top: targetElement.top - 200 // Position above the button instead of below
+                      };
+                    } else if (step.target === 'instruction-guide') {
+                      // Position tooltip for the user guide button
+                      return {
+                        left: targetElement.left,
+                        top: targetElement.bottom + 15 // Position below the instruction guide button
                       };
                     }
                     // Default positioning for other elements (below the element)
@@ -420,10 +431,12 @@ export default function EmptyState({
                 {/* Pointing arrow with dynamic positioning */}
                 <div 
                   className={`absolute w-4 h-4 bg-blue-950/90 border-l border-t border-blue-500/30 transform ${
-                    TOUR_STEPS[currentTourStep].target === 'badges-section'
+                    TOUR_STEPS[currentTourStep].target === 'badges-card'
                       ? 'left-10 -top-2 rotate-45' // Arrow points up for badges
                       : TOUR_STEPS[currentTourStep].target === 'meet-travelers'
                         ? 'left-1/2 -translate-x-1/2 -bottom-2 rotate-[225deg]' // Arrow points down for meet travelers
+                      : TOUR_STEPS[currentTourStep].target === 'instruction-guide'
+                        ? 'left-8 -top-2 rotate-45' // Arrow points up for instruction guide
                         : '-top-2 left-1/2 -translate-x-1/2 rotate-45' // Arrow points up for other elements
                   }`}
                 />
@@ -463,15 +476,15 @@ export default function EmptyState({
           )}
         </AnimatePresence>
 
-        {/* Main Content Area with 2-column layout */}
-        <div className="mt-20 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Main Content Area with 2-column layout - adjusted for viewport height */}
+        <div className="mt-16 grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow overflow-auto pb-4">
           
           {/* Left Column - User Profile and Badges */}
           <div className="lg:col-span-1">
-            <div className="bg-black/30 backdrop-blur-md rounded-xl p-6 border border-blue-500/30 h-full">
+            <div className="bg-black/30 backdrop-blur-md rounded-xl p-4 border border-blue-500/30 h-full overflow-auto">
               {/* Avatar and User Info */}
               <div className="flex flex-col items-center">
-                <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-blue-500/50 mb-4 shadow-lg shadow-blue-500/20">
+                <div className="relative w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden border-4 border-blue-500/50 mb-3 shadow-lg shadow-blue-500/20">
                   <Image
                     src="/assets/pfp.png"
                     alt={`${user.name}'s profile`}
@@ -480,14 +493,14 @@ export default function EmptyState({
                     className="object-cover"
                   />
                 </div>
-                <h1 className="text-2xl md:text-3xl font-bold text-white text-center mb-2">
+                <h1 className="text-xl md:text-2xl font-bold text-white text-center mb-2">
                   {user.name}
                 </h1>
                 
                 {/* Member Since Info */}
-                <div className="text-center mb-4">
+                <div className="text-center mb-3">
                   <p className="text-sm text-blue-300">ChronosHub Member Since</p>
-                  <div className="mt-2 bg-black/40 rounded-lg border border-blue-500/20 px-4 py-3 shadow-inner shadow-blue-500/10">
+                  <div className="mt-1 bg-black/40 rounded-lg border border-blue-500/20 px-3 py-2 shadow-inner shadow-blue-500/10">
                     {user.createdAt ? (
                       <div className="flex items-center justify-center space-x-2">
                         <span className="text-blue-400">
@@ -513,48 +526,47 @@ export default function EmptyState({
                 </div>
                 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 gap-4 w-full mb-6">
-                  <div className="bg-black/40 p-4 rounded-lg border border-blue-500/20">
+                <div className="grid grid-cols-1 gap-3 w-full mb-4">
+                  <div className="bg-black/40 p-3 rounded-lg border border-blue-500/20">
                     <p className="text-sm text-blue-300">Total Journeys</p>
-                    <p className="text-3xl font-bold text-white">0</p>
+                    <p className="text-2xl font-bold text-white">0</p>
                   </div>
-                  <div id="badges-section" className="bg-black/40 p-4 rounded-lg border border-blue-500/20">
+                  <div id="badges-card" className="bg-black/40 p-3 rounded-lg border border-blue-500/20">
                     <p className="text-sm text-blue-300">Badges Earned</p>
                     <div className="flex items-center ">
-                      <p className="text-3xl font-bold text-white">{userBadges.length}</p>
+                      <p className="text-2xl font-bold text-white">{userBadges.length}</p>
                     </div>
                   </div>
                 </div>
               
                 {/* Motivation Message */}
-                <div className="mt-8 bg-black/40 p-5 rounded-xl border border-blue-500/30 shadow-inner shadow-blue-500/10">
-                  <div className="flex items-center mb-3">
-                    <span className="text-2xl mr-2">🚀</span>
-                    <h3 className="text-lg font-medium text-blue-300">Begin Your Journey</h3>
+                <div className="mt-3 bg-black/40 p-4 rounded-xl border border-blue-500/30 shadow-inner shadow-blue-500/10">
+                  <div className="flex items-center mb-2">
+                    <span className="text-xl mr-2">🚀</span>
+                    <h3 className="text-base font-medium text-blue-300">Begin Your Journey</h3>
                   </div>
                   <p className="text-blue-100 text-sm">
                     Ready to chronicle your time-traveling adventures? Create your first log and start building your personal timeline of memories!
                   </p>
-                 
                 </div>
               </div>
             </div>
           </div>
           
-          {/* Right Column - Welcome Section + Portal Visual + Action Buttons */}
+          {/* Right Column - Welcome Section + Action Buttons */}
           <div className="lg:col-span-2 flex flex-col h-full">
             {/* Top Right - Welcome Message */}
-            <div className="mb-6">
+            <div className="mb-4">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
                 className="text-center"
               >
-                <h2 className="text-4xl md:text-5xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300">
+                <h2 className="text-3xl md:text-4xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300">
                   {getTimeGreeting()}, {user.name.split(' ')[0]}
                 </h2>
-                <p className="text-xl text-blue-200 mb-6 italic">
+                <p className="text-lg text-blue-200 mb-4 italic">
                   <TypingAnimation duration={100} delay={0}>
                     Welcome to ChronosHub
                   </TypingAnimation>
@@ -562,45 +574,45 @@ export default function EmptyState({
               </motion.div>
             </div>
             
-           
-            
-            {/* Bottom Right - Action Buttons */}
-            <div className="mt-auto flex flex-col items-center gap-4 max-w-xs mx-auto w-full">
-              <ShimmerButton
-                id="create-journey"
-                onClick={() => {
-                  setActiveSection('create');
-                  setShowCreateModal(true);
-                }}
-                className="w-full py-4 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold transition-all"
-                shimmerColor="rgba(255, 255, 255, 0.2)"
-                borderRadius="8px"
-              >
-                 ✍️ Log Your First Journey
-              </ShimmerButton>
-              
-              <ShimmerButton
-                id="explore-map"
-                onClick={() => {
-                  setActiveSection('explore');
-                  toggleMap();
-                }}
-                className="w-full py-4 px-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold transition-all"
-                shimmerColor="rgba(255, 255, 255, 0.2)"
-                borderRadius="8px"
-              >
-                🌍 Explore Time Map
-              </ShimmerButton>
-              
-              <ShimmerButton
-                id="meet-travelers"
-                onClick={() => setShowSearchModal(true)}
-                className="w-full py-4 px-4 bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-bold transition-all"
-                shimmerColor="rgba(255, 255, 255, 0.2)"
-                borderRadius="8px"
-              >
-                👥 Meet Travellers
-              </ShimmerButton>
+            {/* Action Buttons - Centered in the layout */}
+            <div className="flex flex-col items-center justify-center flex-grow">
+              <div className="w-full max-w-sm">
+                <ShimmerButton
+                  id="create-journey"
+                  onClick={() => {
+                    setActiveSection('create');
+                    setShowCreateModal(true);
+                  }}
+                  className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold transition-all mb-3"
+                  shimmerColor="rgba(255, 255, 255, 0.2)"
+                  borderRadius="8px"
+                >
+                   ✍️ Log Your First Journey
+                </ShimmerButton>
+                
+                <ShimmerButton
+                  id="explore-map"
+                  onClick={() => {
+                    setActiveSection('explore');
+                    toggleMap();
+                  }}
+                  className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold transition-all mb-3"
+                  shimmerColor="rgba(255, 255, 255, 0.2)"
+                  borderRadius="8px"
+                >
+                  🌍 Explore Time Map
+                </ShimmerButton>
+                
+                <ShimmerButton
+                  id="meet-travelers"
+                  onClick={() => setShowSearchModal(true)}
+                  className="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-bold transition-all"
+                  shimmerColor="rgba(255, 255, 255, 0.2)"
+                  borderRadius="8px"
+                >
+                  👥 Meet Travellers
+                </ShimmerButton>
+              </div>
             </div>
           </div>
         </div>
@@ -631,7 +643,6 @@ export default function EmptyState({
           onLogCreated={async () => {
             setIsFirstLog(false);
             await onLogCreated();
-            // Don't show tour anymore after successfully creating first log
             setShowIntro(false);
             setShowTour(false);
           }}
@@ -673,19 +684,4 @@ export default function EmptyState({
       </AnimatePresence>
     </div>
   );
-}
-
-// Add twinkle animation for stars in the intro screen
-const globalStyles = `
-@keyframes twinkle {
-  0%, 100% { opacity: 0.2; }
-  50% { opacity: 1; }
-}
-`;
-
-// Add global styles
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
-  style.innerHTML = globalStyles;
-  document.head.appendChild(style);
 }

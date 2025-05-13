@@ -228,3 +228,9 @@
   scrollbar-width: thin;
   scrollbar-color: rgba(59, 130, 246, 0.5) rgba(0, 0, 0, 0.1);
 }
+
+/* Animation for twinkling stars */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}

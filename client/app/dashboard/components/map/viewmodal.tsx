@@ -123,7 +123,6 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
               Journey to {log.yearVisited}
             </DialogTitle>
             <div className="text-indigo-300 text-sm space-y-1">
-              <div>Logged on {new Date(log.createdAt).toLocaleDateString()}</div>
               <div className="flex gap-2">
                 <span>Created by Time Traveller : 
                   {log.user.id === user.id ? (
@@ -156,8 +155,8 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
           
           {/* Content */}
           <div className="mt-2 px-4">
-            <div className="text-xl font-bold text-white mb-1">Year {log.yearVisited}</div>
-            <div className="text-md text-blue-300 mb-2">{log.title}</div> 
+            
+            <div className="text-md text-blue-300 mb-2">Title: {log.title}</div> 
             <div className="text-white text-sm whitespace-pre-wrap max-h-40 overflow-y-auto">{log.story}</div>
           </div>
           
