@@ -290,7 +290,7 @@ export function UserProfileModal({ isOpen, onClose, user, currentUserId }: UserP
       case 'pending':
         return (
           <button className="bg-violet-700 text-white px-3 py-1.5 rounded-md text-sm flex items-center gap-1 shadow-md">
-            <span className="text-xs">⏳</span> Request Sent
+             Request Sent
           </button>
         );
       case 'accepted':
@@ -305,7 +305,7 @@ export function UserProfileModal({ isOpen, onClose, user, currentUserId }: UserP
             onClick={handleSendFriendRequest} 
             className="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-md transition text-sm flex items-center gap-1 shadow-md"
           >
-            <span>+</span> Add Friend
+           Add Friend
           </button>
         );
     }

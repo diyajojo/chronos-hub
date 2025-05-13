@@ -66,7 +66,7 @@ export default function FriendsList({ userId }: FriendsListProps) {
     <>
       <Popover>
         <PopoverTrigger asChild>
-          <button className="relative p-2 text-indigo-200 hover:text-white transition">
+          <button id="friends-list" className="relative p-2 text-indigo-200 hover:text-white transition">
             <Users size={30} />
             {friends.length > 0 && (
               <span className="absolute top-0 right-0 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
@@ -75,7 +75,7 @@ export default function FriendsList({ userId }: FriendsListProps) {
             )}
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-80 p-0 bg-blue-950/90 backdrop-blur-xl border border-blue-500/30 text-white shadow-xl shadow-blue-500/10">
+        <PopoverContent className="w-80 p-0 bg-black/70 backdrop-blur-xl border border-blue-500/30 text-white shadow-xl shadow-blue-500/10">
           <div className="p-3 border-b border-blue-500/30">
             <h3 className="font-medium text-blue-200">Friends</h3>
           </div>
@@ -89,7 +89,7 @@ export default function FriendsList({ userId }: FriendsListProps) {
               {friends.map((friend) => (
                 <div 
                   key={friend.id}            
-                  className="p-3 border-b border-blue-500/10 last:border-0 hover:bg-blue-900/30 transition cursor-pointer"
+                  className="p-3 border-b border-blue-500/30 last:border-0 hover:bg-blue-950/40 transition cursor-pointer"
                   onClick={() => handleOpenProfile(friend)}
                 >
                   <div className="flex items-center gap-3">

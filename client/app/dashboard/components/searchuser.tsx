@@ -131,17 +131,17 @@ export function SearchUsers({
           placeholder="Search users..."
           value={searchTerm}
           onChange={handleInputChange}
-          className="pl-10 w-full bg-blue-100/80 dark:bg-blue-900/40 border-blue-300 dark:border-blue-700 text-blue-800 dark:text-blue-100 placeholder:text-blue-500/70 dark:placeholder:text-blue-400/70"
+          className="pl-10 w-full bg-black/50 border border-blue-500/30 text-white placeholder:text-blue-400/70"
         />
-        <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-600 dark:text-blue-400" />
+        <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-400" />
       </div>
 
-      <div className="mt-2 rounded-md border border-blue-300 dark:border-blue-700 overflow-hidden bg-blue-50/90 dark:bg-blue-900/30">
+      <div className="mt-2 rounded-md border border-blue-500/30 overflow-hidden bg-black/30">
         {/* Prompt state - when user hasn't searched yet */}
         {!searchTerm && !hasSearched && (
           <div className="flex flex-col items-center justify-center p-6 text-center">
             <UserIcon className="h-12 w-12 text-blue-500 mb-2" />
-            <p className="text-blue-700 dark:text-blue-300">Type to search for time travelers</p>
+            <p className="text-blue-300">Type to search for time travelers</p>
           </div>
         )}
 
@@ -149,7 +149,7 @@ export function SearchUsers({
         {searchTerm && hasSearched && !isLoading && users.length === 0 && (
           <div className="flex flex-col items-center justify-center p-6 text-center">
             <UserIcon className="h-12 w-12 text-blue-500 mb-2" />
-            <p className="text-blue-700 dark:text-blue-300">OOPS no time travellers found</p>
+            <p className="text-blue-300">OOPS no time travellers found</p>
           </div>
         )}
 
@@ -170,12 +170,12 @@ export function SearchUsers({
                 key={user.id}
                 onClick={() => handleUserClick(user)}
                 className={`
-                  flex items-center gap-3 p-3 hover:bg-blue-100/80 dark:hover:bg-blue-800/40 cursor-pointer
+                  flex items-center gap-3 p-3 hover:bg-blue-950/40 cursor-pointer
                   ${user.id === currentUserId ? 'opacity-50 cursor-not-allowed' : ''}
-                  border-b border-blue-200 dark:border-blue-700 last:border-0
+                  border-b border-blue-500/30 last:border-0
                 `}
               >
-                <div className="relative w-10 h-10 rounded-full overflow-hidden border border-blue-300 dark:border-blue-700">
+                <div className="relative w-10 h-10 rounded-full overflow-hidden border border-blue-500/30">
                   <Image
                     src="/assets/pfp.png"
                     alt={user.name}
@@ -185,7 +185,7 @@ export function SearchUsers({
                   />
                 </div>
                 <div>
-                  <p className="font-medium text-blue-800 dark:text-blue-100">
+                  <p className="font-medium text-blue-100">
                     {user.name}
                     {user.id === currentUserId && " (You)"}
                   </p>

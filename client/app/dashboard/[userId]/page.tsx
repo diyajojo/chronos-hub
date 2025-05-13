@@ -31,10 +31,33 @@ export default function Dashboard() {
   const [userBadges, setUserBadges] = useState<UserBadge[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
   const [friendsUpdated, setFriendsUpdated] = useState(0);
+  const [showSocialIcons, setShowSocialIcons] = useState(true);
 
   // Mark component as hydrated (client-side)
   useEffect(() => {
     setIsHydrated(true);
+  }, []);
+
+  // Listen for intro state changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Check initial state
+      if ((window as any).isChronosIntroActive === true) {
+        setShowSocialIcons(false);
+      }
+      
+      // Listen for changes
+      const handleIntroStateChanged = (event: Event) => {
+        const customEvent = event as CustomEvent;
+        setShowSocialIcons(!customEvent.detail.isActive);
+      };
+      
+      window.addEventListener('chronosIntroStateChanged', handleIntroStateChanged);
+      
+      return () => {
+        window.removeEventListener('chronosIntroStateChanged', handleIntroStateChanged);
+      };
+    }
   }, []);
 
   useEffect(() => {
@@ -238,8 +261,8 @@ export default function Dashboard() {
       <StarBackground />
       
       <main className="container mx-auto px-6 py-8 relative z-10">
-        {/* Friend Requests and Friends List buttons */}
-        {user && (
+        {/* Friend Requests and Friends List buttons - hide when intro is active */}
+        {user && showSocialIcons && (
           <div className="absolute top-4 right-4 z-20 gap-10 flex items-center space-x-2">
             <FriendsList userId={user.id} />
             <FriendRequests userId={user.id} onRequestAction={handleFriendRequestAction} />
