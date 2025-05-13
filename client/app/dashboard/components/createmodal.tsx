@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import BadgeNotification from './badgenotification';
 import { BadgeName } from '../utils/badges';
+import { SpinningTextLoader } from '../../components/design/loader';
 
 interface CreateLogModalProps {
   onClose: () => void;
@@ -479,7 +480,7 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
                               : 'bg-black/50 border border-blue-500/30 text-blue-300 hover:bg-black/70'
                           }`}
                         >
-                          {generatingImage ? 'Conjuring Image...' : 'Generate Image from Story'}
+                          {generatingImage ? <SpinningTextLoader /> : 'Generate Image from Story'}
                         </Button>
                       ) : (
                         <div className="space-y-4">
@@ -544,7 +545,7 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
                       : 'bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600'
                   }
                 >
-                  {uploading ? 'Creating Timeline...' : 'Submit Journey'}
+                  {uploading ? <SpinningTextLoader /> : 'Submit Journey'}
                 </Button>
               )}
             </CardFooter>

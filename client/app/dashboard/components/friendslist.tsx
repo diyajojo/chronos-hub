@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/popover';
 import Image from 'next/image';
 import { UserProfileModal } from './userprofile';
+import { SpinningTextLoader } from '../../components/design/loader';
 
 interface Friend {
   id: number;
@@ -82,7 +83,7 @@ export default function FriendsList({ userId }: FriendsListProps) {
           
           {loading ? (
             <div className="flex justify-center p-4">
-              <div className="animate-spin h-5 w-5 border-t-2 border-blue-500 rounded-full"></div>
+              <SpinningTextLoader />
             </div>
           ) : friends.length > 0 ? (
             <div className="max-h-80 overflow-y-auto">

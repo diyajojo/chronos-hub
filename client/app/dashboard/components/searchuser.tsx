@@ -1,11 +1,11 @@
 'use client';
-
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { UserProfileModal } from '@/app/dashboard/components/userprofile';
 import { SearchIcon, UserIcon } from 'lucide-react';
 import { debounce } from 'lodash';
 import Image from 'next/image';
+import { SpinningTextLoader } from '../../components/design/loader';
 
 // Define the User interface directly in the component
 interface User {
@@ -112,16 +112,6 @@ export function SearchUsers({
     setSearchTerm(e.target.value);
   };
 
-  // Shimmer loading component
-  const ShimmerUserItem = () => (
-    <div className="flex items-center gap-3 p-2 rounded-md animate-pulse">
-      <div className="w-10 h-10 bg-blue-100 dark:bg-blue-800 rounded-full"></div>
-      <div className="flex-1">
-        <div className="h-4 bg-blue-100 dark:bg-blue-800 rounded w-24 mb-1"></div>
-      </div>
-    </div>
-  );
-
   return (
     <div className={`w-full ${className}`}>
       <div className="relative">
@@ -153,12 +143,10 @@ export function SearchUsers({
           </div>
         )}
 
-        {/* Loading state with shimmer effect */}
+        {/* Loading state with SpinningTextLoader */}
         {isLoading && (
-          <div className="space-y-2 p-2">
-            {Array(3).fill(0).map((_, i) => (
-              <ShimmerUserItem key={i} />
-            ))}
+          <div className="p-4">
+            <SpinningTextLoader />
           </div>
         )}
 

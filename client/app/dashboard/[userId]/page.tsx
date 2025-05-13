@@ -8,6 +8,7 @@ import FriendRequests from '../components/friendrequest';
 import FriendsList from '../components/friendslist';
 import { toast } from "sonner";
 import UserGuide from '../components/userguide';
+import { SpinningTextLoader } from '../../components/design/loader';
 
 interface User {
   id: number;
@@ -248,10 +249,7 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-blue-950 via-blue-900 to-indigo-950">
         <div className="flex items-center justify-center min-h-screen">
-          <div className="text-white text-center">
-            <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-400 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
-            <p className="mt-4 text-blue-300">Traveling through time...</p>
-          </div>
+          <SpinningTextLoader />
         </div>
       </div>
     );

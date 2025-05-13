@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { BADGES } from '../utils/badges';
+import { SpinningTextLoader } from '../../components/design/loader';
 
 interface UserBadge {
   badgeName: string;
@@ -281,7 +282,7 @@ export function UserProfileModal({ isOpen, onClose, user, currentUserId }: UserP
     if (friendActionLoading) {
       return (
         <button disabled className="bg-indigo-800 text-white px-3 py-1.5 rounded-md opacity-70 text-sm">
-          <span className="animate-pulse">Loading...</span>
+          <SpinningTextLoader />
         </button>
       );
     }
@@ -358,7 +359,7 @@ export function UserProfileModal({ isOpen, onClose, user, currentUserId }: UserP
           <TabsContent value="badges" className="p-6 focus:outline-none">
             {loading.badges ? (
               <div className="flex justify-center p-8">
-                <div className="animate-spin h-8 w-8 border-t-2 border-indigo-500 rounded-full"></div>
+                <SpinningTextLoader />
               </div>
             ) : userBadges.length > 0 ? (
               <div className="space-y-4">
@@ -401,7 +402,7 @@ export function UserProfileModal({ isOpen, onClose, user, currentUserId }: UserP
           <TabsContent value="journeys" className="p-6 focus:outline-none">
             {loading.logs ? (
               <div className="flex justify-center p-8">
-                <div className="animate-spin h-8 w-8 border-t-2 border-indigo-500 rounded-full"></div>
+                <SpinningTextLoader />
               </div>
             ) : userLogs.length > 0 ? (
               <div className="space-y-6">
@@ -459,7 +460,7 @@ export function UserProfileModal({ isOpen, onClose, user, currentUserId }: UserP
           <TabsContent value="stats" className="p-6 focus:outline-none">
             {loading.stats ? (
               <div className="flex justify-center p-8">
-                <div className="animate-spin h-8 w-8 border-t-2 border-indigo-500 rounded-full"></div>
+                <SpinningTextLoader />
               </div>
             ) : (
               <div className="space-y-4">
