@@ -30,7 +30,7 @@ const getUser = async (req, res) => {
         return res.status(404).json({ error: 'User not found' });
       }
 
-      // Convert createdAt to ISO string if it exists
+      // Convert createdAt to ISO string if it exists becuase JSON.stringify() of timestamp  doesn't work with Date objects
       const userData = {
         ...user,
         createdAt: user.createdAt ? user.createdAt.toISOString() : undefined

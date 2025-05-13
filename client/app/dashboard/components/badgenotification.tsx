@@ -18,9 +18,17 @@ interface BadgeNotificationProps {
   onLogCreated?: () => Promise<void>;
   isFirstLog?: boolean;
   chronodopplerInfo?: ChronodopplerInfo;
+  earnedBadges?: string[];
 }
 
-export default function BadgeNotification({ badgeName, onClose, onLogCreated, isFirstLog = false, chronodopplerInfo }: BadgeNotificationProps) {
+export default function BadgeNotification({ 
+  badgeName, 
+  onClose, 
+  onLogCreated, 
+  isFirstLog = false, 
+  chronodopplerInfo,
+  earnedBadges = []
+}: BadgeNotificationProps) {
   // Safety check to ensure badge exists in the BADGES object
   if (!BADGES[badgeName]) {
     console.error(`Badge "${badgeName}" not found in BADGES object`);
@@ -32,13 +40,14 @@ export default function BadgeNotification({ badgeName, onClose, onLogCreated, is
   const isChronoProdigy = badgeName === 'chronoprodigy';
   const isChronoDoppler = badgeName === 'chronodoppler';
   console.log(`Showing badge notification for: ${badgeName}`, badge);
+  console.log(`Earned badges: ${earnedBadges.join(', ')}`);
 
   // Determine the congratulation message based on the badge type
   const getCongratulationMessage = () => {
-    if (isFirstLog && !isChronoProdigy) 
-      {
+    if (badgeName === 'chronosprout' || isFirstLog) {
       return "Congratulations on your first journey through time!";
-    } else if (badgeName === 'chronoexplorer') {
+    } 
+    else if (badgeName === 'chronoexplorer') {
       return "You've discovered the secret of midnight time travel!";
     } 
     else if (badgeName === 'chronodoppler') {
@@ -50,7 +59,11 @@ export default function BadgeNotification({ badgeName, onClose, onLogCreated, is
       return "A hundred words, a hundred moments — you blinked, and time stood still.";
     }
     else if (badgeName === 'chronoprodigy') {
-      return "Your very first time travel tale hit exactly 100 words — a mastery of precision and creativity!";
+      const badgeNames = earnedBadges
+        .filter(b => b !== 'chronoprodigy')
+        .map(b => BADGES[b as BadgeName]?.name || b)
+        .join(', ');
+      return `An extraordinary achievement! You've unlocked: ${badgeNames}`;
     }
     else {
       return "Congratulations! You've earned a new badge!";
@@ -73,6 +86,30 @@ export default function BadgeNotification({ badgeName, onClose, onLogCreated, is
     }
   };
 
+  // Helper function to render badge icons
+  const renderBadgeIcon = (badgeName: string, size: 'small' | 'large' = 'small') => {
+    if (!BADGES[badgeName as BadgeName]) return null;
+    
+    const sizePx = size === 'small' ? 8 : 32;
+    
+    return (
+      <div className="flex flex-col items-center">
+        <div className={`relative w-${sizePx} h-${sizePx} mb-1`}>
+          <Image
+            src={BADGES[badgeName as BadgeName].imageUrl}
+            alt={BADGES[badgeName as BadgeName].name}
+            fill
+            sizes={`${sizePx}px`}
+            className="object-contain"
+          />
+        </div>
+        {size === 'small' && (
+          <span className="text-[10px] text-yellow-100">{BADGES[badgeName as BadgeName].name}</span>
+        )}
+      </div>
+    );
+  };
+
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -86,7 +123,7 @@ export default function BadgeNotification({ badgeName, onClose, onLogCreated, is
         
         <ScratchToReveal
           width={500}
-          height={350}
+          height={400}
           minScratchPercentage={isChronoProdigy ? 40 : 70}
           className={`relative bg-gradient-to-br ${
             isChronoProdigy 
@@ -164,34 +201,63 @@ export default function BadgeNotification({ badgeName, onClose, onLogCreated, is
                 <>
                   <p className="text-xs text-yellow-300/80 mt-1">An extraordinarily rare achievement!</p>
                
-                    <p className="text-xs text-yellow-100 mb-1">You've also unlocked these badges:</p>
-                    <div className="flex justify-center space-x-3">
-                      <div className="flex flex-col items-center">
-                        <div className="relative w-8 h-8 mb-1">
-                          <Image
-                            src={BADGES['chronosprout'].imageUrl}
-                            alt={BADGES['chronosprout'].name}
-                            fill
-                            sizes="32px"
-                            className="object-contain"
-                          />
-                        </div>
-                        
+                  {earnedBadges.length > 0 ? (
+                    <>
+                      <p className="text-xs text-yellow-100 mb-1">You've also unlocked these badges:</p>
+                      <div className="flex justify-center gap-3 flex-wrap">
+                        {earnedBadges
+                          .filter(b => b !== 'chronoprodigy') // Filter out the prodigy badge since we're already showing it
+                          .map((badgeName, index) => (
+                            <div key={index} className="flex flex-col items-center">
+                              <div className="relative w-8 h-8 mb-1">
+                                <Image
+                                  src={BADGES[badgeName as BadgeName]?.imageUrl || ''}
+                                  alt={BADGES[badgeName as BadgeName]?.name || badgeName}
+                                  fill
+                                  sizes="32px"
+                                  className="object-contain"
+                                />
+                              </div>
+                              <span className="text-[10px] text-yellow-100 font-medium">
+                                {BADGES[badgeName as BadgeName]?.name || badgeName}
+                              </span>
+                              
+                            </div>
+                          ))}
                       </div>
-                      <div className="flex flex-col items-center">
-                        <div className="relative w-8 h-8 mb-1">
-                          <Image
-                            src={BADGES['chronoblink'].imageUrl}
-                            alt={BADGES['chronoblink'].name}
-                            fill
-                            sizes="32px"
-                            className="object-contain"
-                          />
+                    </>
+                  ) : (
+                    // Fallback to the default badges (backward compatibility)
+                    <>
+                      <p className="text-xs text-yellow-100 mb-1">You've also unlocked these badges:</p>
+                      <div className="flex justify-center space-x-3">
+                        <div className="flex flex-col items-center">
+                          <div className="relative w-8 h-8 mb-1">
+                            <Image
+                              src={BADGES['chronosprout'].imageUrl}
+                              alt={BADGES['chronosprout'].name}
+                              fill
+                              sizes="32px"
+                              className="object-contain"
+                            />
+                          </div>
+                          <span className="text-[10px] text-yellow-100 font-medium">Chronosprout</span>
                         </div>
-                      
+                        <div className="flex flex-col items-center">
+                          <div className="relative w-8 h-8 mb-1">
+                            <Image
+                              src={BADGES['chronoblink'].imageUrl}
+                              alt={BADGES['chronoblink'].name}
+                              fill
+                              sizes="32px"
+                              className="object-contain"
+                            />
+                          </div>
+                          <span className="text-[10px] text-yellow-100 font-medium">Chronoblink</span>
+                        </div>
                       </div>
-                    </div>
-                 
+                    </>
+                  )}
                 </>
               )}
             </div>

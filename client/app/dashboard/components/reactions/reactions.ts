@@ -14,7 +14,7 @@ interface ReactionData {
   };
 }
 
-export const useReactions = (logId: number, userName: string) => {
+export const useReactions = (logId: number, userId: number) => {
   const [selectedReaction, setSelectedReaction] = useState<string | null>(null);
   const [reactionData, setReactionData] = useState<ReactionData | null>(null);
   const [totalReactions, setTotalReactions] = useState(0);
@@ -32,7 +32,8 @@ export const useReactions = (logId: number, userName: string) => {
         const data = await response.json();
         setReactionData(data);
         setTotalReactions(Object.values(data.counts).reduce((sum: number, count: any) => sum + Number(count), 0));
-        const userReaction = data.reactions.find((r: { reactor: string }) => r.reactor === userName);
+        // Look for the user's reaction based on userId
+        const userReaction = data.reactions.find((r: any) => r.userId === userId);
         setSelectedReaction(userReaction ? userReaction.type : null);
       }
     } catch (error) {
@@ -48,7 +49,7 @@ export const useReactions = (logId: number, userName: string) => {
         body: JSON.stringify({
           travelLogId: logId,
           type,
-          reactor: userName,
+          reactor: userId,  // Send the user ID directly
         }),
       });
 

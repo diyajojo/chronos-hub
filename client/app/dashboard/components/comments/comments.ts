@@ -19,7 +19,7 @@ interface ReplyTarget {
 };
 
 
-export const useComments = (logId: number, userName: string) => {
+export const useComments = (logId: number, userId: number) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [replyingTo, setReplyingTo] = useState<ReplyTarget | null>(null);
@@ -53,7 +53,7 @@ export const useComments = (logId: number, userName: string) => {
         body: JSON.stringify({
           travelLogId: logId,
           text: newComment,
-          commenter: userName,
+          commenter: userId,  // Send the user ID directly
           parentId: null
         }),
       });
@@ -79,7 +79,7 @@ export const useComments = (logId: number, userName: string) => {
         body: JSON.stringify({
           travelLogId: logId,
           text: replyText,
-          commenter: userName,
+          commenter: userId,  // Send the user ID directly
           parentId: replyingTo.id
         }),
       });

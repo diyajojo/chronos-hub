@@ -75,7 +75,7 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
     handleReplyClick,
     cancelReply,
     fetchComments
-  } = useComments(log?.id || 0, user?.name);
+  } = useComments(log?.id || 0, user?.id);
 
   const {
     selectedReaction,
@@ -85,7 +85,7 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
     setShowReactionsList,
     handleReactionClick,
     fetchReactions
-  } = useReactions(log?.id || 0, user?.name);
+  } = useReactions(log?.id || 0, user?.id);
 
   // Organize comments into a hierarchy
   const commentThreads = useMemo(() => {

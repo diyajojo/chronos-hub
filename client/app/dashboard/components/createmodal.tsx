@@ -230,12 +230,12 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
             setChronodopplerInfo(data.chronodopplerInfo);
           }
           
-          // If multiple badges were earned, prioritize showing Chronoprodigy if it exists
-          if (data.earnedBadges.includes('chronoprodigy')) {
+          // If multiple badges were earned, always show Chronoprodigy
+          if (data.earnedBadges.length > 1) {
             setEarnedBadge('chronoprodigy');
             setShowBadgeNotification(true);
           } else if (data.earnedBadges.includes('chronodoppler')) {
-            // Show chronodoppler badge if it was earned
+            // Show chronodoppler badge only if it's the only badge earned
             setEarnedBadge('chronodoppler');
             setShowBadgeNotification(true);
           } else {
@@ -561,7 +561,8 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
           }}
           onLogCreated={onLogCreated}
           isFirstLog={isFirstLog}
-          chronodopplerInfo={earnedBadge === 'chronodoppler' ? chronodopplerInfo : undefined}
+          chronodopplerInfo={chronodopplerInfo}
+          earnedBadges={earnedBadges}
         />
       )}
     </>

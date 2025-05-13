@@ -29,6 +29,7 @@ export default function Login() {
   });
   const [error, setError] = useState('');
   const [newBadge, setNewBadge] = useState<BadgeName | null>(null);
+  const [earnedBadges, setEarnedBadges] = useState<BadgeName[]>([]);
   const [userData, setUserData] = useState<any>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,6 +62,7 @@ export default function Login() {
         setUserData(data.user);
         if (data.newBadge) {
           setNewBadge(data.newBadge as BadgeName);
+          setEarnedBadges(data.earnedBadges || [data.newBadge]);
         } else {
           router.push(`/dashboard/${data.user.id}`);
         }
@@ -118,6 +120,7 @@ export default function Login() {
           badgeName={newBadge}
           onClose={handleBadgeClose}
           isFirstLog={false}  // This is login badge, not first log badge
+          earnedBadges={earnedBadges}
           onLogCreated={async () => {
             // Add an empty async function that resolves immediately
             // This ensures the badge notification's onLogCreated handler won't cause issues

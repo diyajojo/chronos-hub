@@ -23,7 +23,7 @@ export const BADGES = {
   },
   chronoprodigy: {
     name: 'Chronoprodigy',
-    description: 'First journey, perfect word count',
+    description: 'Master of time - achieved multiple badges in a single journey',
     imageUrl: 'https://hkrxeroqgguchwhrclsr.supabase.co/storage/v1/object/public/user-badges//chronolegend.png'
   }
 } as const;

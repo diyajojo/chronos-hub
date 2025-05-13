@@ -43,7 +43,8 @@ export async function POST(request: Request) {
         email: data.user.email,
         createdAt: data.user.createdAt
       },
-      newBadge: data.newBadge
+      newBadge: data.newBadge,
+      earnedBadges: data.earnedBadges || []
     }, { status: 200 });
 
   }

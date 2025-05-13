@@ -82,7 +82,7 @@ const addLog = async (req, res) => {
               }
             }
           },
-          take: 3 // Limit to 3 users for display purposes
+          take: 5 // Limit to 3 users for display purposes
         });
         
         if (sameYearLogs.length > 0) {
@@ -125,7 +125,7 @@ const addLog = async (req, res) => {
         });
         earnedBadges.push("chronosprout");
         
-        // Special case: If first log AND exactly 100 words, award both chronoblink and chronoprodigy badges
+        // Check if it's also exactly 100 words
         if (countWords(description) === 100) {
           try {
             // Award Chronoblink badge
@@ -136,19 +136,8 @@ const addLog = async (req, res) => {
               }
             });
             earnedBadges.push("chronoblink");
-            
-            // Award Chronoprodigy badge - special achievement for first log with exactly 100 words
-            await prisma.userBadge.create({
-              data: {
-                userId: parseInt(userId),
-                badgeName: "chronoprodigy"
-              }
-            });
-            earnedBadges.push("chronoprodigy");
-            console.log(`Chronoprodigy badge awarded to user ${userId} for first log with exactly 100 words`);
           } catch (specialBadgeError) {
-            console.error("Error creating special badges:", specialBadgeError);
-            // Continue even if special badges fail
+            console.error("Error creating chronoblink badge:", specialBadgeError);
           }
         }
         
@@ -182,6 +171,62 @@ const addLog = async (req, res) => {
         }
       } catch (error) {
         console.error("Error creating chronoblink badge:", error);
+      }
+    }
+
+    // Check for midnight login (12am - 1am)
+    const currentHour = new Date().getHours();
+    if (currentHour === 0) {
+      try {
+        // Check if user already has the ChronoExplorer badge
+        const existingBadge = await prisma.userBadge.findFirst({
+          where: {
+            userId: parseInt(userId),
+            badgeName: 'chronoexplorer'
+          }
+        });
+
+        if (!existingBadge) {
+          // Award the badge
+          await prisma.userBadge.create({
+            data: {
+              userId: parseInt(userId),
+              badgeName: 'chronoexplorer',
+              earnedAt: new Date()
+            }
+          });
+          earnedBadges.push("chronoexplorer");
+          console.log('Midnight explorer badge awarded to user', userId);
+        }
+      } catch (badgeError) {
+        console.error('Error handling chronoexplorer badge:', badgeError);
+      }
+    }
+
+    // Award chronoprodigy badge if multiple badges were earned at once
+    if (earnedBadges.length > 1) {
+      try {
+        // Check if user already has this badge
+        const existingProdigyBadge = await prisma.userBadge.findFirst({
+          where: {
+            userId: parseInt(userId),
+            badgeName: "chronoprodigy"
+          }
+        });
+        
+        if (!existingProdigyBadge) {
+          await prisma.userBadge.create({
+            data: {
+              userId: parseInt(userId),
+              badgeName: "chronoprodigy"
+            }
+          });
+          console.log(`Chronoprodigy badge awarded to user ${userId} for earning multiple badges at once: ${earnedBadges.join(', ')}`);
+          // Set the primary badge to display as chronoprodigy
+          badgeName = "chronoprodigy";
+        }
+      } catch (prodigyError) {
+        console.error("Error creating chronoprodigy badge:", prodigyError);
       }
     }
 

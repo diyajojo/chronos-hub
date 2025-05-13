@@ -84,7 +84,8 @@ const login = async (req, res) => {
         email: existingUser.email,
         createdAt: existingUser.createdAt.toISOString()
       },
-      newBadge: newBadgeAwarded ? 'chronoexplorer' : null
+      newBadge: newBadgeAwarded ? 'chronoexplorer' : null,
+      earnedBadges: newBadgeAwarded ? ['chronoexplorer'] : []
     };
 
     console.log('Login response:', response);
