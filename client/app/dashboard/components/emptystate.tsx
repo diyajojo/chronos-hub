@@ -3,12 +3,11 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CreateLogModal from './createmodal';
 import StarBackground from '../../components/design/starbackground';
-import PortalVisual from '../../components/design/portalvisual';
 import MapModal from './map/map'; 
 import Image from 'next/image';
-import { BADGES } from '../utils/badges';
 import { ShimmerButton } from '../../../components/magicui/shimmer-button';
 import { TypingAnimation } from '../../../components/magicui/typing-animation';
+import { SearchUsers } from './searchuser';
 
 interface User {
   id: number;
@@ -50,6 +49,7 @@ export default function EmptyState({
 }) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showMap, setShowMap] = useState(false);
+  const [showSearchModal, setShowSearchModal] = useState(false);
   const [activeSection, setActiveSection] = useState('welcome');
   const [welcomeComplete, setWelcomeComplete] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -209,6 +209,7 @@ export default function EmptyState({
               </ShimmerButton>
               
               <ShimmerButton
+                onClick={() => setShowSearchModal(true)}
                 className="w-full py-4 px-4 bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-bold transition-all"
                 shimmerColor="rgba(255, 255, 255, 0.2)"
                 borderRadius="8px"
@@ -248,6 +249,40 @@ export default function EmptyState({
           }}
         />
       )}
+      
+      {/* Search Users Modal */}
+      <AnimatePresence>
+        {showSearchModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center"
+          >
+            <div className="absolute inset-0 bg-black/70" onClick={() => setShowSearchModal(false)}></div>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative bg-blue-950/90 backdrop-blur-xl p-6 rounded-xl border border-blue-500/30 w-full max-w-md shadow-xl shadow-blue-500/10"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-blue-200">Find Time Travellers</h2>
+                <button 
+                  onClick={() => setShowSearchModal(false)}
+                  className="text-blue-300 hover:text-white"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+              <SearchUsers currentUserId={user.id} autoFocus={true} />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

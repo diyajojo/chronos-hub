@@ -114,38 +114,38 @@ export default function FriendRequests({ userId, onRequestAction }: FriendReques
           )}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0 bg-indigo-950 border border-indigo-500/30 text-white">
-        <div className="p-3 border-b border-indigo-500/30">
-          <h3 className="font-medium">Friend Requests</h3>
+      <PopoverContent className="w-80 p-0 bg-blue-950/90 backdrop-blur-xl border border-blue-500/30 text-white shadow-xl shadow-blue-500/10">
+        <div className="p-3 border-b border-blue-500/30">
+          <h3 className="font-medium text-blue-200">Friend Requests</h3>
         </div>
         
         {loading ? (
           <div className="flex justify-center p-4">
-            <div className="animate-spin h-5 w-5 border-t-2 border-indigo-500 rounded-full"></div>
+            <div className="animate-spin h-5 w-5 border-t-2 border-blue-500 rounded-full"></div>
           </div>
         ) : requests.length > 0 ? (
           <div className="max-h-80 overflow-y-auto">
             {requests.map((request) => (
-              <div key={request.id} className="p-3 border-b border-indigo-500/10 last:border-0">
+              <div key={request.id} className="p-3 border-b border-blue-500/10 last:border-0">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">{request.user1.name}</p>
-                    <p className="text-xs text-indigo-400">Sent you a friend request</p>
+                    <p className="font-medium text-blue-100">{request.user1.name}</p>
+                    <p className="text-xs text-blue-300">Sent you a friend request</p>
                   </div>
                   <div className="flex gap-2">
                     {actionLoading === request.id ? (
-                      <div className="animate-pulse">Loading...</div>
+                      <div className="animate-pulse text-blue-300">Loading...</div>
                     ) : (
                       <>
                         <button 
                           onClick={() => handleAcceptRequest(request.id)}
-                          className="bg-indigo-600 hover:bg-indigo-500 text-white px-2 py-1 rounded-md text-xs"
+                          className="bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded-md text-xs transition-colors"
                         >
                           Accept
                         </button>
                         <button 
                           onClick={() => handleRejectRequest(request.id)}
-                          className="bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded-md text-xs"
+                          className="bg-blue-900 hover:bg-blue-800 text-white px-2 py-1 rounded-md text-xs transition-colors"
                         >
                           Reject
                         </button>
@@ -157,7 +157,7 @@ export default function FriendRequests({ userId, onRequestAction }: FriendReques
             ))}
           </div>
         ) : (
-          <div className="p-4 text-center text-indigo-400">
+          <div className="p-4 text-center text-blue-300">
             <p>No pending friend requests</p>
           </div>
         )}

@@ -69,31 +69,31 @@ export default function FriendsList({ userId }: FriendsListProps) {
           <button className="relative p-2 text-indigo-200 hover:text-white transition">
             <Users size={30} />
             {friends.length > 0 && (
-              <span className="absolute top-0 right-0 bg-indigo-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+              <span className="absolute top-0 right-0 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                 {friends.length}
               </span>
             )}
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-80 p-0 bg-indigo-950 border border-indigo-500/30 text-white">
-          <div className="p-3 border-b border-indigo-500/30">
-            <h3 className="font-medium">Friends</h3>
+        <PopoverContent className="w-80 p-0 bg-blue-950/90 backdrop-blur-xl border border-blue-500/30 text-white shadow-xl shadow-blue-500/10">
+          <div className="p-3 border-b border-blue-500/30">
+            <h3 className="font-medium text-blue-200">Friends</h3>
           </div>
           
           {loading ? (
             <div className="flex justify-center p-4">
-              <div className="animate-spin h-5 w-5 border-t-2 border-indigo-500 rounded-full"></div>
+              <div className="animate-spin h-5 w-5 border-t-2 border-blue-500 rounded-full"></div>
             </div>
           ) : friends.length > 0 ? (
             <div className="max-h-80 overflow-y-auto">
               {friends.map((friend) => (
                 <div 
                   key={friend.id}            
-                  className="p-3 border-b border-indigo-500/10 last:border-0 hover:bg-indigo-900/30 transition cursor-pointer"
+                  className="p-3 border-b border-blue-500/10 last:border-0 hover:bg-blue-900/30 transition cursor-pointer"
                   onClick={() => handleOpenProfile(friend)}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="relative h-10 w-10 rounded-full overflow-hidden border border-indigo-500/30 flex-shrink-0">
+                    <div className="relative h-10 w-10 rounded-full overflow-hidden border border-blue-500/30 flex-shrink-0">
                       <Image
                         src={"/assets/pfp.png"}
                         alt={friend.name}
@@ -102,14 +102,14 @@ export default function FriendsList({ userId }: FriendsListProps) {
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-white truncate">{friend.name}</p>
+                      <p className="font-medium text-blue-100 truncate">{friend.name}</p>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="p-4 text-center text-indigo-400">
+            <div className="p-4 text-center text-blue-300">
               <p>No friends yet</p>
             </div>
           )}
