@@ -6,6 +6,7 @@ import EmptyState from '../components/emptystate';
 import StarBackground from '../../components/design/starbackground';
 import FriendRequests from '../components/friendrequest';
 import FriendsList from '../components/friendslist';
+import { toast } from "sonner";
 
 interface User {
   id: number;
@@ -48,6 +49,13 @@ export default function Dashboard() {
         const authData = await authResponse.json();
         
         if (!authResponse.ok || !authData.authenticated) {
+          if (authData.error === 'User not found') {
+            // User was deleted from the database
+            toast.error("Your account no longer exists", {
+              description: "You have been logged out because your account was deleted.",
+              duration: 5000,
+            });
+          }
           router.replace('/login');
           return;
         }

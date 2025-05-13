@@ -12,7 +12,14 @@ const { addReaction, fetchReactions } = require('./routes/database/reactions');
 const { fetchUserBadges } = require('./routes/database/badges');
 const { searchUsers } = require('./routes/database/users');
 const { getUser } = require('./routes/database/profilefetch');
-const friendshipRoutes = require('./routes/database/friendship');
+const { 
+  sendFriendRequest,
+  acceptFriendRequest,
+  rejectFriendRequest,
+  getFriendRequests,
+  getFriendshipStatus,
+  getFriends
+} = require('./routes/database/friendship');
 
 const app = express();
 const port = 8000;
@@ -44,9 +51,12 @@ app.post('/fetchreactions', fetchReactions);
 app.post('/userbadges', fetchUserBadges);
 app.post('/searchUsers', searchUsers);
 app.get('/user/:userId', getUser);
-
-// Friendship routes
-app.use('/friendship', friendshipRoutes);
+app.post('/friendship/send-request', sendFriendRequest);
+app.post('/friendship/accept-request', acceptFriendRequest);
+app.post('/friendship/reject-request', rejectFriendRequest);
+app.post('/friendship/friend-requests', getFriendRequests);
+app.post('/friendship/status', getFriendshipStatus);
+app.post('/friendship/friends', getFriends);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

@@ -1,10 +1,6 @@
-const express = require('express');
-const { PrismaClient } = require('@prisma/client');
-const router = express.Router();
-const prisma = new PrismaClient();
-
+const { prisma } = require('../../utils/prisma');
 // Send friend request
-router.post('/send-request', async (req, res) => {
+const sendFriendRequest = async (req, res) => {
   const { senderId, receiverId } = req.body;
   
   try {
@@ -39,10 +35,10 @@ router.post('/send-request', async (req, res) => {
     console.error('Error sending friend request:', error);
     return res.status(500).json({ success: false, error: 'Failed to send friend request' });
   }
-});
+};
 
 // Accept friend request
-router.post('/accept-request', async (req, res) => {
+const acceptFriendRequest = async (req, res) => {
   const { friendshipId } = req.body;
   
   try {
@@ -56,10 +52,10 @@ router.post('/accept-request', async (req, res) => {
     console.error('Error accepting friend request:', error);
     return res.status(500).json({ success: false, error: 'Failed to accept friend request' });
   }
-});
+};
 
 // Reject/delete friend request
-router.post('/reject-request', async (req, res) => {
+const rejectFriendRequest = async (req, res) => {
   const { friendshipId } = req.body;
   
   try {
@@ -72,10 +68,10 @@ router.post('/reject-request', async (req, res) => {
     console.error('Error rejecting friend request:', error);
     return res.status(500).json({ success: false, error: 'Failed to reject friend request' });
   }
-});
+};
 
 // Get friend requests for a user
-router.post('/friend-requests', async (req, res) => {
+const getFriendRequests = async (req, res) => {
   const { userId } = req.body;
   
   try {
@@ -101,10 +97,10 @@ router.post('/friend-requests', async (req, res) => {
     console.error('Error fetching friend requests:', error);
     return res.status(500).json({ success: false, error: 'Failed to fetch friend requests' });
   }
-});
+};
 
 // Get friendship status between two users
-router.post('/status', async (req, res) => {
+const getFriendshipStatus = async (req, res) => {
   const { user1Id, user2Id } = req.body;
   
   try {
@@ -127,10 +123,10 @@ router.post('/status', async (req, res) => {
     console.error('Error fetching friendship status:', error);
     return res.status(500).json({ success: false, error: 'Failed to fetch friendship status' });
   }
-});
+};
 
 // Get all friends for a user
-router.post('/friends', async (req, res) => {
+const getFriends = async (req, res) => {
   const { userId } = req.body;
   
   try {
@@ -171,6 +167,13 @@ router.post('/friends', async (req, res) => {
     console.error('Error fetching friends:', error);
     return res.status(500).json({ success: false, error: 'Failed to fetch friends' });
   }
-});
+};
 
-module.exports = router; 
+module.exports = {
+  sendFriendRequest,
+  acceptFriendRequest,
+  rejectFriendRequest,
+  getFriendRequests,
+  getFriendshipStatus,
+  getFriends
+}; 

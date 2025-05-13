@@ -29,6 +29,23 @@ export async function GET() {
       return NextResponse.json({ authenticated: false, error: 'Invalid token' }, { status: 401 });
     }
 
+    // Check if user still exists in the database
+    const userId = (user as JwtPayload).id;
+    try {
+      const userResponse = await fetch(`http://localhost:8000/user/${userId}`);
+      const userData = await userResponse.json();
+      
+      if (!userResponse.ok || userData.error === 'User not found') {
+        console.log('User no longer exists in database');
+        // Clear the token cookie
+        cookieStore.delete('token');
+        return NextResponse.json({ authenticated: false, error: 'User not found' }, { status: 401 });
+      }
+    } catch (error) {
+      console.error('Error checking user existence:', error);
+      // Continue with authentication on server error to prevent accidental lockouts
+    }
+
     console.log('JWT payload:', JSON.stringify(user));
 
     return NextResponse.json({ 

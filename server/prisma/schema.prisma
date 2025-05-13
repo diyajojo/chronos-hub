@@ -19,6 +19,9 @@ model User {
   
   sentFriendRequests     Friendship[] @relation("SentFriendRequests")
   receivedFriendRequests Friendship[] @relation("ReceivedFriendRequests")
+  
+  comments  Comment[]
+  reactions Reaction[]
 }
 
 
@@ -44,15 +47,15 @@ model TravelLog {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
    comments        Comment[]
-   reaction      Reaction[]
+   reactions      Reaction[]
 }
 
 model Comment {
   id          String    @id @default(uuid())
   travelLogId Int
+  userId      Int       // Changed from commenter string to userId reference
   parentId    String?   // null for top-level comments
   text        String
-  commenter   String
   createdAt   DateTime  @default(now())
   time        DateTime  @default(now())
 
@@ -60,18 +63,20 @@ model Comment {
   replies     Comment[] @relation("Replies")
   
   travelLog   TravelLog @relation(fields: [travelLogId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Reaction {
   id          String    @id @default(uuid())
   travelLogId Int
+  userId      Int       // Changed from reactor string to userId reference
   type        String    
-  reactor     String    // Remove the @default("Anonymous")
   createdAt   DateTime  @default(now())
   
   travelLog   TravelLog @relation(fields: [travelLogId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  @@unique([travelLogId, reactor]) // Change unique constraint to prevent multiple reactions from same user
+  @@unique([travelLogId, userId]) // Updated to use userId instead of reactor
 }
 
 model Friendship {
