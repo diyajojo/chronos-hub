@@ -1,5 +1,4 @@
 import { useState } from 'react';
-
 interface ReactionData {
   reactions: {
     id: string;
@@ -13,6 +12,7 @@ interface ReactionData {
     [key: string]: number;
   };
 }
+import { API_BASE_URL } from '@/lib/config';
 
 export const useReactions = (logId: number, userId: number) => {
   const [selectedReaction, setSelectedReaction] = useState<string | null>(null);
@@ -22,7 +22,7 @@ export const useReactions = (logId: number, userId: number) => {
 
   const fetchReactions = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/fetchreactions`, {
+      const response = await fetch(`${API_BASE_URL}/fetchreactions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ travelLogId: logId })
@@ -43,7 +43,7 @@ export const useReactions = (logId: number, userId: number) => {
 
   const handleReactionClick = async (type: string) => {
     try {
-      const response = await fetch('http://localhost:8000/addreaction', {
+      const response = await fetch(`${API_BASE_URL}/addreaction`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

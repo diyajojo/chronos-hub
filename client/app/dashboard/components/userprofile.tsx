@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { BADGES } from '../utils/badges';
+import { API_BASE_URL } from '@/lib/config';
 
 interface UserBadge {
   badgeName: string;
@@ -62,14 +63,14 @@ export function UserProfileModal({ isOpen, onClose, user, currentUserId }: UserP
       // Fetch friendship status
       const checkFriendshipStatus = async () => {
         try {
-          const response = await fetch('http://localhost:8000/friendship/status', {
+          setFriendshipStatus(null);
+          const response = await fetch(`${API_BASE_URL}/friendship/status`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body: JSON.stringify({ 
-              user1Id: currentUserId, 
-              user2Id: user.id 
-            }),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ targetUserId: user.id }),
           });
 
           if (response.ok) {
@@ -96,11 +97,15 @@ export function UserProfileModal({ isOpen, onClose, user, currentUserId }: UserP
       const fetchBadges = async () => {
         setLoading(prev => ({ ...prev, badges: true }));
         try {
-          const response = await fetch('http://localhost:8000/userbadges', {
+          const response = await fetch(`${API_BASE_URL}/userbadges`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body: JSON.stringify({ userId: user.id }),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userId: user.id,
+            }),
           });
 
           if (response.ok) {
@@ -119,11 +124,15 @@ export function UserProfileModal({ isOpen, onClose, user, currentUserId }: UserP
       const fetchLogs = async () => {
         setLoading(prev => ({ ...prev, logs: true }));
         try {
-          const response = await fetch('http://localhost:8000/fetchlogs', {
+          const response = await fetch(`${API_BASE_URL}/fetchlogs`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body: JSON.stringify({ userId: user.id }),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userId: user.id,
+            }),
           });
 
           if (response.ok) {
@@ -195,18 +204,15 @@ export function UserProfileModal({ isOpen, onClose, user, currentUserId }: UserP
   } 
 
   const handleSendFriendRequest = async () => {
-    if (!currentUserId || !user.id) return;
-    
     setFriendActionLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/friendship/send-request', {
+      const response = await fetch(`${API_BASE_URL}/friendship/send-request`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ 
-          senderId: currentUserId, 
-          receiverId: user.id 
-        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ targetUserId: user.id }),
       });
 
       if (response.ok) {
@@ -224,14 +230,14 @@ export function UserProfileModal({ isOpen, onClose, user, currentUserId }: UserP
   };
 
   const handleAcceptFriendRequest = async () => {
-    if (!friendshipId) return;
-    
     setFriendActionLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/friendship/accept-request', {
+      const response = await fetch(`${API_BASE_URL}/friendship/accept-request`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ friendshipId }),
       });
 
@@ -249,14 +255,14 @@ export function UserProfileModal({ isOpen, onClose, user, currentUserId }: UserP
   };
 
   const handleRejectFriendRequest = async () => {
-    if (!friendshipId) return;
-    
     setFriendActionLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/friendship/reject-request', {
+      const response = await fetch(`${API_BASE_URL}/friendship/reject-request`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ friendshipId }),
       });
 

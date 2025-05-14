@@ -3,12 +3,13 @@
 
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { API_BASE_URL } from '@/lib/config';
 
 export async function POST(request: Request) {
   try {
     const { email, password } = await request.json();
 
-    const response = await fetch('http://localhost:8000/auth/login', {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

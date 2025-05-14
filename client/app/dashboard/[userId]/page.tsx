@@ -6,6 +6,7 @@ import EmptyState from '../components/emptystate';
 import StarBackground from '../../components/design/starbackground';
 import { toast } from "sonner";
 import { SpinningTextLoader } from '../../components/design/loader';
+import { API_BASE_URL } from '@/lib/config';
 
 interface User {
   id: number;
@@ -62,7 +63,7 @@ export default function Dashboard() {
         
         // Get full user profile from API with createdAt field
         try {
-          const profileResponse = await fetch(`http://localhost:8000/user/${authData.user.id}`, {
+          const profileResponse = await fetch(`${API_BASE_URL}/user/${authData.user.id}`, {
             credentials: 'include',
           });
           
@@ -91,7 +92,7 @@ export default function Dashboard() {
 
         // Fetch logs for the current user
         try {
-          const response = await fetch('http://localhost:8000/fetchlogs', {
+          const response = await fetch(`${API_BASE_URL}/fetchlogs`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -117,7 +118,7 @@ export default function Dashboard() {
           // Fetch badges
           try {
             console.log('Fetching badges for user:', authData.user.id);
-            const badgesResponse = await fetch('http://localhost:8000/userbadges', {
+            const badgesResponse = await fetch(`${API_BASE_URL}/userbadges`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -160,7 +161,7 @@ export default function Dashboard() {
 
   const updateLogs = async () => {
     try {
-      const response = await fetch('http://localhost:8000/fetchlogs', {
+      const response = await fetch(`${API_BASE_URL}/fetchlogs`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -186,7 +187,7 @@ export default function Dashboard() {
       // Also update badges
       try {
         console.log('Refreshing badges for user:', userId);
-        const badgesResponse = await fetch('http://localhost:8000/userbadges', {
+        const badgesResponse = await fetch(`${API_BASE_URL}/userbadges`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

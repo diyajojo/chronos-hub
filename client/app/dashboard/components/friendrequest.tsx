@@ -7,6 +7,7 @@ import {
   PopoverContent, 
   PopoverTrigger 
 } from '@/components/ui/popover';
+import { API_BASE_URL } from '@/lib/config';
 
 interface FriendRequest {
   id: number;
@@ -32,7 +33,7 @@ export default function FriendRequests({ userId, onRequestAction }: FriendReques
     
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/friendship/friend-requests', {
+      const response = await fetch(`${API_BASE_URL}/friendship/friend-requests`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -61,7 +62,7 @@ export default function FriendRequests({ userId, onRequestAction }: FriendReques
   const handleAcceptRequest = async (friendshipId: number) => {
     setActionLoading(friendshipId);
     try {
-      const response = await fetch('http://localhost:8000/friendship/accept-request', {
+      const response = await fetch(`${API_BASE_URL}/friendship/accept-request`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -83,7 +84,7 @@ export default function FriendRequests({ userId, onRequestAction }: FriendReques
   const handleRejectRequest = async (friendshipId: number) => {
     setActionLoading(friendshipId);
     try {
-      const response = await fetch('http://localhost:8000/friendship/reject-request', {
+      const response = await fetch(`${API_BASE_URL}/friendship/reject-request`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/popover';
 import Image from 'next/image';
 import { UserProfileModal } from './userprofile';
+import { API_BASE_URL } from '@/lib/config';
 
 interface Friend {
   id: number;
@@ -31,7 +32,7 @@ export default function FriendsList({ userId }: FriendsListProps) {
     
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/friendship/friends', {
+      const response = await fetch(`${API_BASE_URL}/friendship/friends`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

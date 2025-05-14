@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import BadgeNotification from '../badgenotification';
 import { BadgeName } from '../../utils/badges';
+import { API_BASE_URL } from '@/lib/config';
 
 
 interface CreateLogModalProps {
@@ -193,7 +194,7 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
       
       console.log('Submitting log with payload:', payload);
 
-      const response = await fetch('http://localhost:8000/addlog', {
+      const response = await fetch(`${API_BASE_URL}/addlog`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -5,6 +5,7 @@ import { UserProfileModal } from '@/app/dashboard/components/userprofile';
 import { SearchIcon, UserIcon } from 'lucide-react';
 import { debounce } from 'lodash';
 import Image from 'next/image';
+import { API_BASE_URL } from '@/lib/config';
 
 // Define the User interface directly in the component
 interface User {
@@ -36,7 +37,7 @@ export function SearchUsers({
   
   // Direct API call function
   const searchUsers = async (term: string): Promise<{ success: boolean; users: User[] }> => {
-    const response = await fetch('http://localhost:8000/searchUsers', {
+    const response = await fetch(`${API_BASE_URL}/searchUsers`, {
       method: 'POST',
       credentials: 'include',
       headers: {

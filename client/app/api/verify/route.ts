@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { API_BASE_URL } from '@/lib/config';
 
 async function verifyToken(token: string) {
   try {
@@ -32,7 +33,7 @@ export async function GET() {
     // Check if user still exists in the database
     const userId = (user as JwtPayload).id;
     try {
-      const userResponse = await fetch(`http://localhost:8000/user/${userId}`);
+      const userResponse = await fetch(`${API_BASE_URL}/user/${userId}`);
       const userData = await userResponse.json();
       
       if (!userResponse.ok || userData.error === 'User not found') {

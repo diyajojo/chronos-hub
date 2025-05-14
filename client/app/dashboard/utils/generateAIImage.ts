@@ -6,6 +6,7 @@ interface GenerateImageParams {
   setTimeLog: (timeLog: any) => void;
   currentTimeLog: any;
 }
+import { API_BASE_URL } from '@/lib/config';
 
 // In your generateAIImage.ts file, modify it to use a proxy endpoint:
 export const generateAIImage = async ({
@@ -23,7 +24,7 @@ export const generateAIImage = async ({
       throw new Error('Description and Year are required to generate an image');
     }
     
-    const response = await fetch('http://localhost:8000/generateAIimage', {
+    const response = await fetch(`${API_BASE_URL}/generateAIimage`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -46,7 +47,7 @@ export const generateAIImage = async ({
     }
     
     // Instead of directly fetching from OpenAI's URL, use your proxy endpoint
-    const proxyUrl = `http://localhost:8000/proxy-image?url=${encodeURIComponent(data.imageUrl)}`;
+    const proxyUrl = `${API_BASE_URL}/proxy-image?url=${encodeURIComponent(data.imageUrl)}`;
     
     // Set this proxy URL as the AI image URL
     setAiImageUrl(proxyUrl);
