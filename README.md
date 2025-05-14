@@ -1,8 +1,8 @@
-#  ChronosHub - Where Time Travelers Connect!
+# ⏰ ChronosHub - Where Time Travelers Connect!
 
 Hey there, time traveler! Welcome to ChronosHub, your new favorite hangout across all timelines.
 
-##  What's This All About?
+## 🚀 What's This All About?
 
 Ever wanted to share that wild adventure you had in Ancient Rome or your quick trip to see the dinosaurs? ChronosHub is the place! We've created this cozy corner of the internet where fellow time-hoppers like you can document journeys, connect with other travelers, and build a community that transcends time itself.
 
@@ -16,7 +16,7 @@ Here's what you can do with us:
 - **Stay in the Loop** - Get notified when someone wants to connect or loves your content
 - **Travel Light** - Enjoy the same great experience whether you're on desktop or mobile
 
-## 🛠️ Tech Stack
+## Tech Stack used : 
 
 ### Frontend
 - Next.js 14

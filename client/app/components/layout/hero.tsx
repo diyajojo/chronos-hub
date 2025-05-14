@@ -1,8 +1,6 @@
-"use client";
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-
 
 function HeroSection() {
   const [activeEra, setActiveEra] = useState<number | null>(null);
@@ -74,7 +72,7 @@ function HeroSection() {
       </div>
 
       {/* Main Hero Content */}
-      <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-center py-8 lg:py-12">
+      <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-center py-8 lg:py-12 mt-4">
         <div className="order-2 lg:order-1">
           <motion.h2
             className="font-urbanist text-center lg:text-left text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 text-blue-100 leading-tight font-josefinsans"
@@ -82,21 +80,31 @@ function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            Chronicle Your
+            Your Time Machine
             <span className="font-urbanist block text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-indigo-300">
-              Temporal Adventures
+              Is Now Online
             </span>
           </motion.h2>
 
           <motion.p
-            className="font-urbanist mt-5 text-center lg:text-left text-base sm:text-lg md:text-xl text-blue-200 mb-6 sm:mb-8 leading-relaxed font-josefinsans"
+            className="font-urbanist mt-8 text-center lg:text-left text-base sm:text-lg md:text-xl text-blue-200 mb-6 sm:mb-8 leading-relaxed font-josefinsans"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Record your journeys across time, share your discoveries, and connect with 
-            fellow time travelers. Create AI-generated visuals of your experiences and build 
-            your chronological legacy.
+            Ever wondered how you'd look in the 80s with that classic mullet? 
+            Curious what you'd wear to a party in 3045?
+            Want to see yourself as a medieval knight or a future astronaut?
+          </motion.p>
+
+          <motion.p
+            className="font-urbanist text-center lg:text-left text-base sm:text-lg md:text-xl text-blue-200 mb-6 sm:mb-8 leading-relaxed font-josefinsans"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
+            ChronosHub is here for you, it's like Instagram but with a time travel twist! Post your adventures, create 
+            AI-generated images of your experiences, and connect with friends across different eras.
           </motion.p>
 
           <motion.div
@@ -135,7 +143,7 @@ function HeroSection() {
           className="mb-12 relative"
         >
           <h3 className="font-urbanist text-center text-2xl md:text-3xl font-josefinsans font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-blue-300">
-            Explore The Timeline Continuum
+            Where We're Going, We Don't Need Roads
           </h3>
         </motion.div>
 

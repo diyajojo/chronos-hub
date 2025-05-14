@@ -137,7 +137,7 @@ export default function SignUp() {
                   <CardHeader className="border-b border-blue-500/20 p-6 [.border-b]:pb-6 space-y-4">
                     <CardTitle className="font-urbanist text-blue-200 text-2xl">Create Your Account</CardTitle>
                     <CardDescription className="font-urbanist text-blue-300/70">
-                      Join Chrono Chronicles and start your journey
+                      Join ChronosHub and start your journey
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="p-6 space-y-6">
@@ -194,7 +194,7 @@ export default function SignUp() {
                     </form>
                   </CardContent>
                   <CardFooter className="p-6 border-t border-blue-500/20">
-                    <p className="font-josefinSans text-center text-blue-300/70 text-sm w-full pb-3 sm:pb-0">
+                    <p className="font-urbanist text-center text-blue-300/70 text-sm w-full pb-3 sm:pb-0">
                       Already have an account?{' '}
                       <Link href="/login" className="text-blue-400 hover:text-blue-300">
                         Sign in

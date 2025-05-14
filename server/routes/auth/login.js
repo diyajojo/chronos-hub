@@ -15,7 +15,7 @@ const login = async (req, res) => {
     });
 
     if (!existingUser) {
-      console.log("user doesnt exist , go signup");
+      console.timeLog("user doesnt exist , go signup");
       return res.status(401).json({ "error": "invalid credentials" });
     }
 
@@ -29,20 +29,17 @@ const login = async (req, res) => {
     const payLoad = {
       id: existingUser.id,
       name: existingUser.name,
-      email: existingUser.email,
-      createdAt: existingUser.createdAt.toISOString()
+      email: existingUser.email
     }
 
     const token = jwt.sign(payLoad, JWT_SECRET, { expiresIn: '1h' });
 
-    // Check for midnight login (12am - 1am)
+    // Check for evening login (10 PM)
     const currentHour = new Date().getHours();
     let newBadgeAwarded = false;
-    
-    console.log(`Current hour is: ${currentHour}`); // Debug current hour
 
-    // Check for midnight (00:00 - 00:59)
-    if (currentHour === 0) {
+    // Check between 10 PM and 11 PM (22:00 - 22:59)
+    if (currentHour === 22) {
       try {
         // Check if user already has the ChronoExplorer badge
         const existingBadge = await prisma.userBadge.findFirst({
@@ -54,19 +51,17 @@ const login = async (req, res) => {
           }
         });
 
-        console.log('Existing badge check:', existingBadge ? 'Badge already exists' : 'Badge not found'); // Debug
-
         if (!existingBadge) {
           // Award the badge
           await prisma.userBadge.create({
             data: {
               userId: existingUser.id,
               badgeName: 'chronoexplorer',
-              earnedAt: new Date() // Changed from createdAt to earnedAt to match the UserBadge schema
+              createdAt: new Date()
             }
           });
           newBadgeAwarded = true;
-          console.log('Midnight explorer badge awarded successfully');
+          console.log('Badge awarded successfully');
         }
       } catch (badgeError) {
         console.error('Error handling badge:', badgeError);
@@ -81,11 +76,9 @@ const login = async (req, res) => {
       user: {
         id: existingUser.id,
         name: existingUser.name,
-        email: existingUser.email,
-        createdAt: existingUser.createdAt.toISOString()
+        email: existingUser.email
       },
-      newBadge: newBadgeAwarded ? 'chronoexplorer' : null,
-      earnedBadges: newBadgeAwarded ? ['chronoexplorer'] : []
+      newBadge: newBadgeAwarded ? 'chronoexplorer' : null
     };
 
     console.log('Login response:', response);

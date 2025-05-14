@@ -1,18 +1,16 @@
 const { prisma } = require('../../utils/prisma');
 
 const searchUsers = async (req, res) => {
-  try {
-    const { searchTerm } = req.body;
-    
-    // Require a search term with at least 2 characters
-    if (!searchTerm || searchTerm.trim().length < 2) {
-      return res.status(200).json({ 
-        success: true, 
-        users: [] 
-      });
-    }
+  const { searchTerm } = req.body;
 
-    // Find users with names containing the search term (case insensitive)
+  if (!searchTerm || searchTerm.trim() === '') {
+    return res.status(200).json({ 
+      success: true,
+      users: []
+    });
+  }
+
+  try {
     const users = await prisma.user.findMany({
       where: {
         name: {
@@ -27,8 +25,7 @@ const searchUsers = async (req, res) => {
       },
       orderBy: {
         name: 'asc'
-      },
-      take: 10 // Limit results to prevent overwhelming response
+      }
     });
 
     return res.status(200).json({ 
@@ -46,4 +43,4 @@ const searchUsers = async (req, res) => {
   }
 };
 
-module.exports = { searchUsers }; 
+module.exports = { searchUsers };
