@@ -8,6 +8,9 @@ import Image from 'next/image';
 import { ShimmerButton } from '../../../components/magicui/shimmer-button';
 import { TypingAnimation } from '../../../components/magicui/typing-animation';
 import { SearchUsers } from './searchuser';
+import FriendRequests from './friendrequest';
+import FriendsList from './friendslist';
+import UserGuide from './userguide';
 
 interface TravelLogItem {
   id: number;
@@ -57,6 +60,7 @@ export default function Content({
     totalTrips: userLogs.length,
     totalEngagement: 0
   });
+  const [friendsUpdated, setFriendsUpdated] = useState(0);
   
 
   // Time greetings
@@ -67,7 +71,10 @@ export default function Content({
     return "Good evening";
   };
 
- 
+  const handleFriendRequestAction = () => {
+    // Trigger refresh of data when friend request is accepted or rejected
+    setFriendsUpdated(prev => prev + 1);
+  };
 
   useEffect(() => {
     // Calculate total engagement (reactions and comments)
@@ -91,6 +98,19 @@ export default function Content({
 
   return (
     <div className="container mx-auto px-4 py-4 relative z-10 flex flex-col">
+      {/* Social Icons - Add at the top of ContentState similar to Dashboard */}
+      <div className="flex justify-center md:justify-end items-center space-x-4 sm:space-x-6 mb-8 md:absolute md:top-4 md:right-4 md:mb-0 pointer-events-auto z-20">
+        <div id="instruction-guide" className="cursor-pointer">
+          <UserGuide />
+        </div>
+        <div className="cursor-pointer">
+          <FriendsList userId={user.id} />
+        </div>
+        <div className="cursor-pointer">
+          <FriendRequests userId={user.id} onRequestAction={handleFriendRequestAction} />
+        </div>
+      </div>
+
       {/* Main Content Area with 2-column layout */}
       <div className="mt-6 md:mt-16 grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 flex-grow pb-4">
         

@@ -23,6 +23,18 @@ const addLog = async (req, res) => {
       });
     }
 
+    // Add validation for year value to ensure it's within INT limits
+    const yearValue = parseInt(year);
+    const MIN_SAFE_INT = -2147483648; // Minimum safe INT value
+    const MAX_SAFE_INT = 2147483647;  // Maximum safe INT value
+    
+    if (yearValue < MIN_SAFE_INT || yearValue > MAX_SAFE_INT) {
+      return res.status(400).json({
+        success: false,
+        error: `Year value out of range. Please use a year between ${MIN_SAFE_INT} and ${MAX_SAFE_INT}`
+      });
+    }
+
     // Check if this is user's first log
     const existingLogs = await prisma.travelLog.count({
       where: { userId: parseInt(userId) }
@@ -33,7 +45,7 @@ const addLog = async (req, res) => {
     // Create the travel log
     const travelLog = await prisma.travelLog.create({
       data: {
-        yearVisited: parseInt(year),
+        yearVisited: yearValue,
         title,
         story: description,
         image: imageUrl || '',
@@ -69,7 +81,7 @@ const addLog = async (req, res) => {
         // Find other users who have logs in the same year
         const sameYearLogs = await prisma.travelLog.findMany({
           where: {
-            yearVisited: parseInt(year),
+            yearVisited: yearValue,
             userId: {
               not: parseInt(userId)
             }
@@ -99,14 +111,14 @@ const addLog = async (req, res) => {
           
           // Collect user names who traveled to the same year
           chronodopplerInfo = {
-            year: parseInt(year),
+            year: yearValue,
             travelers: sameYearLogs.map(log => ({
               name: log.user.name,
               userId: log.user.id
             }))
           };
           
-          console.log(`Chronodoppler badge awarded to user ${userId} for year ${year} collision`);
+          console.log(`Chronodoppler badge awarded to user ${userId} for year ${yearValue} collision`);
         }
       }
     } catch (dopplerError) {

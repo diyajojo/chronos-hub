@@ -7,7 +7,6 @@ import {
   PopoverContent, 
   PopoverTrigger 
 } from '@/components/ui/popover';
-import { SpinningTextLoader } from '../../components/design/loader';
 
 interface FriendRequest {
   id: number;
@@ -122,7 +121,7 @@ export default function FriendRequests({ userId, onRequestAction }: FriendReques
         
         {loading ? (
           <div className="flex justify-center p-4">
-            <SpinningTextLoader />
+            <p className="text-blue-300">Loading requests...</p>
           </div>
         ) : requests.length > 0 ? (
           <div className="max-h-80 overflow-y-auto">
@@ -136,7 +135,7 @@ export default function FriendRequests({ userId, onRequestAction }: FriendReques
                   <div className="flex gap-2">
                     {actionLoading === request.id ? (
                       <div className="flex justify-center p-1">
-                        <SpinningTextLoader />
+                        <p className="text-blue-300 text-xs">Processing...</p>
                       </div>
                     ) : (
                       <>

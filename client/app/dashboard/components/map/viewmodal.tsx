@@ -117,12 +117,12 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="bg-gradient-to-br from-indigo-950 to-blue-950 text-white border border-indigo-400/20 p-0 max-w-2xl">
-          <DialogHeader className="p-4 pb-2">
-            <DialogTitle className="text-xl font-serif text-indigo-200">
+        <DialogContent className="bg-gradient-to-br from-indigo-950 to-blue-950 text-white border border-indigo-400/20 p-0 max-w-[95vw] sm:max-w-2xl w-full m-1 sm:m-4 max-h-[90vh] overflow-y-auto sm:overflow-visible">
+          <DialogHeader className="p-3 sm:p-4 pb-2">
+            <DialogTitle className="text-lg sm:text-xl font-serif text-indigo-200">
               Journey to {log.yearVisited}
             </DialogTitle>
-            <div className="text-indigo-300 text-sm space-y-1">
+            <div className="text-indigo-300 text-xs sm:text-sm space-y-1">
               <div className="flex gap-2">
                 <span>Created by Time Traveller : 
                   {log.user.id === user.id ? (
@@ -141,31 +141,30 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
           </DialogHeader>
           
           {/* Image */}
-          <div className="px-4">
-            <div className="rounded-lg overflow-hidden mb-4 bg-indigo-950/70 border border-indigo-400/20">
-              <div className="relative w-full h-56">
+          <div className="px-3 sm:px-4">
+            <div className="rounded-lg overflow-hidden mb-3 sm:mb-4 bg-indigo-950/70 border border-indigo-400/20">
+              <div className="relative w-full h-40 sm:h-56">
                 <img
                   src={log.image || "/api/placeholder/600/400"}
                   alt={`Time travel to ${log.yearVisited}`}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-fit"
                 />
               </div>
             </div>
           </div>
           
           {/* Content */}
-          <div className="mt-2 px-4">
-            
-            <div className="text-md text-blue-300 mb-2">Title: {log.title}</div> 
-            <div className="text-white text-sm whitespace-pre-wrap max-h-40 overflow-y-auto">{log.story}</div>
+          <div className="mt-2 px-3 sm:px-4">
+            <div className="text-sm sm:text-md text-blue-300 mb-2">{log.title}</div> 
+            <div className="text-white text-xs sm:text-sm whitespace-pre-wrap max-h-32 sm:max-h-40 overflow-y-auto">{log.story}</div>
           </div>
           
           {/* Reactions Section */}
-          <div className="flex justify-between items-center px-4 py-2 border-t border-indigo-500/20 mt-4">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 px-3 sm:px-4 py-2 border-t border-indigo-500/20 mt-3 sm:mt-4">
             <div className="flex space-x-3">
               <button 
                 onClick={() => handleReactionClick('enlightenment')}
-                className={`flex items-center space-x-1 px-3 py-1 rounded-lg transition text-sm ${
+                className={`flex items-center px-3 py-1 rounded-lg transition text-xs sm:text-sm ${
                   selectedReaction === 'enlightenment' 
                     ? 'bg-indigo-600 text-white' 
                     : 'bg-indigo-900/40 hover:bg-indigo-800/40'
@@ -175,7 +174,7 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
               </button>
               <button 
                 onClick={() => handleReactionClick('appreciation')}
-                className={`flex items-center space-x-1 px-3 py-1 rounded-lg transition text-sm ${
+                className={`flex items-center px-3 py-1 rounded-lg transition text-xs sm:text-sm ${
                   selectedReaction === 'appreciation' 
                     ? 'bg-indigo-600 text-white' 
                     : 'bg-indigo-900/40 hover:bg-indigo-800/40'
@@ -185,7 +184,7 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
               </button>
               <button 
                 onClick={() => handleReactionClick('wonderstruck')}
-                className={`flex items-center space-x-1 px-3 py-1 rounded-lg transition text-sm ${
+                className={`flex items-center px-3 py-1 rounded-lg transition text-xs sm:text-sm ${
                   selectedReaction === 'wonderstruck' 
                     ? 'bg-indigo-600 text-white' 
                     : 'bg-indigo-900/40 hover:bg-indigo-800/40'
@@ -197,9 +196,9 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
             
             <button
               onClick={() => setShowReactionsList(true)}
-              className="flex items-center space-x-1 px-3 py-1 rounded-lg bg-indigo-900/40 hover:bg-indigo-800/40 text-sm"
+              className="flex items-center space-x-1 px-3 py-1 rounded-lg bg-indigo-900/40 hover:bg-indigo-800/40 text-xs sm:text-sm self-end sm:self-auto"
             >
-              <span className="text-indigo-200 text-sm">Total Reactions</span>
+              <span className="text-indigo-200">Total Reactions</span>
               <span className="bg-indigo-700 text-white px-2 py-0.5 rounded-full text-xs">
                 {totalReactions}
               </span>
@@ -207,11 +206,11 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
           </div>
           
           {/* Comments Section */}
-          <div className="border-t border-indigo-500/20 px-4 py-3">
-            <h3 className="text-indigo-200 font-medium mb-2 text-sm">Comments</h3>
+          <div className="border-t border-indigo-500/20 px-3 sm:px-4 py-3">
+            <h3 className="text-indigo-200 font-medium mb-2 text-xs sm:text-sm">Comments</h3>
             
             {/* Comment List */}
-            <div className="space-y-3 max-h-48 overflow-y-auto mb-3">
+            <div className="space-y-3 max-h-36 sm:max-h-48 overflow-y-auto mb-3">
               {!comments || comments.length === 0 ? (
                 <p className="text-indigo-400 text-xs italic">No temporal observations yet.</p>
               ) : (
@@ -256,7 +255,7 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
                       <form onSubmit={(e) => {
                         handleReplySubmit(e);
                         setTimeout(() => fetchComments(), 500); // Fetch comments after submission
-                      }} className="pl-3 mt-1">
+                      }} className="pl-2 sm:pl-3 mt-1">
                         <div className="bg-indigo-900/20 p-2 rounded-lg border border-indigo-500/10">
                           <div className="text-xs text-indigo-300 mb-1">
                             Replying to <span className="font-medium">
@@ -293,11 +292,11 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
                     
                     {/* Replies to this comment */}
                     {comment.replies && comment.replies.length > 0 && (
-                      <div className="pl-3 space-y-2">
+                      <div className="pl-2 sm:pl-3 space-y-2">
                         {comment.replies.map(reply => (
                           <div key={reply.id} className="space-y-1">
                             <div 
-                              className="bg-indigo-900/20 p-2 rounded-lg border border-indigo-500/10 ml-2"
+                              className="bg-indigo-900/20 p-2 rounded-lg border border-indigo-500/10 ml-1 sm:ml-2"
                             >
                               <div className="flex justify-between items-start">
                                 {reply.user?.id && reply.user.id === user.id ? (
@@ -366,9 +365,9 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
 
       {/* Reactions List Modal */}
       <Dialog open={showReactionsList} onOpenChange={setShowReactionsList}>
-        <DialogContent className="bg-gradient-to-br from-indigo-950 to-blue-950 text-white border border-indigo-400/20 p-4 max-w-md">
+        <DialogContent className="bg-gradient-to-br from-indigo-950 to-blue-950 text-white border border-indigo-400/20 p-4 max-w-[95vw] sm:max-w-md w-full m-1 sm:m-auto">
           <DialogHeader>
-            <DialogTitle className="text-lg font-serif text-indigo-200">
+            <DialogTitle className="text-base sm:text-lg font-serif text-indigo-200">
               All Reactions
             </DialogTitle>
           </DialogHeader>
@@ -380,14 +379,14 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
                 className="flex justify-between items-center p-2 bg-indigo-900/30 rounded-lg border border-indigo-500/10"
               >
                 {reaction.user?.id && reaction.user.id === user.id ? (
-                  <span className="text-indigo-200 text-sm">You</span>
+                  <span className="text-indigo-200 text-xs sm:text-sm">You</span>
                 ) : (
                   <button 
                     onClick={() => handleProfileClick({ 
                       id: reaction.user?.id ? Number(reaction.user.id) : 0, 
                       name: reaction.reactor 
                     })}
-                    className="text-indigo-200 text-sm hover:underline hover:text-indigo-100"
+                    className="text-indigo-200 text-xs sm:text-sm hover:underline hover:text-indigo-100"
                   >
                     {reaction.reactor}
                   </button>

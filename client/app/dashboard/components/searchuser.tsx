@@ -5,7 +5,6 @@ import { UserProfileModal } from '@/app/dashboard/components/userprofile';
 import { SearchIcon, UserIcon } from 'lucide-react';
 import { debounce } from 'lodash';
 import Image from 'next/image';
-import { SpinningTextLoader } from '../../components/design/loader';
 
 // Define the User interface directly in the component
 interface User {
@@ -143,10 +142,10 @@ export function SearchUsers({
           </div>
         )}
 
-        {/* Loading state with SpinningTextLoader */}
+        {/* Loading state */}
         {isLoading && (
-          <div className="p-4">
-            <SpinningTextLoader />
+          <div className="p-4 flex justify-center">
+            <p className="text-blue-300">Searching...</p>
           </div>
         )}
 

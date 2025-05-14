@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import BadgeNotification from '../dashboard/components/badgenotification';
 import {BadgeName} from '../dashboard/utils/badges';
+import { SpinningTextLoader } from '../components/design/loader';
 
 export default function Login() {
   const router = useRouter();
@@ -31,6 +32,7 @@ export default function Login() {
   const [newBadge, setNewBadge] = useState<BadgeName | null>(null);
   const [earnedBadges, setEarnedBadges] = useState<BadgeName[]>([]);
   const [userData, setUserData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -42,6 +44,8 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
+    
     try {
       const response = await fetch('/api/login', {
         method: 'POST',
@@ -61,16 +65,21 @@ export default function Login() {
       if (data.success && data.user) {
         setUserData(data.user);
         if (data.newBadge) {
+          setIsLoading(false);
           setNewBadge(data.newBadge as BadgeName);
           setEarnedBadges(data.earnedBadges || [data.newBadge]);
         } else {
-          router.push(`/dashboard/${data.user.id}`);
+          // Wait for 1 second to show the spinner before redirecting
+          setTimeout(() => {
+            router.push(`/dashboard/${data.user.id}`);
+          }, 1000);
         }
       } else {
         throw new Error('Authentication failed');
       }
     } 
     catch (err) {
+      setIsLoading(false);
       setError(err instanceof Error ? err.message : 'Something went wrong');
     }
   };
@@ -78,7 +87,11 @@ export default function Login() {
   const handleBadgeClose = () => {
     setNewBadge(null);
     if (userData?.id) {
-      router.push(`/dashboard/${userData.id}`);
+      setIsLoading(true);
+      // Show loading animation for a second before redirecting
+      setTimeout(() => {
+        router.push(`/dashboard/${userData.id}`);
+      }, 1000);
     }
   };
 
@@ -127,6 +140,14 @@ export default function Login() {
             return Promise.resolve();
           }}
         />
+      )}
+
+      {isLoading && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+          
+            <SpinningTextLoader />
+         
+        </div>
       )}
 
       <div className="flex items-center justify-center w-full min-h-[calc(100vh-64px)] py-6 sm:py-0">
@@ -210,8 +231,8 @@ export default function Login() {
                           />
                         </div>
                       </div>
-                      <Button type="submit" className="w-full cursor-pointer bg-blue-800/30 hover:bg-blue-800/50 text-blue-200 border border-blue-500/30">
-                        Sign In
+                      <Button type="submit" className="w-full cursor-pointer bg-blue-800/30 hover:bg-blue-800/50 text-blue-200 border border-blue-500/30" disabled={isLoading}>
+                        {isLoading ? "Signing in..." : "Sign In"}
                       </Button>
                     </form>
                   </CardContent>
@@ -229,8 +250,6 @@ export default function Login() {
           </div>
         </div>
       </div>
-      
-                        
     </div>
   );
 }

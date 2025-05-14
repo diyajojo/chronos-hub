@@ -4,11 +4,7 @@ import { useRouter, useParams } from 'next/navigation';
 import Content from '../components/contentstate';
 import EmptyState from '../components/emptystate';
 import StarBackground from '../../components/design/starbackground';
-import FriendRequests from '../components/friendrequest';
-import FriendsList from '../components/friendslist';
 import { toast } from "sonner";
-import UserGuide from '../components/userguide';
-import { SpinningTextLoader } from '../../components/design/loader';
 
 interface User {
   id: number;
@@ -32,34 +28,10 @@ export default function Dashboard() {
   const [userLogs, setUserLogs] = useState([]);
   const [userBadges, setUserBadges] = useState<UserBadge[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
-  const [friendsUpdated, setFriendsUpdated] = useState(0);
-  const [showSocialIcons, setShowSocialIcons] = useState(true);
 
   // Mark component as hydrated (client-side)
   useEffect(() => {
     setIsHydrated(true);
-  }, []);
-
-  // Listen for intro state changes
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Check initial state
-      if ((window as any).isChronosIntroActive === true) {
-        setShowSocialIcons(false);
-      }
-      
-      // Listen for changes
-      const handleIntroStateChanged = (event: Event) => {
-        const customEvent = event as CustomEvent;
-        setShowSocialIcons(!customEvent.detail.isActive);
-      };
-      
-      window.addEventListener('chronosIntroStateChanged', handleIntroStateChanged);
-      
-      return () => {
-        window.removeEventListener('chronosIntroStateChanged', handleIntroStateChanged);
-      };
-    }
   }, []);
 
   useEffect(() => {
@@ -183,7 +155,7 @@ export default function Dashboard() {
     };
 
     loadDashboardData();
-  }, [userId, router, friendsUpdated]);
+  }, [userId, router]);
 
   const updateLogs = async () => {
     try {
@@ -240,37 +212,11 @@ export default function Dashboard() {
     }
   };
 
-  const handleFriendRequestAction = () => {
-    // Trigger refresh of data when friend request is accepted or rejected
-    setFriendsUpdated(prev => prev + 1);
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-950 via-blue-900 to-indigo-950">
-        <div className="flex items-center justify-center min-h-screen">
-          <SpinningTextLoader />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-950 via-blue-900 to-indigo-950 overflow-hidden relative">
       <StarBackground />
       
       <main className="container mx-auto px-6 py-8 relative z-10">
-        {/* Friend Requests, Friends List, and User Guide buttons - hide when intro is active */}
-        {user && showSocialIcons && (
-          <div className="flex justify-center md:justify-end items-center space-x-4 sm:space-x-6 mb-8 md:absolute md:top-4 md:right-4 md:mb-0">
-            <div id="instruction-guide">
-              <UserGuide />
-            </div>
-            <FriendsList userId={user.id} />
-            <FriendRequests userId={user.id} onRequestAction={handleFriendRequestAction} />
-          </div>
-        )}
-        
         {!hasLogs ? (
           user && isHydrated && (
             <EmptyState 

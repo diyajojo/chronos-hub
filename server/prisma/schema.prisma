@@ -38,7 +38,7 @@ model UserBadge {
 model TravelLog {
   id          Int      @id @default(autoincrement())
   userId      Int
-  yearVisited Int
+  yearVisited Int      // Back to regular Int type
   title       String   // Added title field for the story title
   story       String   @db.Text // Long text for the travel story
   image       String   // URL or image path (image stored in supabase bucket gives a link)

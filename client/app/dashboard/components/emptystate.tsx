@@ -7,6 +7,9 @@ import MapModal from './map/map';
 import Image from 'next/image';
 import { ShimmerButton } from '../../../components/magicui/shimmer-button';
 import { SearchUsers } from './searchuser';
+import FriendRequests from './friendrequest';
+import FriendsList from './friendslist';
+import UserGuide from './userguide';
 
 interface User {
   id: number;
@@ -90,6 +93,7 @@ export default function EmptyState({
   const [targetElement, setTargetElement] = useState<DOMRect | null>(null);
   const [isFirstLog, setIsFirstLog] = useState(true);
   const [hasInteractedWithCreateModal, setHasInteractedWithCreateModal] = useState(false);
+  const [friendsUpdated, setFriendsUpdated] = useState(0);
   
 
   // Expose intro state to window object so parent component can access it
@@ -111,7 +115,10 @@ export default function EmptyState({
     };
   }, [showIntro]);
 
- 
+  const handleFriendRequestAction = () => {
+    // Trigger refresh of data when friend request is accepted or rejected
+    setFriendsUpdated(prev => prev + 1);
+  };
 
   useEffect(() => {
     if (showTour) {
@@ -183,6 +190,21 @@ export default function EmptyState({
       <StarBackground />
       
       <div className="container mx-auto px-4 py-4 relative z-10  flex flex-col">
+        {/* Social Icons - Add at the top of EmptyState */}
+        {!showIntro && (
+          <div className="flex justify-center md:justify-end items-center space-x-4 sm:space-x-6 mb-8 md:absolute md:top-4 md:right-4 md:mb-0 pointer-events-auto z-20">
+            <div id="instruction-guide" className="cursor-pointer">
+              <UserGuide />
+            </div>
+            <div className="cursor-pointer">
+              <FriendsList userId={user.id} />
+            </div>
+            <div className="cursor-pointer">
+              <FriendRequests userId={user.id} onRequestAction={handleFriendRequestAction} />
+            </div>
+          </div>
+        )}
+
         {/* Intro Overlay */}
         <AnimatePresence>
           {showIntro && (
