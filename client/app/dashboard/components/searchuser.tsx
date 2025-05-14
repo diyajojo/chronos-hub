@@ -34,7 +34,6 @@ export function SearchUsers({
   const [hasSearched, setHasSearched] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   
-
   // Direct API call function
   const searchUsers = async (term: string): Promise<{ success: boolean; users: User[] }> => {
     const response = await fetch('http://localhost:8000/searchUsers', {
@@ -112,7 +111,7 @@ export function SearchUsers({
   };
 
   return (
-    <div className={`w-full ${className}`}>
+    <div className={`w-[90%] max-w-full sm:max-w-md md:max-w-lg mx-auto ${className}`}>
       <div className="relative">
         <Input
           ref={searchInputRef}
@@ -120,7 +119,7 @@ export function SearchUsers({
           placeholder="Search users..."
           value={searchTerm}
           onChange={handleInputChange}
-          className="pl-10 w-full bg-black/50 border border-blue-500/30 text-white placeholder:text-blue-400/70"
+          className="pl-10 w-full bg-black/50 border border-blue-500/30 text-white placeholder:text-blue-400/70 text-sm sm:text-base"
         />
         <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-400" />
       </div>
@@ -128,51 +127,51 @@ export function SearchUsers({
       <div className="mt-2 rounded-md border border-blue-500/30 overflow-hidden bg-black/30">
         {/* Prompt state - when user hasn't searched yet */}
         {!searchTerm && !hasSearched && (
-          <div className="flex flex-col items-center justify-center p-6 text-center">
-            <UserIcon className="h-12 w-12 text-blue-500 mb-2" />
-            <p className="text-blue-300">Type to search for time travelers</p>
+          <div className="flex flex-col items-center justify-center p-3 sm:p-6 text-center">
+            <UserIcon className="h-8 w-8 sm:h-12 sm:w-12 text-blue-500 mb-1 sm:mb-2" />
+            <p className="text-blue-300 text-sm sm:text-base">Type to search for time travelers</p>
           </div>
         )}
 
         {/* Empty state - when search returned no results */}
         {searchTerm && hasSearched && !isLoading && users.length === 0 && (
-          <div className="flex flex-col items-center justify-center p-6 text-center">
-            <UserIcon className="h-12 w-12 text-blue-500 mb-2" />
-            <p className="text-blue-300">OOPS no time travellers found</p>
+          <div className="flex flex-col items-center justify-center p-3 sm:p-6 text-center">
+            <UserIcon className="h-8 w-8 sm:h-12 sm:w-12 text-blue-500 mb-1 sm:mb-2" />
+            <p className="text-blue-300 text-sm sm:text-base">OOPS no time travellers found</p>
           </div>
         )}
 
         {/* Loading state */}
         {isLoading && (
-          <div className="p-4 flex justify-center">
-            <p className="text-blue-300">Searching...</p>
+          <div className="p-2 sm:p-4 flex justify-center">
+            <p className="text-blue-300 text-sm sm:text-base">Searching...</p>
           </div>
         )}
 
         {/* Results */}
         {hasSearched && !isLoading && users.length > 0 && (
-          <div className="max-h-64 overflow-y-auto">
+          <div className="max-h-48 sm:max-h-64 overflow-y-auto">
             {users.map((user) => (
               <div
                 key={user.id}
                 onClick={() => handleUserClick(user)}
                 className={`
-                  flex items-center gap-3 p-3 hover:bg-blue-950/40 cursor-pointer
+                  flex items-center gap-2 sm:gap-3 p-2 sm:p-3 hover:bg-blue-950/40 cursor-pointer
                   ${user.id === currentUserId ? 'opacity-50 cursor-not-allowed' : ''}
                   border-b border-blue-500/30 last:border-0
                 `}
               >
-                <div className="relative w-10 h-10 rounded-full overflow-hidden border border-blue-500/30">
+                <div className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden border border-blue-500/30">
                   <Image
                     src="/assets/pfp.png"
                     alt={user.name}
                     fill
-                    sizes="40px"
+                    sizes="(max-width: 640px) 32px, 40px"
                     className="object-cover"
                   />
                 </div>
                 <div>
-                  <p className="font-medium text-blue-100">
+                  <p className="font-medium text-blue-100 text-sm sm:text-base">
                     {user.name}
                     {user.id === currentUserId && " (You)"}
                   </p>

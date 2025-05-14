@@ -1,8 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
-import CreateLogModal from './createmodal';
+import CreateLogModal from './logs/createmodal';
 import { AnimatePresence, motion } from 'framer-motion';
-import MapModal from './map/map';
+import MapModal from './map';
 import { BADGES } from '../utils/badges';
 import Image from 'next/image';
 import { ShimmerButton } from '../../../components/magicui/shimmer-button';

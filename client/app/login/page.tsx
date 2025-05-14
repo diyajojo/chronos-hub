@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import BadgeNotification from '../dashboard/components/badgenotification';
 import {BadgeName} from '../dashboard/utils/badges';
-import { SpinningTextLoader } from '../components/design/loader';
+
 
 export default function Login() {
   const router = useRouter();
@@ -142,13 +142,7 @@ export default function Login() {
         />
       )}
 
-      {isLoading && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
-          
-            <SpinningTextLoader />
-         
-        </div>
-      )}
+    
 
       <div className="flex items-center justify-center w-full min-h-[calc(100vh-64px)] py-6 sm:py-0">
         <div className="container mx-auto px-4 sm:px-6 relative z-10">

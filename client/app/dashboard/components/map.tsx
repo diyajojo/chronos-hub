@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ViewModal } from './viewmodal';
+import { ViewModal } from './logs/viewmodal';
 
 
  interface TravelLogItem {

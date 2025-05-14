@@ -5,6 +5,7 @@ import Content from '../components/contentstate';
 import EmptyState from '../components/emptystate';
 import StarBackground from '../../components/design/starbackground';
 import { toast } from "sonner";
+import { SpinningTextLoader } from '../../components/design/loader';
 
 interface User {
   id: number;
@@ -217,24 +218,32 @@ export default function Dashboard() {
       <StarBackground />
       
       <main className="container mx-auto px-6 py-8 relative z-10">
-        {!hasLogs ? (
-          user && isHydrated && (
-            <EmptyState 
-              user={user}
-              otherLogs={otherLogs}
-              userBadges={userBadges}
-              onLogCreated={updateLogs}
-            />
-          )
+        {loading ? (
+          // Show the SpinningTextLoader while data is being fetched
+          <div className="min-h-[80vh] flex items-center justify-center">
+
+              <SpinningTextLoader />
+           
+          </div>
         ) : (
+          // Once loading is complete, render the appropriate component
           user && isHydrated && (
-            <Content 
-              user={user}
-              otherLogs={otherLogs} 
-              userLogs={userLogs}
-              userBadges={userBadges}
-              onLogCreated={updateLogs}
-            />
+            hasLogs ? (
+              <Content 
+                user={user}
+                otherLogs={otherLogs} 
+                userLogs={userLogs}
+                userBadges={userBadges}
+                onLogCreated={updateLogs}
+              />
+            ) : (
+              <EmptyState 
+                user={user}
+                otherLogs={otherLogs}
+                userBadges={userBadges}
+                onLogCreated={updateLogs}
+              />
+            )
           )
         )}
       </main>

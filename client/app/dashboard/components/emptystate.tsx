@@ -1,9 +1,9 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import CreateLogModal from './createmodal';
+import CreateLogModal from './logs/createmodal';
 import StarBackground from '../../components/design/starbackground';
-import MapModal from './map/map'; 
+import MapModal from './map'; 
 import Image from 'next/image';
 import { ShimmerButton } from '../../../components/magicui/shimmer-button';
 import { SearchUsers } from './searchuser';
@@ -433,7 +433,7 @@ export default function EmptyState({
                       // Position tooltip lower for the Create Your First Journey button
                       return {
                         left: targetElement.left + targetElement.width / 2 - 160,
-                        top: targetElement.bottom + (window.innerWidth < 768 ? 100 : 28) // More space on mobile, less on desktop
+                        top: targetElement.bottom + (window.innerWidth < 768 ? 10 : 28) // More space on mobile, less on desktop
                       };
                     }
                     // Default positioning for other elements (below the element)

@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { handleImageUpload } from '../utils/imageupload';
-import { generateAIImage } from '../utils/generateAIImage';
+import { handleImageUpload } from '../../utils/imageupload';
+import { generateAIImage } from '../../utils/generateAIImage';
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,8 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import BadgeNotification from './badgenotification';
-import { BadgeName } from '../utils/badges';
+import BadgeNotification from '../badgenotification';
+import { BadgeName } from '../../utils/badges';
 
 
 interface CreateLogModalProps {
