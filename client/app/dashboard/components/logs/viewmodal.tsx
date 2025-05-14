@@ -4,6 +4,7 @@ import { useReactions } from '../../utils/reactions';
 import { useEffect, useState, useMemo } from 'react';
 import { UserProfileModal } from '../userprofile';
 
+
 // Using the same interface definitions as in MapModal component
 interface Comment {
   id: string;
