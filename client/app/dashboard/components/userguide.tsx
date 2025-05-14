@@ -113,9 +113,9 @@ export default function UserGuide() {
           <BookOpen size={30} />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-96 p-0 bg-black/70 backdrop-blur-xl border border-blue-500/30 text-white shadow-xl shadow-blue-500/10">
+      <PopoverContent className="w-96 p-0 bg-black/70 backdrop-blur-xl border border-blue-500/30 text-white shadow-xl shadow-blue-500/10 font-josefinSans">
         <div className="p-3 border-b border-blue-500/30">
-          <h3 className="font-medium text-blue-200">ChronosHub Guide</h3>
+          <h3 className="text-blue-200">ChronosHub Guide</h3>
         </div>
         
         <div className="p-4">

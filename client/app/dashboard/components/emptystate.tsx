@@ -6,7 +6,6 @@ import StarBackground from '../../components/design/starbackground';
 import MapModal from './map/map'; 
 import Image from 'next/image';
 import { ShimmerButton } from '../../../components/magicui/shimmer-button';
-import { TypingAnimation } from '../../../components/magicui/typing-animation';
 import { SearchUsers } from './searchuser';
 
 interface User {
@@ -67,11 +66,6 @@ const TOUR_STEPS = [
     target: 'instruction-guide',
     title: '📖 Time Traveler\'s Guide',
     content: 'Access the guidebook anytime you need help navigating ChronosHub. Contains information about all features!',
-  },
-  {
-    target: 'badges-card',
-    title: '🏆 Achievement Badges',
-    content: 'Collect special badges as you create logs, make friends, and engage with the community!',
   }
 ];
 
@@ -188,7 +182,7 @@ export default function EmptyState({
     <div className="relative min-h-screen">
       <StarBackground />
       
-      <div className="container mx-auto px-4 py-4 relative z-10 h-screen flex flex-col">
+      <div className="container mx-auto px-4 py-4 relative z-10  flex flex-col">
         {/* Intro Overlay */}
         <AnimatePresence>
           {showIntro && (
@@ -222,7 +216,7 @@ export default function EmptyState({
                   
                   {/* Left top */}
                   <div
-                    className="absolute left-[10%] top-[15%] w-36 h-36 rounded-full overflow-hidden border-2 border-blue-500/20"
+                    className="absolute left-[10%] top-[15%] w-16 sm:w-24 md:w-36 h-16 sm:h-24 md:h-36 rounded-full overflow-hidden border-2 border-blue-500/20"
                     style={{ opacity: 0.5 }}
                   >
                     <Image
@@ -236,7 +230,7 @@ export default function EmptyState({
                   
                   {/* Left middle */}
                   <div
-                    className="absolute left-[15%] top-[45%] w-36 h-36 rounded-full overflow-hidden border-2 border-purple-500/20"
+                    className="absolute left-[15%] top-[45%] w-16 sm:w-24 md:w-36 h-16 sm:h-24 md:h-36 rounded-full overflow-hidden border-2 border-purple-500/20"
                     style={{ opacity: 0.5 }}
                   >
                     <Image
@@ -250,7 +244,7 @@ export default function EmptyState({
                   
                   {/* Left bottom */}
                   <div
-                    className="absolute left-[10%] bottom-[15%] w-36 h-36 rounded-full overflow-hidden border-2 border-indigo-500/20"
+                    className="absolute left-[10%] bottom-[15%] w-16 sm:w-24 md:w-36 h-16 sm:h-24 md:h-36 rounded-full overflow-hidden border-2 border-indigo-500/20"
                     style={{ opacity: 0.5 }}
                   >
                     <Image
@@ -266,7 +260,7 @@ export default function EmptyState({
                   
                   {/* Right top */}
                   <div
-                    className="absolute right-[10%] top-[15%] w-36 h-36 rounded-full overflow-hidden border-2 border-blue-500/20"
+                    className="absolute right-[10%] top-[15%] w-16 sm:w-24 md:w-36 h-16 sm:h-24 md:h-36 rounded-full overflow-hidden border-2 border-blue-500/20"
                     style={{ opacity: 0.5 }}
                   >
                     <Image
@@ -280,7 +274,7 @@ export default function EmptyState({
                   
                   {/* Right middle */}
                   <div
-                    className="absolute right-[15%] top-[45%] w-36 h-36 rounded-full overflow-hidden border-2 border-purple-500/20"
+                    className="absolute right-[15%] top-[45%] w-16 sm:w-24 md:w-36 h-16 sm:h-24 md:h-36 rounded-full overflow-hidden border-2 border-purple-500/20"
                     style={{ opacity: 0.5 }}
                   >
                     <Image
@@ -294,7 +288,7 @@ export default function EmptyState({
                   
                   {/* Right bottom */}
                   <div
-                    className="absolute right-[10%] bottom-[15%] w-36 h-36 rounded-full overflow-hidden border-2 border-indigo-500/20"
+                    className="absolute right-[10%] bottom-[15%] w-16 sm:w-24 md:w-36 h-16 sm:h-24 md:h-36 rounded-full overflow-hidden border-2 border-indigo-500/20"
                     style={{ opacity: 0.5 }}
                   >
                     <Image
@@ -309,20 +303,20 @@ export default function EmptyState({
               </div>
 
               {/* Centered content */}
-              <div className="absolute inset-0 flex items-center justify-center">
+              <div className="absolute inset-0 flex items-center justify-center p-4">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 20 }}
                   transition={{ duration: 0.8 }}
-                  className="max-w-2xl w-full p-10 text-center"
+                  className="max-w-2xl w-full p-4 sm:p-8 text-center"
                 >
                   {/* Chronos Hub logo/icon */}
                   <motion.div
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: 0.3, duration: 1 }}
-                    className="w-36 h-36 mx-auto mb-10 relative"
+                    className="w-24 h-24 sm:w-28 md:w-36 sm:h-28 md:h-36 mx-auto mb-6 sm:mb-8 md:mb-10 relative"
                   >
                     <div className=""></div>
                     <Image
@@ -335,14 +329,14 @@ export default function EmptyState({
                   </motion.div>
 
                   {/* Creative welcome message */}
-                  <h2 className="text-4xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-purple-300 to-blue-200">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 md:mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-purple-300 to-blue-200">
                      You've Crossed The Threshold
                   </h2>
                   
                   {/* Immersive description */}
-                  <div className="mb-12 text-blue-100 text-xl leading-relaxed max-w-xl mx-auto space-y-6">
+                  <div className="mb-6 sm:mb-8 md:mb-12 text-blue-100 text-base sm:text-lg md:text-xl leading-relaxed max-w-xl mx-auto space-y-3 sm:space-y-4 md:space-y-6">
                     <p>
-                      You're no longer {user.name.split(' ')[0]} from the ordinary world. You are now a <span className="text-blue-300 font-semibold">Chrono Traveler</span> in this realm between timelines. 🌠
+                      You're no longer <span className="text-blue-300 font-bold">{user.name.split(' ')[0]}</span> from the ordinary world. You are now a <span className="text-blue-300 font-semibold">Chrono Traveler</span> in this realm between timelines. 🌠
                     </p>
                     <p>
                       The normal rules of time don't apply here. You're caught in the streams of history, floating between eras, with no way back to the mundane world. 🕰️
@@ -355,7 +349,7 @@ export default function EmptyState({
                   {/* Creative button */}
                   <button
                     onClick={startTour}
-                    className="px-8 py-3 bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-900 hover:from-blue-800 hover:via-indigo-800 hover:to-blue-800 text-white font-bold rounded-lg transition-all transform hover:scale-105 shadow-md shadow-blue-900/30"
+                    className="px-6 sm:px-7 md:px-8 py-2 sm:py-2.5 md:py-3 bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-900 hover:from-blue-800 hover:via-indigo-800 hover:to-blue-800 text-white font-bold rounded-lg transition-all transform hover:scale-105 shadow-md shadow-blue-900/30"
                   >
                     🚀 Let's Begin Journey
                   </button>
@@ -397,17 +391,11 @@ export default function EmptyState({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
-                className="absolute bg-blue-950/90 backdrop-blur-xl p-6 rounded-xl border border-blue-500/30 shadow-xl shadow-blue-500/10 w-80"
+                className="absolute bg-blue-950/90 backdrop-blur-xl p-4 sm:p-5 md:p-6 rounded-xl border border-blue-500/30 shadow-xl shadow-blue-500/10 w-64 sm:w-72 md:w-80"
                 style={{
                   ...(() => {
                     const step = TOUR_STEPS[currentTourStep];
-                    if (step.target === 'badges-card') {
-                      // Position tooltip on the left side under the total journeys area
-                      return {
-                        left: Math.max(20, targetElement.left - 40), // Keep it from going off-screen
-                        top: targetElement.top + 60 // Position below the stats cards
-                      };
-                    } else if (step.target === 'meet-travelers') {
+                    if (step.target === 'meet-travelers') {
                       // Position tooltip higher up for the Meet Travelers button
                       return {
                         left: targetElement.left + targetElement.width / 2 - 160,
@@ -418,6 +406,12 @@ export default function EmptyState({
                       return {
                         left: targetElement.left,
                         top: targetElement.bottom + 15 // Position below the instruction guide button
+                      };
+                    } else if (step.target === 'create-journey') {
+                      // Position tooltip lower for the Create Your First Journey button
+                      return {
+                        left: targetElement.left + targetElement.width / 2 - 160,
+                        top: targetElement.bottom + (window.innerWidth < 768 ? 100 : 28) // More space on mobile, less on desktop
                       };
                     }
                     // Default positioning for other elements (below the element)
@@ -431,20 +425,20 @@ export default function EmptyState({
                 {/* Pointing arrow with dynamic positioning */}
                 <div 
                   className={`absolute w-4 h-4 bg-blue-950/90 border-l border-t border-blue-500/30 transform ${
-                    TOUR_STEPS[currentTourStep].target === 'badges-card'
-                      ? 'left-10 -top-2 rotate-45' // Arrow points up for badges
-                      : TOUR_STEPS[currentTourStep].target === 'meet-travelers'
-                        ? 'left-1/2 -translate-x-1/2 -bottom-2 rotate-[225deg]' // Arrow points down for meet travelers
-                      : TOUR_STEPS[currentTourStep].target === 'instruction-guide'
-                        ? 'left-8 -top-2 rotate-45' // Arrow points up for instruction guide
-                        : '-top-2 left-1/2 -translate-x-1/2 rotate-45' // Arrow points up for other elements
+                    TOUR_STEPS[currentTourStep].target === 'meet-travelers'
+                      ? 'left-1/2 -translate-x-1/2 -bottom-2 rotate-[225deg]' // Arrow points down for meet travelers
+                    : TOUR_STEPS[currentTourStep].target === 'instruction-guide'
+                      ? 'left-8 -top-2 rotate-45' // Arrow points up for instruction guide
+                    : TOUR_STEPS[currentTourStep].target === 'create-journey'
+                      ? '-top-2 left-1/2 -translate-x-1/2 rotate-45' // Arrow points up for create journey
+                    : '-top-2 left-1/2 -translate-x-1/2 rotate-45' // Arrow points up for other elements
                   }`}
                 />
 
-                <h3 className="text-xl font-bold text-blue-200 mb-2">
+                <h3 className="text-lg sm:text-xl font-bold text-blue-200 mb-2">
                   {TOUR_STEPS[currentTourStep].title}
                 </h3>
-                <p className="text-blue-100 mb-4">
+                <p className="text-sm sm:text-base text-blue-100 mb-4">
                   {TOUR_STEPS[currentTourStep].content}
                 </p>
                 <div className="flex justify-between items-center">
@@ -452,7 +446,7 @@ export default function EmptyState({
                     <button
                       onClick={prevTourStep}
                       disabled={currentTourStep === 0}
-                      className={`px-3 py-1 rounded-md text-sm transition-colors
+                      className={`px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm transition-colors
                         ${currentTourStep === 0 
                           ? 'bg-blue-900/50 text-blue-300 cursor-not-allowed' 
                           : 'bg-blue-600 hover:bg-blue-500 text-white'}`
@@ -462,12 +456,12 @@ export default function EmptyState({
                     </button>
                     <button
                       onClick={nextTourStep}
-                      className="px-3 py-1 rounded-md text-sm bg-blue-600 hover:bg-blue-500 text-white transition-colors"
+                      className="px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm bg-blue-600 hover:bg-blue-500 text-white transition-colors"
                     >
                       {currentTourStep === TOUR_STEPS.length - 1 ? 'Got it!' : 'Next'}
                     </button>
                   </div>
-                  <span className="text-blue-300 text-sm">
+                  <span className="text-blue-300 text-xs sm:text-sm">
                     {currentTourStep + 1} / {TOUR_STEPS.length}
                   </span>
                 </div>
@@ -477,14 +471,14 @@ export default function EmptyState({
         </AnimatePresence>
 
         {/* Main Content Area with 2-column layout - adjusted for viewport height */}
-        <div className="mt-16 grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow overflow-auto pb-4">
+        <div className="mt-6 md:mt-16 grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 flex-grow pb-4">
           
           {/* Left Column - User Profile and Badges */}
-          <div className="lg:col-span-1">
-            <div className="bg-black/30 backdrop-blur-md rounded-xl p-4 border border-blue-500/30 h-full overflow-auto">
+          <div className="lg:col-span-1 order-2 lg:order-1">
+            <div className="bg-black/30 backdrop-blur-md rounded-xl p-4 border border-blue-500/30 h-full">
               {/* Avatar and User Info */}
               <div className="flex flex-col items-center">
-                <div className="relative w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden border-4 border-blue-500/50 mb-3 shadow-lg shadow-blue-500/20">
+                <div className="relative w-20 h-20 md:w-28 md:h-28 rounded-full overflow-hidden border-4 border-blue-500/50 mb-3 shadow-lg shadow-blue-500/20">
                   <Image
                     src="/assets/pfp.png"
                     alt={`${user.name}'s profile`}
@@ -498,7 +492,7 @@ export default function EmptyState({
                 </h1>
                 
                 {/* Member Since Info */}
-                <div className="text-center mb-3">
+                <div className="text-center mb-3 w-full">
                   <p className="text-sm text-blue-300">ChronosHub Member Since</p>
                   <div className="mt-1 bg-black/40 rounded-lg border border-blue-500/20 px-3 py-2 shadow-inner shadow-blue-500/10">
                     {user.createdAt ? (
@@ -526,14 +520,14 @@ export default function EmptyState({
                 </div>
                 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 gap-3 w-full mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 w-full mb-4">
                   <div className="bg-black/40 p-3 rounded-lg border border-blue-500/20">
                     <p className="text-sm text-blue-300">Total Journeys</p>
                     <p className="text-2xl font-bold text-white">0</p>
                   </div>
                   <div id="badges-card" className="bg-black/40 p-3 rounded-lg border border-blue-500/20">
                     <p className="text-sm text-blue-300">Badges Earned</p>
-                    <div className="flex items-center ">
+                    <div className="flex items-center">
                       <p className="text-2xl font-bold text-white">{userBadges.length}</p>
                     </div>
                   </div>
@@ -554,7 +548,7 @@ export default function EmptyState({
           </div>
           
           {/* Right Column - Welcome Section + Action Buttons */}
-          <div className="lg:col-span-2 flex flex-col h-full">
+          <div className="lg:col-span-2 flex flex-col h-full order-1 lg:order-2 mb-4 lg:mb-0">
             {/* Top Right - Welcome Message */}
             <div className="mb-4">
               <motion.div
@@ -563,20 +557,18 @@ export default function EmptyState({
                 transition={{ duration: 0.8 }}
                 className="text-center"
               >
-                <h2 className="text-3xl md:text-4xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300">
                   {getTimeGreeting()}, {user.name.split(' ')[0]}
                 </h2>
-                <p className="text-lg text-blue-200 mb-4 italic">
-                  <TypingAnimation duration={100} delay={0}>
-                    Welcome to ChronosHub
-                  </TypingAnimation>
-                </p>
+                <h3 className="text-lg sm:text-xl md:text-2xl text-blue-200 mb-4 italic">
+                  Welcome to ChronosHub
+                </h3>
               </motion.div>
             </div>
             
             {/* Action Buttons - Centered in the layout */}
             <div className="flex flex-col items-center justify-center flex-grow">
-              <div className="w-full max-w-sm">
+              <div className="w-full max-w-xs sm:max-w-sm">
                 <ShimmerButton
                   id="create-journey"
                   onClick={() => {

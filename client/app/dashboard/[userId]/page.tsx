@@ -262,7 +262,7 @@ export default function Dashboard() {
       <main className="container mx-auto px-6 py-8 relative z-10">
         {/* Friend Requests, Friends List, and User Guide buttons - hide when intro is active */}
         {user && showSocialIcons && (
-          <div className="absolute top-4 right-4 z-20 flex items-center space-x-6">
+          <div className="flex justify-center md:justify-end items-center space-x-4 sm:space-x-6 mb-8 md:absolute md:top-4 md:right-4 md:mb-0">
             <div id="instruction-guide">
               <UserGuide />
             </div>

@@ -93,8 +93,8 @@ export default function SignUp() {
       <StarBackground />
       <Navbar page="signup" />
       
-      <div className="flex items-center justify-center w-full h-[calc(100vh-64px)]">
-        <div className="container mx-auto px-6 relative z-10">
+      <div className="flex items-center justify-center w-full min-h-[calc(100vh-64px)] py-6 md:py-0 overflow-y-auto">
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
           <div className="flex flex-col md:flex-row items-center justify-center gap-8">
             {/* Animated Beam Container - Left side */}
             <div 
@@ -104,13 +104,13 @@ export default function SignUp() {
               <div className="absolute inset-0 flex items-center justify-center">
                 <SpaceEmoji emoji="👨‍🚀" size="w-20 h-20" ref={astronautRef} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20" />
                 
-                <SpaceEmoji emoji="🛸" size="w-16 h-16" ref={spaceshipRef} className="absolute left-[20%] top-[20%]" />
-                <SpaceEmoji emoji="🚀" size="w-14 h-14" ref={rocketRef} className="absolute right-[25%] top-[15%]" />
-                <SpaceEmoji emoji="👽" size="w-12 h-12" ref={alienRef} className="absolute left-[15%] bottom-[25%]" />
-                <SpaceEmoji emoji="🤖" size="w-12 h-12" ref={robotRef} className="absolute right-[20%] bottom-[20%]" />
-                <SpaceEmoji emoji="🪐" size="w-16 h-16" ref={planetRef} className="absolute left-[30%] top-[50%]" />
-                <SpaceEmoji emoji="💎" size="w-10 h-10" ref={crystalRef} className="absolute right-[30%] top-[45%]" />
-                <SpaceEmoji emoji="☄️" size="w-14 h-14" ref={cometRef} className="absolute left-[40%] bottom-[15%]" />
+                <SpaceEmoji emoji="🛸" size="w-16 h-16" ref={spaceshipRef} className="absolute left-[15%] top-[10%] sm:left-[20%] sm:top-[20%]" />
+                <SpaceEmoji emoji="🚀" size="w-14 h-14" ref={rocketRef} className="absolute right-[15%] top-[10%] sm:right-[25%] sm:top-[15%]" />
+                <SpaceEmoji emoji="👽" size="w-12 h-12" ref={alienRef} className="absolute left-[10%] bottom-[15%] sm:left-[15%] sm:bottom-[25%]" />
+                <SpaceEmoji emoji="🤖" size="w-12 h-12" ref={robotRef} className="absolute right-[10%] bottom-[15%] sm:right-[20%] sm:bottom-[20%]" />
+                <SpaceEmoji emoji="🪐" size="w-16 h-16" ref={planetRef} className="absolute left-[25%] top-[45%] sm:left-[30%] sm:top-[50%]" />
+                <SpaceEmoji emoji="💎" size="w-10 h-10" ref={crystalRef} className="absolute right-[25%] top-[40%] sm:right-[30%] sm:top-[45%]" />
+                <SpaceEmoji emoji="☄️" size="w-14 h-14" ref={cometRef} className="absolute left-[35%] bottom-[10%] sm:left-[40%] sm:bottom-[15%]" />
               </div>
 
               {/* Beams connecting to the astronaut (center) */}
@@ -193,7 +193,7 @@ export default function SignUp() {
                     </form>
                   </CardContent>
                   <CardFooter className="p-6 border-t border-blue-500/20">
-                    <p className="text-center text-blue-300/70 text-sm w-full">
+                    <p className="text-center text-blue-300/70 text-sm w-full pb-3 sm:pb-0">
                       Already have an account?{' '}
                       <Link href="/login" className="text-blue-400 hover:text-blue-300">
                         Sign in

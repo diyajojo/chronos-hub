@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { useComments } from '../comments/comments';
-import { useReactions } from '../reactions/reactions';
+import { useComments } from '../../utils/comments';
+import { useReactions } from '../../utils/reactions';
 import { useEffect, useState, useMemo } from 'react';
 import { UserProfileModal } from '../userprofile';
 

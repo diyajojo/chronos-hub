@@ -332,7 +332,7 @@ export function UserProfileModal({ isOpen, onClose, user, currentUserId }: UserP
               </div>
               <div>
                 <h2 className="text-xl font-bold text-indigo-200">{user.name}</h2>
-                <p className="text-indigo-400 text-sm">Time Traveler</p>
+                <p className="text-indigo-400 text-sm">ChronoTraveller</p>
               </div>
             </div>
             {getFriendActionButton()}

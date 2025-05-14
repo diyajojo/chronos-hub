@@ -79,7 +79,7 @@ function HeroSection() {
       <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-center py-8 lg:py-12">
         <div className="order-2 lg:order-1">
           <motion.h2
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 text-blue-100 leading-tight font-noto"
+            className="text-center lg:text-left text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 text-blue-100 leading-tight font-noto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -91,7 +91,7 @@ function HeroSection() {
           </motion.h2>
 
           <motion.p
-            className="text-base sm:text-lg md:text-xl text-blue-200 mb-6 sm:mb-8 leading-relaxed font-noto"
+            className="text-center lg:text-left text-base sm:text-lg md:text-xl text-blue-200 mb-6 sm:mb-8 leading-relaxed font-noto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -136,7 +136,7 @@ function HeroSection() {
           className="mb-12 relative"
         >
           <h3 className="text-center text-2xl md:text-3xl font-noto font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-blue-300">
-            Journey Through The Temporal Continuum
+            Journey Through The Temporal Continum
           </h3>
         </motion.div>
 
