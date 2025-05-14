@@ -346,10 +346,10 @@ const MapModal = ({ logs, user, userLogs = [], onClose }: {
               {displayLogs.length === 0 && (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="bg-black/70 text-white p-6 rounded-lg max-w-sm text-center">
-                    <h3 className="text-lg font-bold mb-2">
+                    <h3 className="font-urbanist text-lg font-bold mb-2">
                       {activeView === 'user' ? 'No Personal Journeys Yet' : 'No Journeys Discovered'}
                     </h3>
-                    <p className="text-amber-300">
+                    <p className="font-urbanist text-amber-300">
                       {activeView === 'user' 
                         ? 'Your time travel adventures will appear here once you start logging journeys.' 
                         : 'Time travelers have not recorded any journeys yet.'}
@@ -437,11 +437,11 @@ const MapModal = ({ logs, user, userLogs = [], onClose }: {
                         <div className={`absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-gray-900/90 text-white text-xs w-40 p-1.5 rounded ${isMobile ? (isInDenseArea ? 'opacity-100' : 'opacity-0 group-active:opacity-100') : 'opacity-0 group-hover:opacity-100'} transition-opacity z-20`}>
                           <div className="font-bold text-xs">{multipleLogsExist ? `${logs.length} journeys to ${year}` : `Journey to ${year}`}</div>
                           {multipleLogsExist ? (
-                            <div className="text-blue-300 mt-0.5 text-center text-xs">Click to explore all</div>
+                            <div className="font-urbanist text-blue-300 mt-0.5 text-center text-xs">Click to explore all</div>
                           ) : (
                             <>
                               <div className="truncate text-xs">{logs[0].story.substring(0, 15)}...</div>
-                              <div className="text-blue-300 mt-0.5 text-center text-xs">Click to view</div>
+                              <div className="font-urbanist text-blue-300 mt-0.5 text-center text-xs">Click to view</div>
                             </>
                           )}
                         </div>
@@ -463,7 +463,7 @@ const MapModal = ({ logs, user, userLogs = [], onClose }: {
                               e.stopPropagation();
                               setExpandedYear(null);
                             }}
-                            className="text-gray-400 hover:text-white"
+                            className="font-urbanist text-gray-400 hover:text-white"
                           >
                             ✕
                           </button>
@@ -483,7 +483,7 @@ const MapModal = ({ logs, user, userLogs = [], onClose }: {
                               }}
                             >
                               <div className="flex gap-2 items-center">
-                                <div className="rounded-full bg-blue-500/50 w-7 h-7 flex items-center justify-center text-xs text-white overflow-hidden">
+                                <div className="font-urbanist rounded-full bg-blue-500/50 w-7 h-7 flex items-center justify-center text-xs text-white overflow-hidden">
                                   {log.user.name.charAt(0).toUpperCase()}
                                 </div>
                                 <div className="flex-1 min-w-0">

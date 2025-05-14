@@ -116,7 +116,7 @@ export default function Content({
       <div className="mt-6 md:mt-16 grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 flex-grow pb-4">
         
         {/* Left Column - User Profile and Badges */}
-        <div className="lg:col-span-1 order-2 lg:order-1">
+        <div className="font-urbanist lg:col-span-1 order-2 lg:order-1">
           <div className="bg-black/30 backdrop-blur-md rounded-xl p-4 border border-blue-500/30 ">
             {/* Avatar and User Info */}
             <div className="flex flex-col items-center">
@@ -202,7 +202,7 @@ export default function Content({
           </div>
           
           {/* Mobile-only Action Buttons - Moved outside profile div but still in left column */}
-          <div className="mt-4 block lg:hidden">
+          <div className="font-urbanist text-white mt-4 block lg:hidden">
             <ShimmerButton
               onClick={() => setShowCreateModal(true)}
               className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold transition-all mb-3"
@@ -233,7 +233,7 @@ export default function Content({
         </div>
         
         {/* Right Column - Welcome Section + Action Buttons */}
-        <div className="lg:col-span-2 flex flex-col h-full order-1 lg:order-2 mb-4 lg:mb-0">
+        <div className="font-urbanist lg:col-span-2 flex flex-col h-full order-1 lg:order-2 mb-4 lg:mb-0">
           {/* Top Right - Welcome Message */}
           <div className="mb-4">
             <motion.div

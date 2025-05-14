@@ -11,7 +11,7 @@ const oswald=Oswald({
 
 
 const josefinSans=Josefin_Sans({
-  variable: "--font-josefinsans",
+  variable: "--font-josefinSans",
   subsets: ["latin"],
   weight: ["100","200","300","400", "500", "600", "700"], 
 });
@@ -37,9 +37,10 @@ const noto=Noto_Sans_Cuneiform({
 
 
 export const metadata: Metadata = {
-  title: "CHRONOSHUB",
-  description: "A Time Travel Adventure",
-};
+  title: "ChronosHub ",
+  description: "Log and share your temporal journeys across time and space. Connect with fellow time travelers and build your personal timeline of memories in this immersive social platform.",
+}
+    
 
 export default function RootLayout({
   children,

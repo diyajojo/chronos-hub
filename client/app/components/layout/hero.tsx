@@ -16,8 +16,6 @@ function HeroSection() {
       year: "3045 CE",
       title: "Chronicler's Era",
       icon: "📜",
-      description: "Record your journeys with detailed logs and evidence",
-      color: "from-blue-500 to-cyan-400"
     },
     {
       year: "2199 CE",
@@ -79,25 +77,26 @@ function HeroSection() {
       <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-center py-8 lg:py-12">
         <div className="order-2 lg:order-1">
           <motion.h2
-            className="text-center lg:text-left text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 text-blue-100 leading-tight font-noto"
+            className="font-urbanist text-center lg:text-left text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 text-blue-100 leading-tight font-josefinsans"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            Document Your
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-indigo-300">
-              Time Travel Adventures
+            Chronicle Your
+            <span className="font-urbanist block text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-indigo-300">
+              Temporal Adventures
             </span>
           </motion.h2>
 
           <motion.p
-            className="text-center lg:text-left text-base sm:text-lg md:text-xl text-blue-200 mb-6 sm:mb-8 leading-relaxed font-noto"
+            className="font-urbanist mt-5 text-center lg:text-left text-base sm:text-lg md:text-xl text-blue-200 mb-6 sm:mb-8 leading-relaxed font-josefinsans"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Log your journeys through time, collect temporal artifacts, and connect with 
-            fellow chrononauts in this exclusive portal for time travelers.
+            Record your journeys across time, share your discoveries, and connect with 
+            fellow time travelers. Create AI-generated visuals of your experiences and build 
+            your chronological legacy.
           </motion.p>
 
           <motion.div
@@ -135,17 +134,18 @@ function HeroSection() {
           transition={{ duration: 1, delay: 0.5 }}
           className="mb-12 relative"
         >
-          <h3 className="text-center text-2xl md:text-3xl font-noto font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-blue-300">
-            Journey Through The Temporal Continum
+          <h3 className="font-urbanist text-center text-2xl md:text-3xl font-josefinsans font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-blue-300">
+            Explore The Timeline Continuum
           </h3>
         </motion.div>
 
         {/* Interactive Timeline */}
-        <div className="relative h-[180px] sm:h-[150px] mb-8 sm:mb-12 overflow-x-auto">
+        <div className="relative h-[280px] sm:h-[150px] mb-8 sm:mb-12 overflow-x-auto">
           <div className="absolute left-0 right-0 top-1/2 h-1 bg-gradient-to-r from-indigo-500/50 via-blue-500/50 to-cyan-500/50 min-w-[640px]"></div>
 
           {timeEras.map((era, index) => {
-            const position = 10 + (index * 80 / (timeEras.length - 1));
+            // Create more space between timeline items on mobile
+            const position = 15 + (index * 70 / (timeEras.length - 1));
             return (
               <motion.div
                 key={`timeline-${index}`}
@@ -164,16 +164,24 @@ function HeroSection() {
                 } shadow-lg shadow-blue-500/30 transition-all duration-300`}>
                   <span className="text-base sm:text-lg">{era.icon}</span>
                 </div>
+                {/* Year - Position farther from icon on mobile */}
                 <div className={`absolute top-8 sm:top-10 transform -translate-x-1/2 text-xs sm:text-sm ${
                   activeEra === index ? 'text-blue-100' : 'text-blue-300'
-                } whitespace-nowrap transition-colors duration-300`}>
+                } whitespace-nowrap transition-colors duration-300 font-medium`}>
                   {era.year}
                 </div>
-                <div className={`absolute bottom-8 sm:bottom-10 transform -translate-x-1/2 text-xs sm:text-sm ${
+                {/* Title - Only show on tablet/desktop */}
+                <div className={`absolute bottom-8 sm:bottom-10 transform -translate-x-1/2 hidden sm:block text-xs sm:text-sm ${
                   activeEra === index ? 'text-blue-100' : 'text-blue-300'
-                } font-medium whitespace-nowrap transition-colors duration-300`}>
+                } font-medium whitespace-nowrap transition-colors duration-300 bg-blue-950/80 backdrop-blur-sm px-2 py-1 rounded`}>
                   {era.title}
                 </div>
+                {/* Mobile title - only shows when active */}
+                {activeEra === index && (
+                  <div className="absolute -bottom-12 transform -translate-x-1/2 block sm:hidden text-xs bg-blue-950/90 backdrop-blur-sm text-blue-100 font-medium whitespace-nowrap transition-all duration-300 px-3 py-1.5 rounded-full shadow-lg border border-blue-500/30 z-20">
+                    {era.title}
+                  </div>
+                )}
               </motion.div>
             );
           })}

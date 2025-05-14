@@ -117,12 +117,12 @@ export default function FriendRequests({ userId, onRequestAction }: FriendReques
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0 bg-black/70 backdrop-blur-xl border border-blue-500/30 text-white shadow-xl shadow-blue-500/10">
         <div className="p-3 border-b border-blue-500/30">
-          <h3 className="font-medium text-blue-200">Friend Requests</h3>
+          <h3 className="font-urbanist text-blue-200">Friend Requests</h3>
         </div>
         
         {loading ? (
           <div className="flex justify-center p-4">
-            <p className="text-blue-300">Loading requests...</p>
+            <p className="font-urbanist text-blue-300">Loading requests...</p>
           </div>
         ) : requests.length > 0 ? (
           <div className="max-h-80 overflow-y-auto">
@@ -130,25 +130,25 @@ export default function FriendRequests({ userId, onRequestAction }: FriendReques
               <div key={request.id} className="p-3 border-b border-blue-500/30 last:border-0">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-blue-100">{request.user1.name}</p>
-                    <p className="text-xs text-blue-300">Sent you a friend request</p>
+                    <p className="font-urbanist font-medium text-blue-100">{request.user1.name}</p>
+                    <p className="font-urbanist text-xs text-blue-300">Sent you a friend request</p>
                   </div>
                   <div className="flex gap-2">
                     {actionLoading === request.id ? (
                       <div className="flex justify-center p-1">
-                        <p className="text-blue-300 text-xs">Processing...</p>
+                        <p className="font-urbanist text-blue-300 text-xs">Processing...</p>
                       </div>
                     ) : (
                       <>
                         <button 
                           onClick={() => handleAcceptRequest(request.id)}
-                          className="bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded-md text-xs transition-colors"
+                          className="font-urbanist bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded-md text-xs transition-colors"
                         >
                           Accept
                         </button>
                         <button 
                           onClick={() => handleRejectRequest(request.id)}
-                          className="bg-black/50 border border-blue-500/30 hover:bg-black/70 text-blue-300 px-2 py-1 rounded-md text-xs transition-colors"
+                          className="font-urbanist bg-black/50 border border-blue-500/30 hover:bg-black/70 text-blue-300 px-2 py-1 rounded-md text-xs transition-colors"
                         >
                           Reject
                         </button>

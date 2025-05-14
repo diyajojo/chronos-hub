@@ -323,7 +323,7 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
         <Card className="bg-black/70 border border-blue-500/30 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-auto">
           <CardHeader className="border-b border-blue-500/30">
             <div className="flex justify-between items-center">
-              <CardTitle className="text-2xl font-bold text-white font-serif">{getStepTitle()}</CardTitle>
+              <CardTitle className="text-2xl font-bold text-white font-urbanist">{getStepTitle()}</CardTitle>
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -341,7 +341,7 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
           </CardHeader>
           
           <form onSubmit={handleSubmit}>
-            <CardContent className="p-6">
+            <CardContent className="font-urbanist p-6">
               {error && (
                 <Alert variant="destructive" className="mb-6 bg-red-500/20 border border-red-500/50 text-red-300">
                   <AlertDescription>{error}</AlertDescription>

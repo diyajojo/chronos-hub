@@ -16,7 +16,7 @@ export default function Navbar({ page }: NavbarProps) {
 
   return (
     <nav className="w-full h-16 backdrop-blur-sm border-b border-blue-500/20 relative z-20">
-      <div className="container h-full mx-auto px-4 flex items-center justify-between">
+      <div className=" font-notocontainer h-full mx-auto px-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-1 text-xl md:text-2xl text-blue-200 font-semibold hover:text-blue-300 font-noto">
           <Image
             src="/assets/logo.png"

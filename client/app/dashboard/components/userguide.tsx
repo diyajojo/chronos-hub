@@ -114,16 +114,16 @@ export default function UserGuide() {
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-96 p-0 bg-black/70 backdrop-blur-xl border border-blue-500/30 text-white shadow-xl shadow-blue-500/10 font-josefinSans">
-        <div className="p-3 border-b border-blue-500/30">
+        <div className="font-urbanist p-3 border-b border-blue-500/30">
           <h3 className="text-blue-200">ChronosHub Guide</h3>
         </div>
         
         <div className="p-4">
           <div className="mb-4">
-            <h4 className="text-lg font-medium text-blue-100">{guideSteps[currentStep].title}</h4>
+            <h4 className="font-urbanist text-lg font-medium text-blue-100">{guideSteps[currentStep].title}</h4>
             
             <div className="mt-3 p-3 bg-blue-900/30 rounded-md border border-blue-500/20">
-              <p className="text-sm text-blue-100 leading-relaxed whitespace-pre-line">
+              <p className="font-urbanist text-sm text-blue-100 leading-relaxed whitespace-pre-line">
                 {guideSteps[currentStep].longDescription}
               </p>
             </div>
@@ -135,7 +135,7 @@ export default function UserGuide() {
             <button 
               onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))}
               disabled={currentStep === 0}
-              className="px-3 py-1 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed bg-black/50 border border-blue-500/30 hover:bg-black/70 text-blue-300"
+              className="font-urbanist px-3 py-1 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed bg-black/50 border border-blue-500/30 hover:bg-black/70 text-blue-300"
             >
               Previous
             </button>
@@ -155,7 +155,7 @@ export default function UserGuide() {
             <button 
               onClick={() => setCurrentStep(prev => Math.min(guideSteps.length - 1, prev + 1))}
               disabled={currentStep === guideSteps.length - 1}
-              className="px-3 py-1 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed bg-blue-600 hover:bg-blue-500 text-white"
+              className="font-urbanist px-3 py-1 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed bg-blue-600 hover:bg-blue-500 text-white"
             >
               Next
             </button>

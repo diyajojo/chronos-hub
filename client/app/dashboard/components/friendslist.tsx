@@ -78,12 +78,12 @@ export default function FriendsList({ userId }: FriendsListProps) {
         </PopoverTrigger>
         <PopoverContent className="w-80 p-0 bg-black/70 backdrop-blur-xl border border-blue-500/30 text-white shadow-xl shadow-blue-500/10">
           <div className="p-3 border-b border-blue-500/30">
-            <h3 className="font-medium text-blue-200">Friends</h3>
+            <h3 className="font-urbanist text-blue-200">Friends</h3>
           </div>
           
           {loading ? (
             <div className="flex justify-center p-4">
-              <p className="text-blue-300">Loading friends...</p>
+              <p className="font-urbanist text-blue-300">Loading friends...</p>
             </div>
           ) : friends.length > 0 ? (
             <div className="max-h-80 overflow-y-auto">
@@ -103,7 +103,7 @@ export default function FriendsList({ userId }: FriendsListProps) {
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-blue-100 truncate">{friend.name}</p>
+                      <p className="font-urbanist  text-blue-100 truncate">{friend.name}</p>
                     </div>
                   </div>
                 </div>

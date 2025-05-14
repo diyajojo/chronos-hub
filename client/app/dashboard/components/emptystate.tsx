@@ -352,19 +352,19 @@ export default function EmptyState({
                   </motion.div>
 
                   {/* Creative welcome message */}
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 md:mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-purple-300 to-blue-200">
+                  <h2 className="font-urbanist text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 md:mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-purple-300 to-blue-200">
                      You've Crossed The Threshold
                   </h2>
                   
                   {/* Immersive description */}
-                  <div className="mb-6 sm:mb-8 md:mb-12 text-blue-100 text-base sm:text-lg md:text-xl leading-relaxed max-w-xl mx-auto space-y-3 sm:space-y-4 md:space-y-6">
+                  <div className="mb-6 font-urbanist sm:mb-8 md:mb-12 text-blue-100 text-base sm:text-lg md:text-xl leading-relaxed max-w-xl mx-auto space-y-3 sm:space-y-4 md:space-y-6">
                     <p>
-                      You're no longer <span className="text-blue-300 font-bold">{user.name.split(' ')[0]}</span> from the ordinary world. You are now a <span className="text-blue-300 font-semibold">Chrono Traveler</span> in this realm between timelines. 🌠
+                      You're no longer <span className="font-urbanist text-blue-300 font-bold">{user.name.split(' ')[0]}</span> from the ordinary world. You are now a <span className="font-urbanist text-blue-300 font-semibold">Chrono Traveler</span> in this realm between timelines. 🌠
                     </p>
                     <p>
                       The normal rules of time don't apply here. You're caught in the streams of history, floating between eras, with no way back to the mundane world. 🕰️
                     </p>
-                    <p className="text-blue-200">
+                    <p className="font-urbanist text-blue-200">
                       The only path forward is to embrace your new identity and venture through the timestream.
                     </p>
                   </div>
@@ -372,7 +372,7 @@ export default function EmptyState({
                   {/* Creative button */}
                   <button
                     onClick={startTour}
-                    className="px-6 sm:px-7 md:px-8 py-2 sm:py-2.5 md:py-3 bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-900 hover:from-blue-800 hover:via-indigo-800 hover:to-blue-800 text-white font-bold rounded-lg transition-all transform hover:scale-105 shadow-md shadow-blue-900/30"
+                    className="font-urbanist px-6 sm:px-7 md:px-8 py-2 sm:py-2.5 md:py-3 bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-900 hover:from-blue-800 hover:via-indigo-800 hover:to-blue-800 text-white font-bold rounded-lg transition-all transform hover:scale-105 shadow-md shadow-blue-900/30"
                   >
                     🚀 Let's Begin Journey
                   </button>
@@ -458,10 +458,10 @@ export default function EmptyState({
                   }`}
                 />
 
-                <h3 className="text-lg sm:text-xl font-bold text-blue-200 mb-2">
+                <h3 className="font-urbanist text-lg sm:text-xl font-bold text-blue-200 mb-2">
                   {TOUR_STEPS[currentTourStep].title}
                 </h3>
-                <p className="text-sm sm:text-base text-blue-100 mb-4">
+                <p className="font-urbanist text-sm sm:text-base text-blue-100 mb-4">
                   {TOUR_STEPS[currentTourStep].content}
                 </p>
                 <div className="flex justify-between items-center">
@@ -479,12 +479,12 @@ export default function EmptyState({
                     </button>
                     <button
                       onClick={nextTourStep}
-                      className="px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm bg-blue-600 hover:bg-blue-500 text-white transition-colors"
+                      className="font-urbanist px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm bg-blue-600 hover:bg-blue-500 text-white transition-colors"
                     >
                       {currentTourStep === TOUR_STEPS.length - 1 ? 'Got it!' : 'Next'}
                     </button>
                   </div>
-                  <span className="text-blue-300 text-xs sm:text-sm">
+                  <span className="font-urbanist text-blue-300 text-xs sm:text-sm">
                     {currentTourStep + 1} / {TOUR_STEPS.length}
                   </span>
                 </div>
@@ -510,13 +510,13 @@ export default function EmptyState({
                     className="object-cover"
                   />
                 </div>
-                <h1 className="text-xl md:text-2xl font-bold text-white text-center mb-2">
+                <h1 className="font-urbanist text-xl md:text-2xl font-bold text-white text-center mb-2">
                   {user.name}
                 </h1>
                 
                 {/* Member Since Info */}
                 <div className="text-center mb-3 w-full">
-                  <p className="text-sm text-blue-300">ChronosHub Member Since</p>
+                  <p className="font-urbanist text-sm text-blue-300">ChronosHub Member Since</p>
                   <div className="mt-1 bg-black/40 rounded-lg border border-blue-500/20 px-3 py-2 shadow-inner shadow-blue-500/10">
                     {user.createdAt ? (
                       <div className="flex items-center justify-center space-x-2">
@@ -545,13 +545,13 @@ export default function EmptyState({
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 w-full mb-4">
                   <div className="bg-black/40 p-3 rounded-lg border border-blue-500/20">
-                    <p className="text-sm text-blue-300">Total Journeys</p>
-                    <p className="text-2xl font-bold text-white">0</p>
+                    <p className="font-urbanist text-sm text-blue-300">Total Journeys</p>
+                    <p className="font-urbanist text-2xl font-bold text-white">0</p>
                   </div>
                   <div id="badges-card" className="bg-black/40 p-3 rounded-lg border border-blue-500/20">
-                    <p className="text-sm text-blue-300">Badges Earned</p>
+                    <p className="font-urbanist text-sm text-blue-300">Badges Earned</p>
                     <div className="flex items-center">
-                      <p className="text-2xl font-bold text-white">{userBadges.length}</p>
+                      <p className="font-urbanist text-2xl font-bold text-white">{userBadges.length}</p>
                     </div>
                   </div>
                 </div>
@@ -560,9 +560,9 @@ export default function EmptyState({
                 <div className="mt-3 bg-black/40 p-4 rounded-xl border border-blue-500/30 shadow-inner shadow-blue-500/10">
                   <div className="flex items-center mb-2">
                     <span className="text-xl mr-2">🚀</span>
-                    <h3 className="text-base font-medium text-blue-300">Begin Your Journey</h3>
+                    <h3 className="font-urbanist text-base font-medium text-blue-300">Begin Your Journey</h3>
                   </div>
-                  <p className="text-blue-100 text-sm">
+                  <p className="font-urbanist text-blue-100 text-sm">
                     Ready to chronicle your time-traveling adventures? Create your first log and start building your personal timeline of memories!
                   </p>
                 </div>
@@ -580,10 +580,10 @@ export default function EmptyState({
                 transition={{ duration: 0.8 }}
                 className="text-center"
               >
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300">
+                <h2 className="font-urbanist text-2xl sm:text-3xl md:text-4xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300">
                   {getTimeGreeting()}, {user.name.split(' ')[0]}
                 </h2>
-                <h3 className="text-lg sm:text-xl md:text-2xl text-blue-200 mb-4 italic">
+                <h3 className="font-urbanist text-lg sm:text-xl md:text-2xl text-blue-200 mb-4 italic">
                   Welcome to ChronosHub
                 </h3>
               </motion.div>
@@ -591,7 +591,7 @@ export default function EmptyState({
             
             {/* Action Buttons - Centered in the layout */}
             <div className="flex flex-col items-center justify-center flex-grow">
-              <div className="w-full max-w-xs sm:max-w-sm">
+              <div className="font-urbanist w-full max-w-xs sm:max-w-sm">
                 <ShimmerButton
                   id="create-journey"
                   onClick={() => {

@@ -319,7 +319,7 @@ export function UserProfileModal({ isOpen, onClose, user, currentUserId }: UserP
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-gradient-to-br from-indigo-950 to-blue-950 text-white border border-indigo-400/20 p-0 max-w-[95vw] sm:max-w-2xl w-full m-1 sm:m-4 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="font-urbanist bg-gradient-to-br from-indigo-950 to-blue-950 text-white border border-indigo-400/20 p-0 max-w-[95vw] sm:max-w-2xl w-full m-1 sm:m-4 max-h-[90vh] overflow-y-auto">
         {/* Add DialogTitle for accessibility, can be visually hidden if needed */}
         <DialogTitle className="sr-only">User Profile</DialogTitle>
         
