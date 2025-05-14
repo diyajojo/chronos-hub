@@ -27,7 +27,7 @@ const port = 8000;
 // Middleware
 app.use(cors({
   origin: ['http://localhost:3000', 'https://chronos-hub.vercel.app'],
-  credentials: 'include',
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'],
   exposedHeaders: ['Access-Control-Allow-Origin']
