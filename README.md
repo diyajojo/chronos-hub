@@ -1,3 +1,4 @@
+
 # ChronosHub - Time Travel Social Platform
 
 
@@ -19,15 +20,15 @@ ChronosHub is an immersive social platform where time travelers connect, share t
 ## 🛠️ Technology Stack
 
 ### Frontend
-- **Next.js 14** - React framework with App Router for optimized rendering
-- **TypeScript** - Type-safe code with enhanced developer experience
-- **Tailwind CSS** - Utility-first CSS framework for responsive design
-- **Shadcn UI** - Accessible component system built on Radix UI
-- **Framer Motion** - Animation library for interactive UI elements
+- **Next.js 14**
+- **TypeScript** 
+- **Tailwind CSS** 
+- **Shadcn UI** 
+- **Framer Motion**
 
 ### Backend
-- **Node.js** - JavaScript runtime for the server
-- **Express** - Web application framework
-- **Prisma** - Next-generation ORM for database access
-- **PostgreSQL** - Relational database for data persistence
+- **Node.js**
+- **Express**
+- **Prisma** 
+- **PostgreSQL** 
 

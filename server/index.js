@@ -58,6 +58,10 @@ app.post('/friendship/friend-requests', getFriendRequests);
 app.post('/friendship/status', getFriendshipStatus);
 app.post('/friendship/friends', getFriends);
 
+app.get('/', (req, res) => {
+  res.send('Hello World');
+});
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
