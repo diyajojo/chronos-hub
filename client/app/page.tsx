@@ -2,7 +2,6 @@
 import Navbar from './components/layout/navbar';
 import HeroSection from './components/layout/hero';
 import StarBackground from './components/design/starbackground';
-
 import FloatingMagicalElements from './components/design/floatingelements';
 
 export default function LandingPage() {
