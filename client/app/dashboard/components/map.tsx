@@ -403,18 +403,22 @@ const MapModal = ({ logs, user, userLogs = [], onClose }: {
                       onClick={() => multipleLogsExist ? handleYearClick(year) : handleLogClick(logs[0])}
                       className="relative group"
                     >
-                      {/* Year label with improved visibility */}
-                      <div className={`absolute -top-6 left-1/2 transform -translate-x-1/2 text-amber-200 font-bold text-xs ${isInDenseArea ? 'bg-blue-800/90 border border-blue-400' : 'bg-black/70'} px-2 py-0.5 rounded-full z-10 ${isInDenseArea ? 'whitespace-nowrap' : ''}`}>
-                        {isInDenseArea ? `Year ${year}` : year}
+                      {/* Year label - always visible */}
+                      <div 
+                        className={`absolute -top-6 left-1/2 transform -translate-x-1/2 text-amber-200 font-bold text-xs 
+                          ${isInDenseArea ? 'bg-blue-800/90 border border-blue-400' : 'bg-black/70'} 
+                          px-2 py-0.5 rounded-full z-10`}
+                      >
+                        {year}
                       </div>
                       
-                      {/* Pin indicator for all pins */}
+                      {/* Pin indicator */}
                       <div className="relative filter drop-shadow-lg">
                         <div className="relative">
                           {/* Pin with consistent size */}
                           <span role="img" aria-label="map-pin" className={`text-3xl ${getPinColorClass()}`}>📍</span>
                           
-                          {/* Glow effect that's more intense with more logs */}
+                          {/* Glow effect */}
                           <div className={`absolute inset-0 animate-pulse ${getGlowColorClass()} opacity-50 rounded-full blur-md -z-10`} 
                                style={{ animationDuration: `${1.5 - Math.min(logs.length * 0.1, 0.8)}s` }}></div>
 
@@ -429,22 +433,7 @@ const MapModal = ({ logs, user, userLogs = [], onClose }: {
 
                       {/* Enlarged click/tap area for mobile (invisible) */}
                       {isMobile && (
-                        <div className="absolute -inset-3 bg-transparent z-0"></div>
-                      )}
-
-                      {/* Tooltip - only show on non-mobile or when not expanded */}
-                      {!isExpanded && (
-                        <div className={`absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-gray-900/90 text-white text-xs w-40 p-1.5 rounded ${isMobile ? (isInDenseArea ? 'opacity-100' : 'opacity-0 group-active:opacity-100') : 'opacity-0 group-hover:opacity-100'} transition-opacity z-20`}>
-                          <div className="font-bold text-xs">{multipleLogsExist ? `${logs.length} journeys to ${year}` : `Journey to ${year}`}</div>
-                          {multipleLogsExist ? (
-                            <div className="font-urbanist text-blue-300 mt-0.5 text-center text-xs">Click to explore all</div>
-                          ) : (
-                            <>
-                              <div className="truncate text-xs">{logs[0].story.substring(0, 15)}...</div>
-                              <div className="font-urbanist text-blue-300 mt-0.5 text-center text-xs">Click to view</div>
-                            </>
-                          )}
-                        </div>
+                        <div className="absolute -inset-4 bg-transparent z-0"></div>
                       )}
                     </button>
 
@@ -457,7 +446,7 @@ const MapModal = ({ logs, user, userLogs = [], onClose }: {
                         transition={{ duration: 0.3 }}
                       >
                         <div className="flex justify-between items-center mb-2">
-                          <h3 className="text-amber-300 font-bold">Travellers to {year}</h3>
+                          <h3 className="text-amber-300 font-bold">Journeys to {year}</h3>
                           <button 
                             onClick={(e) => {
                               e.stopPropagation();
@@ -478,7 +467,6 @@ const MapModal = ({ logs, user, userLogs = [], onClose }: {
                               className="bg-black/50 border border-blue-500/30 rounded-lg p-2 cursor-pointer hover:bg-blue-900/30"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                console.log('Expanded view log clicked:', log);
                                 handleLogClick(log);
                               }}
                             >

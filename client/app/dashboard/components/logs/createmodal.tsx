@@ -1,14 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { handleImageUpload } from '../../utils/imageupload';
-import { generateAIImage } from '../../utils/generateAIImage';
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import BadgeNotification from '../badgenotification';
@@ -27,7 +25,6 @@ interface CreateLogModalProps {
   onLogCreated: () => Promise<void>;
 }
 
-
 interface TimeLog {
   year: string;
   title: string;
@@ -40,11 +37,6 @@ interface TimeLog {
 export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated }: CreateLogModalProps) {
   const [step, setStep] = useState(1);
   const [uploading, setUploading] = useState(false);
-  const [imageMode, setImageMode] = useState<'upload' | 'ai'>('upload');
-  const [generatingImage, setGeneratingImage] = useState(false);
-  const [aiImageUrl, setAiImageUrl] = useState('');
-  const [aiImagePrompt, setAiImagePrompt] = useState('');
-  const [aiLoading, setAiLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [showBadgeNotification, setShowBadgeNotification] = useState(false);
   const [earnedBadge, setEarnedBadge] = useState<BadgeName | null>(null);
@@ -63,90 +55,26 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
   });
 
   const validateForm = () => {
-    if (!timeLog.year || isNaN(parseInt(timeLog.year))) {
-      setError('Please enter a valid year');
-      toast.error("Invalid Year", {
-        description: "Please enter a valid year",
-        duration: 5000,
-        action: {
-          label: "Fix",
-          onClick: () => setStep(1),
-        },
-      });
+    if (!timeLog.year) {
+      setError('Please select a year');
       return false;
     }
 
-    if (!timeLog.description.trim()) {
-      setError('Please enter a description');
-      toast.error("Missing Description", {
-        description: "Please enter a description of your journey",
-        duration: 5000,
-        action: {
-          label: "Fix",
-          onClick: () => setStep(2),
-        },
-      });
+    if (!timeLog.title) {
+      setError('Please enter a title');
       return false;
     }
-    if (!timeLog.title.trim()) {
-      setError('Please enter a title for your story');
-      toast.error("Missing Title", {
-        description: "Please enter a title for your time travel story",
-        duration: 5000,
-        action: {
-          label: "Fix",
-          onClick: () => setStep(1),
-        },
-      });
+
+    if (!timeLog.description) {
+      setError('Please describe your trip');
       return false;
     }
-    if (!user.id) {
-      setError('User ID is missing');
-      toast.error("Authentication Error", {
-        description: "User ID is missing. Please try logging in again.",
-        duration: 5000,
-        action: {
-          label: "Dismiss",
-          onClick: () => {},
-        },
-      });
-      return false;
-    }
-    if (imageMode === 'upload' && !timeLog.imageFile) {
+
+    if (!timeLog.imageFile) {
       setError('Please upload an image');
-      toast.error("Missing Image", {
-        description: "Please upload an image from your adventure",
-        duration: 5000,
-        action: {
-          label: "Fix",
-          onClick: () => {},
-        },
-      });
       return false;
     }
-    if (imageMode === 'ai' && !aiImageUrl) {
-      setError('Please generate an AI image');
-      toast.error("Missing Image", {
-        description: "Please generate an AI image for your adventure",
-        duration: 5000,
-        action: {
-          label: "Generate",
-          onClick: () => {
-            if (timeLog.description && timeLog.year) {
-              generateAIImage({
-                description: timeLog.description,
-                year: timeLog.year,
-                setGeneratingImage,
-                setAiImageUrl,
-                setTimeLog,
-                currentTimeLog: timeLog,
-              });
-            }
-          },
-        },
-      });
-      return false;
-    }
+
     setError('');
     return true;
   };
@@ -163,23 +91,12 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
       let finalImageUrl = '';
       setUploading(true);
 
-      if (imageMode === 'upload' && timeLog.imageFile) {
+      if (timeLog.imageFile) {
         try {
           finalImageUrl = await handleImageUpload(timeLog.imageFile);
         } catch (uploadError) {
           console.error('Image upload error:', uploadError);
           throw new Error('Failed to upload image. Please try again.');
-        }
-      } else if (imageMode === 'ai' && aiImageUrl) {
-        try {
-          const aiImageResponse = await fetch(aiImageUrl);
-          const aiImageBlob = await aiImageResponse.blob();
-          const aiImageFile = new File([aiImageBlob], 'ai-generated-image.png', { type: 'image/png' });
-
-          finalImageUrl = await handleImageUpload(aiImageFile);
-        } catch (aiError) {
-          console.error('AI image processing error:', aiError);
-          throw new Error('Failed to process AI image. Please try again.');
         }
       }
 
@@ -293,30 +210,6 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
     setWordCount(count);
   };
 
-  const handleGenerate = async () => {
-    if (!timeLog.description) {
-      setError('Please describe your trip first');
-      return;
-    }
-
-    setError('');
-    
-    try {
-      generateAIImage({
-        description: timeLog.description,
-        year: timeLog.year,
-        setGeneratingImage,
-        setAiImageUrl,
-        setTimeLog,
-        currentTimeLog: timeLog,
-      });
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to generate image';
-      setError(errorMessage);
-      toast.error('Failed to generate image: ' + errorMessage);
-    }
-  };
-
   return (
     <>
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -403,115 +296,65 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
               
               {step === 3 && (
                 <div className="space-y-6">
-                  <Tabs
-                    value={imageMode}
-                    onValueChange={(value) => setImageMode(value as 'upload' | 'ai')}
-                    className="w-full"
-                  >
-                    <TabsList className="grid grid-cols-2 w-full bg-black/50 border border-blue-500/30">
-                      <TabsTrigger value="upload" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-300">Upload Image</TabsTrigger>
-                      <TabsTrigger value="ai" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-300">Generate AI Image</TabsTrigger>
-                    </TabsList>
-                    
-                    <TabsContent value="upload" className="mt-4">
-                      {!timeLog.imageFile ? (
-                        <div className="border-2 border-dashed border-blue-500/30 rounded-lg p-8 text-center">
-                          <p className="text-blue-300 mb-4">Upload a photo from your adventure</p>
-                          <Label htmlFor="image-upload" className="cursor-pointer inline-block px-4 py-2 bg-black/50 border border-blue-500/30 text-blue-300 hover:bg-black/70 rounded-lg transition-colors">
-                            <span>Choose an image</span>
+                  <div className="border-2 border-dashed border-blue-500/30 rounded-lg p-8 text-center">
+                    {!timeLog.imageFile ? (
+                      <>
+                        <p className="text-blue-300 mb-4">Upload a photo from your adventure</p>
+                        <Label htmlFor="image-upload" className="cursor-pointer inline-block px-4 py-2 bg-black/50 border border-blue-500/30 text-blue-300 hover:bg-black/70 rounded-lg transition-colors">
+                          <span>Choose an image</span>
+                          <Input
+                            id="image-upload"
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setTimeLog({
+                                  ...timeLog,
+                                  imageFile: file,
+                                  customFileName: file.name.split('.')[0],
+                                });
+                              }
+                            }}
+                            className="hidden"
+                          />
+                        </Label>
+                      </>
+                    ) : (
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="artifact-name" className="text-blue-300 mb-2">Artifact Name</Label>
+                          <div className="flex gap-4">
                             <Input
-                              id="image-upload"
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                  setTimeLog({
-                                    ...timeLog,
-                                    imageFile: file,
-                                    customFileName: file.name.split('.')[0],
-                                  });
-                                }
-                              }}
-                              className="hidden"
+                              id="artifact-name"
+                              type="text"
+                              value={timeLog.customFileName}
+                              onChange={(e) => setTimeLog({ ...timeLog, customFileName: e.target.value })}
+                              className="bg-black/50 border border-blue-500/30 text-white"
+                              placeholder="Name your time artifact"
                             />
-                          </Label>
-                        </div>
-                      ) : (
-                        <div className="space-y-4">
-                          <div>
-                            <Label htmlFor="artifact-name" className="text-blue-300 mb-2">Artifact Name</Label>
-                            <div className="flex gap-4">
-                              <Input
-                                id="artifact-name"
-                                type="text"
-                                value={timeLog.customFileName}
-                                onChange={(e) => setTimeLog({ ...timeLog, customFileName: e.target.value })}
-                                className="bg-black/50 border border-blue-500/30 text-white"
-                                placeholder="Name your time artifact"
-                              />
-                              <Button
-                                type="button"
-                                variant="destructive"
-                                onClick={() => setTimeLog({ ...timeLog, imageFile: null, customFileName: '' })}
-                              >
-                                Remove
-                              </Button>
-                            </div>
-                          </div>
-                          <div className="relative">
-                            <img
-                              src={URL.createObjectURL(timeLog.imageFile)}
-                              alt="Preview"
-                              className="max-w-full rounded-lg border border-blue-500/30"
-                            />
-                            <div className="absolute top-2 right-2 bg-black/70 px-2 py-1 rounded text-xs text-blue-300">
-                              Time Artifact
-                            </div>
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              onClick={() => setTimeLog({ ...timeLog, imageFile: null, customFileName: '' })}
+                            >
+                              Remove
+                            </Button>
                           </div>
                         </div>
-                      )}
-                    </TabsContent>
-                    
-                    <TabsContent value="ai" className="mt-4">
-                      {!aiImageUrl ? (
-                        <Button
-                          type="button"
-                          variant="default"
-                          onClick={handleGenerate}
-                          disabled={generatingImage || !timeLog.description || !timeLog.year}
-                          className={`w-full ${
-                            generatingImage || !timeLog.description || !timeLog.year
-                              ? 'bg-gray-600'
-                              : 'bg-black/50 border border-blue-500/30 text-blue-300 hover:bg-black/70'
-                          }`}
-                        >
-                          {generatingImage ? 'Generating Image...' : 'Generate Image from Story'}
-                        </Button>
-                      ) : (
-                        <div className="space-y-4">
-                          <div className="relative">
-                            <img
-                              src={aiImageUrl}
-                              alt="AI Generated"
-                              className="max-w-full rounded-lg border border-blue-500/30"
-                            />
-                            <div className="absolute top-2 right-2 bg-black/70 px-2 py-1 rounded text-xs text-blue-300">
-                              AI Generated
-                            </div>
+                        <div className="relative">
+                          <img
+                            src={URL.createObjectURL(timeLog.imageFile)}
+                            alt="Preview"
+                            className="max-w-full rounded-lg border border-blue-500/30"
+                          />
+                          <div className="absolute top-2 right-2 bg-black/70 px-2 py-1 rounded text-xs text-blue-300">
+                            Time Artifact
                           </div>
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            onClick={() => setAiImageUrl('')}
-                            className="w-full"
-                          >
-                            Remove & Generate New
-                          </Button>
                         </div>
-                      )}
-                    </TabsContent>
-                  </Tabs>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </CardContent>
@@ -544,9 +387,9 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
                 <Button
                   type="submit"
                   variant="default"
-                  disabled={uploading || (imageMode === 'upload' && !timeLog.imageFile) || (imageMode === 'ai' && !aiImageUrl)}
+                  disabled={uploading || !timeLog.imageFile}
                   className={
-                    uploading || (imageMode === 'upload' && !timeLog.imageFile) || (imageMode === 'ai' && !aiImageUrl)
+                    uploading || !timeLog.imageFile
                       ? 'bg-gray-600'
                       : 'bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600'
                   }

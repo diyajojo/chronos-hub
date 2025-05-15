@@ -22,7 +22,6 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "nodemon": "^3.1.9",
-    "openai": "^4.93.0",
     "prisma": "^6.5.0"
   }
 }

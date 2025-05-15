@@ -103,8 +103,8 @@ function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
           >
-            ChronosHub is here for you, it's like Instagram but with a time travel twist! Post your adventures, create 
-            AI-generated images or upload images of your experiences, and connect with friends across different eras.
+            ChronosHub is here for you, it's like Instagram but with a time travel twist! Post your time travel stories, 
+             upload images of your adventures, and connect with friends across different eras.
           </motion.p>
 
           <motion.div
