@@ -12,6 +12,7 @@ interface User {
   id: number;
   name: string;
   email: string;
+  isOnline?: boolean;
 }
 
 export interface SearchUsersProps {
@@ -29,79 +30,53 @@ export function SearchUsers({
 }: SearchUsersProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [users, setUsers] = useState<User[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  
-  // Direct API call function
-  const searchUsers = async (term: string): Promise<{ success: boolean; users: User[] }> => {
-    const response = await fetch(`${API_BASE_URL}/searchUsers`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ searchTerm: term }),
-    });
-    return response.json();
-  };
 
-  // Debounce search to avoid excessive API calls
-  // This creates a function that waits 300ms after the user stops typing
-  // before executing the search - this prevents sending a request for every keystroke
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedSearch = useCallback(
-    debounce(async (term: string) => {
-      if (!term.trim()) {
-        // If search is cleared, clear results
-        setUsers([]);
-        setHasSearched(false);
-        return;
-      }
-
+  // Fetch all users on component mount
+  useEffect(() => {
+    const fetchUsers = async () => {
       setIsLoading(true);
       try {
-        const result = await searchUsers(term);
-        if (result.success) {
-          setUsers(result.users);
-          setHasSearched(true);
+        const response = await fetch(`${API_BASE_URL}/users`, {
+          credentials: 'include',
+        });
+        const data = await response.json();
+        if (data.success) {
+          setUsers(data.users);
+          setFilteredUsers(data.users);
         }
       } catch (error) {
-        console.error('Error searching users:', error);
+        console.error('Error fetching users:', error);
       } finally {
         setIsLoading(false);
       }
-    }, 300), // Wait 300ms after user stops typing before executing search
-    []
-  );
+    };
 
-  useEffect(() => {
-    // Focus the search input if autoFocus is enabled
-    if (autoFocus && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-  }, [autoFocus]);
+    fetchUsers();
+  }, []);
 
+  // Filter users locally based on search term
   useEffect(() => {
-    if (searchTerm) {
-      debouncedSearch(searchTerm);
+    if (searchTerm.trim() === '') {
+      setFilteredUsers(users);
     } else {
-      setUsers([]);
-      setHasSearched(false);
+      const filtered = users.filter(user => 
+        user.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredUsers(filtered);
     }
-  }, [searchTerm, debouncedSearch]);
+  }, [searchTerm, users]);
 
   const handleUserClick = (user: User) => {
-    // Don't do anything if the user clicked is the current user
     if (user.id === currentUserId) return;
     
-    // If parent provided a callback, use that
     if (onUserSelect) {
       onUserSelect(user);
     } else {
-      // Otherwise handle locally
       setSelectedUser(user);
       setIsProfileOpen(true);
     }
@@ -126,33 +101,17 @@ export function SearchUsers({
       </div>
 
       <div className="mt-2 rounded-md border border-blue-500/30 overflow-hidden bg-black/30">
-        {/* Prompt state - when user hasn't searched yet */}
-        {!searchTerm && !hasSearched && (
-          <div className="flex flex-col items-center justify-center p-3 sm:p-6 text-center">
-            <UserIcon className="h-8 w-8 sm:h-12 sm:w-12 text-blue-500 mb-1 sm:mb-2" />
-            <p className="text-blue-300 text-sm sm:text-base">Type to search for time travelers</p>
-          </div>
-        )}
-
-        {/* Empty state - when search returned no results */}
-        {searchTerm && hasSearched && !isLoading && users.length === 0 && (
-          <div className="flex flex-col items-center justify-center p-3 sm:p-6 text-center">
-            <UserIcon className="h-8 w-8 sm:h-12 sm:w-12 text-blue-500 mb-1 sm:mb-2" />
-            <p className="text-blue-300 text-sm sm:text-base">OOPS no time travellers found</p>
-          </div>
-        )}
-
         {/* Loading state */}
         {isLoading && (
           <div className="p-2 sm:p-4 flex justify-center">
-            <p className="text-blue-300 text-sm sm:text-base">Searching...</p>
+            <p className="text-blue-300 text-sm sm:text-base">Loading users...</p>
           </div>
         )}
 
-        {/* Results */}
-        {hasSearched && !isLoading && users.length > 0 && (
-          <div className="max-h-48 sm:max-h-64 overflow-y-auto">
-            {users.map((user) => (
+        {/* User list */}
+        {!isLoading && filteredUsers.length > 0 && (
+          <div className="max-h-64 overflow-y-auto">
+            {filteredUsers.map((user) => (
               <div
                 key={user.id}
                 onClick={() => handleUserClick(user)}
@@ -181,9 +140,17 @@ export function SearchUsers({
             ))}
           </div>
         )}
+
+        {/* Empty state */}
+        {!isLoading && filteredUsers.length === 0 && (
+          <div className="flex flex-col items-center justify-center p-3 sm:p-6 text-center">
+            <UserIcon className="h-8 w-8 sm:h-12 sm:w-12 text-blue-500 mb-1 sm:mb-2" />
+            <p className="text-blue-300 text-sm sm:text-base">No users found</p>
+          </div>
+        )}
       </div>
 
-      {/* Profile modal - only shown if parent doesn't handle user selection */}
+      {/* Profile modal */}
       {!onUserSelect && selectedUser && (
         <UserProfileModal
           isOpen={isProfileOpen}

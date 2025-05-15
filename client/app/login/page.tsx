@@ -185,7 +185,7 @@ export default function Login() {
                   className="font-urbanist p-0 bg-blue-950/30 backdrop-blur-sm border-blue-500/20 min-h-[500px]"
                 >
                   <CardHeader className="border-b border-blue-500/20 p-6 [.border-b]:pb-6 space-y-4">
-                    <CardTitle className="font-urbanist text-blue-200 text-2xl">Login to Chrono Chronicles</CardTitle>
+                    <CardTitle className="font-urbanist text-blue-200 text-2xl">Login to ChronosHub</CardTitle>
                     <CardDescription className="font-urbanist text-blue-300/70">
                       Enter your credentials to access your account
                     </CardDescription>
@@ -231,7 +231,7 @@ export default function Login() {
                     </form>
                   </CardContent>
                   <CardFooter className="p-6 border-t border-blue-500/20">
-                    <p className="font-josefinSans text-center text-blue-300/70 text-sm w-full">
+                    <p className="font-urbanist text-center text-blue-300/70 text-sm w-full">
                       Don't have an account?{' '}
                       <Link href="/signup" className="text-blue-400 hover:text-blue-300">
                         Sign up

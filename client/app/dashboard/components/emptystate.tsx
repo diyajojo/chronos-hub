@@ -370,12 +370,14 @@ export default function EmptyState({
                   </div>
 
                   {/* Creative button */}
-                  <button
-                    onClick={startTour}
-                    className="font-urbanist px-6 sm:px-7 md:px-8 py-2 sm:py-2.5 md:py-3 bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-900 hover:from-blue-800 hover:via-indigo-800 hover:to-blue-800 text-white font-bold rounded-lg transition-all transform hover:scale-105 shadow-md shadow-blue-900/30"
-                  >
-                    🚀 Let's Begin Journey
-                  </button>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <button
+                      onClick={startTour}
+                      className="font-urbanist px-6 sm:px-7 md:px-8 py-2 sm:py-2.5 md:py-3 bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-900 hover:from-blue-800 hover:via-indigo-800 hover:to-blue-800 text-white font-bold rounded-lg transition-all transform hover:scale-105 shadow-md shadow-blue-900/30"
+                    >
+                      🚀 Let's Begin Journey
+                    </button>
+                  </div>
                 </motion.div>
               </div>
             </motion.div>
@@ -484,9 +486,17 @@ export default function EmptyState({
                       {currentTourStep === TOUR_STEPS.length - 1 ? 'Got it!' : 'Next'}
                     </button>
                   </div>
-                  <span className="font-urbanist text-blue-300 text-xs sm:text-sm">
-                    {currentTourStep + 1} / {TOUR_STEPS.length}
-                  </span>
+                  <div className="flex items-center gap-4">
+                    <button
+                      onClick={() => setShowTour(false)}
+                      className="font-urbanist text-blue-300 hover:text-blue-200 text-xs sm:text-sm transition-colors"
+                    >
+                      Skip Tour
+                    </button>
+                    <span className="font-urbanist text-blue-300 text-xs sm:text-sm">
+                      {currentTourStep + 1} / {TOUR_STEPS.length}
+                    </span>
+                  </div>
                 </div>
               </motion.div>
             </motion.div>

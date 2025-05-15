@@ -10,7 +10,7 @@ const proxyImage = require('./routes/ai/image/utils/proxyimage');
 const { addComment, fetchComments } = require('./routes/database/comments');
 const { addReaction, fetchReactions } = require('./routes/database/reactions');
 const { fetchUserBadges } = require('./routes/database/badges');
-const { searchUsers } = require('./routes/database/users');
+const { searchUsers, getAllUsers } = require('./routes/database/users');
 const { getUser } = require('./routes/database/profilefetch');
 const { 
   sendFriendRequest,
@@ -50,6 +50,7 @@ app.post('/addreaction', addReaction);
 app.post('/fetchreactions', fetchReactions);
 app.post('/userbadges', fetchUserBadges);
 app.post('/searchUsers', searchUsers);
+app.get('/users', getAllUsers);
 app.get('/user/:userId', getUser);
 app.post('/friendship/send-request', sendFriendRequest);
 app.post('/friendship/accept-request', acceptFriendRequest);

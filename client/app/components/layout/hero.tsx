@@ -80,9 +80,9 @@ function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            Your Time Machine
+            Brb, Just Grabbing Coffee
             <span className="font-urbanist block text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-indigo-300">
-              Is Now Online
+            With Shakespeare ☕
             </span>
           </motion.h2>
 
@@ -104,7 +104,7 @@ function HeroSection() {
             transition={{ duration: 0.8, delay: 0.3 }}
           >
             ChronosHub is here for you, it's like Instagram but with a time travel twist! Post your adventures, create 
-            AI-generated images of your experiences, and connect with friends across different eras.
+            AI-generated images or upload images of your experiences, and connect with friends across different eras.
           </motion.p>
 
           <motion.div
@@ -149,11 +149,11 @@ function HeroSection() {
 
         {/* Interactive Timeline */}
         <div className="relative h-[280px] sm:h-[150px] mb-8 sm:mb-12 overflow-x-auto">
-          <div className="absolute left-0 right-0 top-1/2 h-1 bg-gradient-to-r from-indigo-500/50 via-blue-500/50 to-cyan-500/50 min-w-[640px]"></div>
+          <div className="absolute left-0 right-0 top-1/2 h-1 bg-gradient-to-r from-indigo-500/50 via-blue-500/50 to-cyan-500/50 w-[200%] sm:w-full"></div>
 
           {timeEras.map((era, index) => {
             // Create more space between timeline items on mobile
-            const position = 15 + (index * 70 / (timeEras.length - 1));
+            const position = index * (90 / (timeEras.length - 1));
             return (
               <motion.div
                 key={`timeline-${index}`}
@@ -165,31 +165,25 @@ function HeroSection() {
                 transition={{ duration: 0.5, delay: index * 0.15 }}
                 onClick={() => setActiveEra(activeEra === index ? null : index)}
               >
-                <div className={`w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-full ${
+                <div className={`w-8 h-8 sm:w-8 sm:h-8 flex items-center justify-center rounded-full ${
                   activeEra === index
                     ? 'bg-gradient-to-r from-blue-500 to-indigo-500'
                     : 'bg-blue-900/70 border border-blue-500/30'
                 } shadow-lg shadow-blue-500/30 transition-all duration-300`}>
                   <span className="text-base sm:text-lg">{era.icon}</span>
                 </div>
-                {/* Year - Position farther from icon on mobile */}
-                <div className={`absolute top-8 sm:top-10 transform -translate-x-1/2 text-xs sm:text-sm ${
+                {/* Year */}
+                <div className={`absolute top-10 transform -translate-x-1/2 text-sm ${
                   activeEra === index ? 'text-blue-100' : 'text-blue-300'
                 } whitespace-nowrap transition-colors duration-300 font-medium`}>
                   {era.year}
                 </div>
-                {/* Title - Only show on tablet/desktop */}
-                <div className={`absolute bottom-8 sm:bottom-10 transform -translate-x-1/2 hidden sm:block text-xs sm:text-sm ${
+                {/* Title - Only show on desktop */}
+                <div className={`absolute bottom-8 transform -translate-x-1/2 hidden sm:block text-xs sm:text-sm ${
                   activeEra === index ? 'text-blue-100' : 'text-blue-300'
                 } font-medium whitespace-nowrap transition-colors duration-300 bg-blue-950/80 backdrop-blur-sm px-2 py-1 rounded`}>
                   {era.title}
                 </div>
-                {/* Mobile title - only shows when active */}
-                {activeEra === index && (
-                  <div className="absolute -bottom-12 transform -translate-x-1/2 block sm:hidden text-xs bg-blue-950/90 backdrop-blur-sm text-blue-100 font-medium whitespace-nowrap transition-all duration-300 px-3 py-1.5 rounded-full shadow-lg border border-blue-500/30 z-20">
-                    {era.title}
-                  </div>
-                )}
               </motion.div>
             );
           })}
