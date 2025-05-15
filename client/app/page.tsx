@@ -2,7 +2,7 @@
 import Navbar from './components/layout/navbar';
 import HeroSection from './components/layout/hero';
 import StarBackground from './components/design/starbackground';
-import TimeParticles from './components/design/timeparticles';
+
 import FloatingMagicalElements from './components/design/floatingelements';
 
 export default function LandingPage() {
@@ -11,7 +11,7 @@ export default function LandingPage() {
       {/* Background Elements */}
       <StarBackground />
       <FloatingMagicalElements />
-      <TimeParticles />
+     
       
       <Navbar />
       <main className="container mx-auto px-6 py-8 h-[calc(100vh-76px)] relative z-10">

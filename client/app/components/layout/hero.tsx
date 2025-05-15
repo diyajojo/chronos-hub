@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { ShimmerButton } from '@/components/magicui/shimmer-button';
 
 function HeroSection() {
   const [activeEra, setActiveEra] = useState<number | null>(null);
@@ -72,47 +73,58 @@ function HeroSection() {
       </div>
 
       {/* Main Hero Content */}
-      <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-center py-8 lg:py-12 mt-4">
-        <div className="order-2 lg:order-1">
-          <motion.h2
-            className="font-urbanist text-center lg:text-left text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 text-blue-100 leading-tight font-josefinsans"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            Brb, Just Grabbing Coffee
-            <span className="font-urbanist block text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-indigo-300">
-            With Shakespeare ☕
-            </span>
-          </motion.h2>
+      <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-start sm:items-center py-4 sm:py-8 lg:py-12 mt-2 sm:mt-4 min-h-[65vh] sm:min-h-0">
+        <div className="order-2 lg:order-1 flex flex-col justify-between h-full">
+          <div>
+            <motion.h2
+              className="font-urbanist text-center lg:text-left text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-6 text-blue-100 leading-tight font-josefinsans"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              Brb, Just Grabbing Coffee
+              <span className="font-urbanist block text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-indigo-300">
+              With Shakespeare ☕
+              </span>
+            </motion.h2>
 
-          <motion.p
-            className="font-urbanist mt-8 text-center lg:text-left text-base sm:text-lg md:text-xl text-blue-200 mb-6 sm:mb-8 leading-relaxed font-josefinsans"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            Ever wondered how you'd look in the 80s with that classic mullet? 
-            Curious what you'd wear to a party in 3045?
-            Want to see yourself as a medieval knight or a future astronaut?
-          </motion.p>
+            <motion.p
+              className="font-urbanist mt-4 sm:mt-8 text-center lg:text-left text-base sm:text-lg md:text-xl text-blue-200 mb-3 sm:mb-8 leading-relaxed font-josefinsans"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              Ever wondered how you'd look in the 80s with that classic mullet? 
+              Curious what you'd wear to a party in 3045?
+              Want to see yourself as a medieval knight or a future astronaut?
+            </motion.p>
 
-          <motion.p
-            className="font-urbanist text-center lg:text-left text-base sm:text-lg md:text-xl text-blue-200 mb-6 sm:mb-8 leading-relaxed font-josefinsans"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-          >
-            ChronosHub is here for you, it's like Instagram but with a time travel twist! Post your time travel stories, 
-             upload images of your adventures, and connect with friends across different eras.
-          </motion.p>
+            <motion.p
+              className="font-urbanist text-center lg:text-left text-base sm:text-lg md:text-xl text-blue-200 mb-3 sm:mb-8 leading-relaxed font-josefinsans"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
+              ChronosHub is here for you, it's like Instagram but with a time travel twist! Post your time travel stories, 
+               upload images of your adventures, and connect with friends across different eras.
+            </motion.p>
+          </div>
 
           <motion.div
-            className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4"
+            className="flex justify-center lg:justify-start mt-4 sm:mt-0"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
+            <ShimmerButton
+              onClick={() => router.push('/login')}
+              className="text-lg font-medium px-8 py-4"
+              shimmerColor="rgba(255, 255, 255, 0.2)"
+              shimmerDuration="2s"
+              background="linear-gradient(to right, rgb(37, 99, 235), rgb(79, 70, 229))"
+            >
+              Get Started
+            </ShimmerButton>
           </motion.div>
         </div>
 
@@ -126,7 +138,7 @@ function HeroSection() {
       </div>
 
       {/* Temporal Timeline Explorer */}
-      <div ref={timelineRef} className="mt-8 sm:mt-auto pb-8">
+      <div ref={timelineRef} className="mt-4 sm:mt-auto pb-4 sm:pb-8">
         {/* Spotlight effect */}
         <div
           className="absolute pointer-events-none inset-0 opacity-20 bg-gradient-radial from-blue-300 to-transparent rounded-xl"
@@ -140,15 +152,15 @@ function HeroSection() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 0.5 }}
-          className="mb-12 relative"
+          className="mb-6 sm:mb-12 relative"
         >
-          <h3 className="font-urbanist text-center text-2xl md:text-3xl font-josefinsans font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-blue-300">
+          <h3 className="font-urbanist text-center text-xl sm:text-2xl md:text-3xl font-josefinsans font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-blue-300">
             Where We're Going, We Don't Need Roads
           </h3>
         </motion.div>
 
         {/* Interactive Timeline */}
-        <div className="relative h-[280px] sm:h-[150px] mb-8 sm:mb-12 overflow-x-auto">
+        <div className="relative h-[200px] sm:h-[150px] mb-4 sm:mb-12 overflow-x-auto">
           <div className="absolute left-0 right-0 top-1/2 h-1 bg-gradient-to-r from-indigo-500/50 via-blue-500/50 to-cyan-500/50 w-[200%] sm:w-full"></div>
 
           {timeEras.map((era, index) => {
