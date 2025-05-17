@@ -118,44 +118,44 @@ const MapModal = ({ logs, user, userLogs = [], onClose }: {
   // Generate positions for year markers that stay within the map boundaries and distribute them better
   const getPositionForYear = (year: number) => {
     // Use year value to create a deterministic but seemingly random position
-    // This ensures the same year always gets the same position
     const absYear = Math.abs(year);
     const seed = (absYear * 13) % 10000;
+    
+    // Find how many logs exist for this year
+    const logsForYear = displayLogs.filter(log => log.yearVisited === year).length;
     
     // For prehistoric eras (negative years), place in left side of map
     if (year < 0) {
       const x = 5 + (seed % 30); // 5-35% from left
-      const y = 15 + ((seed * 17) % 70); // 15-85% from top
+      // If multiple logs, place in top portion
+      const y = logsForYear > 1 ? 15 + ((seed * 17) % 35) : 15 + ((seed * 17) % 70);
       return { x, y };
     }
     // For future eras (2100+), place in right side of map
     else if (year > 2100) {
       const x = 65 + (seed % 30); // 65-95% from left
-      const y = 15 + ((seed * 23) % 70); // 15-85% from top
+      // If multiple logs, place in top portion
+      const y = logsForYear > 1 ? 15 + ((seed * 23) % 35) : 15 + ((seed * 23) % 70);
       return { x, y };
     }
     // For historical and contemporary eras, distribute in middle area
     else {
-      // Distribute years more systematically based on the timeline
-      // This helps cluster similar years while maintaining some separation
-      let baseX, baseY;
+      let baseX;
       
       if (year < 500) {
-        // Ancient history (BC-500AD)
         baseX = 35 + (year * 0.01) % 10;
       } else if (year < 1500) {
-        // Middle ages (500-1500)
         baseX = 40 + (year * 0.008) % 10;
       } else if (year < 1900) {
-        // Early modern period (1500-1900)
         baseX = 45 + (year * 0.006) % 10;
       } else {
-        // Modern era (1900+)
         baseX = 50 + (year * 0.004) % 10;
       }
       
-      // Vertical position - use absolute year to create more variation
-      baseY = 15 + ((seed * 19) % 70);
+      // If multiple logs, constrain to top 40% of map
+      const baseY = logsForYear > 1 
+        ? 15 + ((seed * 19) % 25)  // 15-40% from top
+        : 15 + ((seed * 19) % 70); // 15-85% from top
       
       return { x: baseX, y: baseY };
     }

@@ -36,6 +36,34 @@ export default function Dashboard() {
     setIsHydrated(true);
   }, []);
 
+  // Add new useEffect for handling back navigation
+  useEffect(() => {
+    const handleBackNavigation = async (event: PopStateEvent) => {
+      // Check if user is authenticated
+      try {
+        const authResponse = await fetch('/api/verify', {
+          credentials: 'include',
+        });
+        const authData = await authResponse.json();
+        
+        if (authData.authenticated) {
+          // If authenticated, prevent navigation and stay on dashboard
+          window.history.pushState(null, '', window.location.href);
+        }
+      } catch (error) {
+        console.error('Error checking authentication:', error);
+      }
+    };
+
+    window.addEventListener('popstate', handleBackNavigation);
+    // Push initial state to enable popstate handling
+    window.history.pushState(null, '', window.location.href);
+
+    return () => {
+      window.removeEventListener('popstate', handleBackNavigation);
+    };
+  }, []);
+
   useEffect(() => {
     const loadDashboardData = async () => {
       console.log("Dashboard loading started");
@@ -49,14 +77,18 @@ export default function Dashboard() {
         
         if (!authResponse.ok || !authData.authenticated) {
           if (authData.error === 'User not found') {
-            // User was deleted from the database
             toast.error("Your account no longer exists", {
               description: "You have been logged out because your account was deleted.",
               duration: 5000,
             });
+            router.replace('/login');
+            return;
           }
-          router.replace('/login');
-          return;
+          // Only redirect to login if there's no valid authentication
+          if (!document.cookie.includes('token')) {
+            router.replace('/login');
+            return;
+          }
         }
         
         console.log('User data from auth:', JSON.stringify(authData.user));

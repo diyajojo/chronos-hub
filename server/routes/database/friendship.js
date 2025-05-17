@@ -1,15 +1,16 @@
 const { prisma } = require('../../utils/prisma');
 // Send friend request
 const sendFriendRequest = async (req, res) => {
-  const { senderId, receiverId } = req.body;
+  const { targetUserId } = req.body;
+  const senderId = req.user.id; // Get from authenticated session
   
   try {
     // Check if friendship already exists
     const existingFriendship = await prisma.friendship.findFirst({
       where: {
         OR: [
-          { user1Id: senderId, user2Id: receiverId },
-          { user1Id: receiverId, user2Id: senderId }
+          { user1Id: senderId, user2Id: targetUserId },
+          { user1Id: targetUserId, user2Id: senderId }
         ]
       }
     });
@@ -25,7 +26,7 @@ const sendFriendRequest = async (req, res) => {
     const friendship = await prisma.friendship.create({
       data: {
         user1Id: senderId,
-        user2Id: receiverId,
+        user2Id: targetUserId,
         status: 'pending'
       }
     });
@@ -176,4 +177,4 @@ module.exports = {
   getFriendRequests,
   getFriendshipStatus,
   getFriends
-}; 
+};

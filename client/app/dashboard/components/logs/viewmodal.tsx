@@ -118,7 +118,7 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="font-urbanist bg-gradient-to-br from-indigo-950 to-blue-950 text-white border border-indigo-400/20 p-0 max-w-[95vw] sm:max-w-2xl w-full m-1 sm:m-4 max-h-[90vh] overflow-y-auto sm:overflow-visible">
+        <DialogContent className="font-urbanist bg-gradient-to-br from-indigo-950 to-blue-950 text-white border border-indigo-400/20 p-0 max-w-[95vw] sm:max-w-2xl w-full m-1 sm:m-4 max-h-[90vh] overflow-y-auto">
           <DialogHeader className="p-3 sm:p-4 pb-2">
             <DialogTitle className="text-lg sm:text-xl font-serif text-indigo-200">
               Journey to {log.yearVisited}
@@ -143,12 +143,12 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
           
           {/* Image */}
           <div className="px-3 sm:px-4">
-            <div className="rounded-lg overflow-hidden mb-3 sm:mb-4 bg-indigo-950/70 border border-indigo-400/20">
-              <div className="relative w-full h-40 sm:h-56">
+            <div className="rounded-lg overflow-hidden mb-3 sm:mb-4 bg-indigo-950/70 border border-indigo-400/20 mx-auto max-w-lg">
+              <div className="relative w-full aspect-[4/3]">
                 <img
                   src={log.image || "/api/placeholder/600/400"}
                   alt={`Time travel to ${log.yearVisited}`}
-                  className="w-full h-full object-fit"
+                  className="w-full h-full object-cover"
                 />
               </div>
             </div>
@@ -211,7 +211,7 @@ export const ViewModal = ({ log, user, isOpen, onClose }: ViewModalProps) => {
             <h3 className="text-indigo-200 font-medium mb-2 text-xs sm:text-sm">Comments</h3>
             
             {/* Comment List */}
-            <div className="space-y-3 max-h-36 sm:max-h-48 overflow-y-auto mb-3">
+            <div className="space-y-3 overflow-y-auto mb-3" style={{ maxHeight: 'calc(90vh - 500px)', minHeight: '100px' }}>
               {!comments || comments.length === 0 ? (
                 <p className="text-indigo-400 text-xs italic">No temporal observations yet.</p>
               ) : (

@@ -76,38 +76,38 @@ function HeroSection() {
       <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-start sm:items-center py-4 sm:py-8 lg:py-12 mt-2 sm:mt-4 min-h-[65vh] sm:min-h-0">
         <div className="order-2 lg:order-1 flex flex-col justify-between h-full">
           <div>
-            <motion.h2
+          <motion.h2
               className="font-urbanist text-center lg:text-left text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-6 text-blue-100 leading-tight font-josefinsans"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              Brb, Just Grabbing Coffee
-              <span className="font-urbanist block text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-indigo-300">
-              With Shakespeare ☕
-              </span>
-            </motion.h2>
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            Brb, Just Grabbing Coffee
+            <span className="font-urbanist block text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-indigo-300">
+            With Shakespeare ☕
+            </span>
+          </motion.h2>
 
-            <motion.p
+          <motion.p
               className="font-urbanist mt-4 sm:mt-8 text-center lg:text-left text-base sm:text-lg md:text-xl text-blue-200 mb-3 sm:mb-8 leading-relaxed font-josefinsans"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              Ever wondered how you'd look in the 80s with that classic mullet? 
-              Curious what you'd wear to a party in 3045?
-              Want to see yourself as a medieval knight or a future astronaut?
-            </motion.p>
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            Ever wondered how you'd look in the 80s with that classic mullet? 
+            Curious what you'd wear to a party in 3045?
+            Want to see yourself as a medieval knight or a future astronaut?
+          </motion.p>
 
-            <motion.p
+          <motion.p
               className="font-urbanist text-center lg:text-left text-base sm:text-lg md:text-xl text-blue-200 mb-3 sm:mb-8 leading-relaxed font-josefinsans"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-            >
-              ChronosHub is here for you, it's like Instagram but with a time travel twist! Post your time travel stories, 
-               upload images of your adventures, and connect with friends across different eras.
-            </motion.p>
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
+            ChronosHub is here for you, it's like Instagram but with a time travel twist! Post your time travel stories, 
+             upload images of your adventures, and connect with friends across different eras.
+          </motion.p>
           </div>
 
           <motion.div
