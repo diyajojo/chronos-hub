@@ -11,12 +11,12 @@ const { fetchUserBadges } = require('./routes/database/badges');
 const { searchUsers, getAllUsers } = require('./routes/database/users');
 const { getUser } = require('./routes/database/profilefetch');
 const { 
-  sendFriendRequest,
-  acceptFriendRequest,
-  rejectFriendRequest,
-  getFriendRequests,
-  getFriendshipStatus,
-  getFriends
+  handleSendRequest,
+  handleAcceptRequest,
+  handleRejectRequest,
+  handleGetFriendRequests,
+  handleGetFriendshipStatus,
+  handleGetFriends
 } = require('./routes/database/friendship');
 
 const app = express();
@@ -48,12 +48,14 @@ app.post('/userbadges', fetchUserBadges);
 app.post('/searchUsers', searchUsers);
 app.get('/users', getAllUsers);
 app.get('/user/:userId', getUser);
-app.post('/friendship/send-request', sendFriendRequest);
-app.post('/friendship/accept-request', acceptFriendRequest);
-app.post('/friendship/reject-request', rejectFriendRequest);
-app.post('/friendship/friend-requests', getFriendRequests);
-app.post('/friendship/status', getFriendshipStatus);
-app.post('/friendship/friends', getFriends);
+
+// Simplified friendship routes
+app.post('/friendship/send-request', handleSendRequest);
+app.post('/friendship/accept-request', handleAcceptRequest);
+app.post('/friendship/reject-request', handleRejectRequest);
+app.post('/friendship/friend-requests', handleGetFriendRequests);
+app.post('/friendship/status', handleGetFriendshipStatus);
+app.post('/friendship/friends', handleGetFriends);
 
 app.get('/', (req, res) => {
   res.send('Hello World');

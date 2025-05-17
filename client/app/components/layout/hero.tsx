@@ -117,7 +117,7 @@ function HeroSection() {
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             <ShimmerButton
-              onClick={() => router.push('/login')}
+              onClick={() => router.push('/signup')}
               className="text-lg font-medium px-8 py-4"
               shimmerColor="rgba(255, 255, 255, 0.2)"
               shimmerDuration="2s"

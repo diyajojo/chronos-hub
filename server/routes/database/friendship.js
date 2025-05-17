@@ -1,16 +1,13 @@
 const { prisma } = require('../../utils/prisma');
-// Send friend request
-const sendFriendRequest = async (req, res) => {
-  const { targetUserId } = req.body;
-  const senderId = req.user.id; // Get from authenticated session
-  
+
+const handleSendRequest = async (req, res) => {
+  const { senderId, receiverId } = req.body;
   try {
-    // Check if friendship already exists
     const existingFriendship = await prisma.friendship.findFirst({
       where: {
         OR: [
-          { user1Id: senderId, user2Id: targetUserId },
-          { user1Id: targetUserId, user2Id: senderId }
+          { user1Id: senderId, user2Id: receiverId },
+          { user1Id: receiverId, user2Id: senderId }
         ]
       }
     });
@@ -22,11 +19,10 @@ const sendFriendRequest = async (req, res) => {
       });
     }
 
-    // Create new friendship request
     const friendship = await prisma.friendship.create({
       data: {
         user1Id: senderId,
-        user2Id: targetUserId,
+        user2Id: receiverId,
         status: 'pending'
       }
     });
@@ -38,16 +34,13 @@ const sendFriendRequest = async (req, res) => {
   }
 };
 
-// Accept friend request
-const acceptFriendRequest = async (req, res) => {
+const handleAcceptRequest = async (req, res) => {
   const { friendshipId } = req.body;
-  
   try {
     const friendship = await prisma.friendship.update({
       where: { id: friendshipId },
       data: { status: 'accepted' }
     });
-
     return res.status(200).json({ success: true, friendship });
   } catch (error) {
     console.error('Error accepting friend request:', error);
@@ -55,15 +48,12 @@ const acceptFriendRequest = async (req, res) => {
   }
 };
 
-// Reject/delete friend request
-const rejectFriendRequest = async (req, res) => {
+const handleRejectRequest = async (req, res) => {
   const { friendshipId } = req.body;
-  
   try {
     await prisma.friendship.delete({
       where: { id: friendshipId }
     });
-
     return res.status(200).json({ success: true });
   } catch (error) {
     console.error('Error rejecting friend request:', error);
@@ -71,12 +61,9 @@ const rejectFriendRequest = async (req, res) => {
   }
 };
 
-// Get friend requests for a user
-const getFriendRequests = async (req, res) => {
-  const { userId } = req.body;
-  
+const handleGetFriendRequests = async (req, res) => {
+  const { userId } = req.params;
   try {
-    // Get pending requests received by the user
     const pendingRequests = await prisma.friendship.findMany({
       where: {
         user2Id: userId,
@@ -92,7 +79,6 @@ const getFriendRequests = async (req, res) => {
         }
       }
     });
-
     return res.status(200).json({ success: true, pendingRequests });
   } catch (error) {
     console.error('Error fetching friend requests:', error);
@@ -100,10 +86,8 @@ const getFriendRequests = async (req, res) => {
   }
 };
 
-// Get friendship status between two users
-const getFriendshipStatus = async (req, res) => {
+const handleGetFriendshipStatus = async (req, res) => {
   const { user1Id, user2Id } = req.body;
-  
   try {
     const friendship = await prisma.friendship.findFirst({
       where: {
@@ -113,7 +97,6 @@ const getFriendshipStatus = async (req, res) => {
         ]
       }
     });
-
     return res.status(200).json({ 
       success: true, 
       exists: !!friendship,
@@ -126,12 +109,9 @@ const getFriendshipStatus = async (req, res) => {
   }
 };
 
-// Get all friends for a user
-const getFriends = async (req, res) => {
-  const { userId } = req.body;
-  
+const handleGetFriends = async (req, res) => {
+  const { userId } = req.params;
   try {
-    // Find all accepted friendships where user is either user1 or user2
     const friendships = await prisma.friendship.findMany({
       where: {
         OR: [
@@ -158,7 +138,6 @@ const getFriends = async (req, res) => {
       }
     });
 
-    // Extract the friend data (the other user in each friendship)
     const friends = friendships.map(friendship => 
       friendship.user1Id === userId ? friendship.user2 : friendship.user1
     );
@@ -171,10 +150,10 @@ const getFriends = async (req, res) => {
 };
 
 module.exports = {
-  sendFriendRequest,
-  acceptFriendRequest,
-  rejectFriendRequest,
-  getFriendRequests,
-  getFriendshipStatus,
-  getFriends
+  handleSendRequest,
+  handleAcceptRequest,
+  handleRejectRequest,
+  handleGetFriendRequests,
+  handleGetFriendshipStatus,
+  handleGetFriends
 };
