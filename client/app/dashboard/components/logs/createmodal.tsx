@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { handleImageUpload } from '../../utils/imageupload';
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import BadgeNotification from '../badgenotification';
 import { BadgeName } from '../../utils/badges';
 import { API_BASE_URL } from '@/lib/config';
-
+import ImageSearch from './imagesearch';
 
 interface CreateLogModalProps {
   onClose: () => void;
@@ -44,7 +44,7 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
   const [currentBadgeIndex, setCurrentBadgeIndex] = useState(0);
   const [wordCount, setWordCount] = useState(0);
   const [chronodopplerInfo, setChronodopplerInfo] = useState<any>(null);
-  
+
   const [timeLog, setTimeLog] = useState<TimeLog>({
     year: '',
     title: '',
@@ -100,7 +100,6 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
         }
       }
 
-      // Prepare the request payload
       const payload = {
         year: parseInt(timeLog.year),
         title: timeLog.title,
@@ -108,7 +107,7 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
         imageUrl: finalImageUrl,
         userId: user.id || '0',
       };
-      
+
       console.log('Submitting log with payload:', payload);
 
       const response = await fetch(`${API_BASE_URL}/addlog`, {
@@ -120,7 +119,6 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
         body: JSON.stringify(payload),
       });
 
-      // Handle potential non-JSON response
       let data;
       try {
         const textResponse = await response.text();
@@ -139,38 +137,31 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
         console.error('Server error details:', data);
         throw new Error(data.error || data.details || 'Failed to submit log');
       }
-      
+
       if (data.success) {
         console.log('Log submitted successfully:', data);
-        // Store all earned badges for reference
         if (data.earnedBadges && data.earnedBadges.length > 0) {
           setEarnedBadges(data.earnedBadges as BadgeName[]);
-          
-          // Store chronodoppler info if available
+
           if (data.chronodopplerInfo) {
             setChronodopplerInfo(data.chronodopplerInfo);
           }
-          
-          // If multiple badges were earned, always show Chronoprodigy
+
           if (data.earnedBadges.length > 1) {
             setEarnedBadge('chronoprodigy');
             setShowBadgeNotification(true);
           } else if (data.earnedBadges.includes('chronodoppler')) {
-            // Show chronodoppler badge only if it's the only badge earned
             setEarnedBadge('chronodoppler');
             setShowBadgeNotification(true);
           } else {
-            // Otherwise show the first badge earned
             setEarnedBadge(data.earnedBadges[0] as BadgeName);
             setShowBadgeNotification(true);
           }
         } else if (data.badgeName) {
-          // Legacy support for single badge
           setEarnedBadge(data.badgeName as BadgeName);
           setEarnedBadges([data.badgeName as BadgeName]);
           setShowBadgeNotification(true);
         } else {
-          // No badges earned, close modal
           await onLogCreated();
           onClose();
         }
@@ -205,16 +196,14 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newDescription = e.target.value;
     setTimeLog({ ...timeLog, description: newDescription });
-    // Count words by splitting on whitespace
-    const count = newDescription.trim().split(/\s+/).filter(word => word.length > 0).length;
-    setWordCount(count);
+    setWordCount(newDescription.split(/\s+/).filter(Boolean).length);
   };
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <Card className="bg-black/70 border border-blue-500/30 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-auto">
-          <CardHeader className="border-b border-blue-500/30">
+      <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <Card className="w-full max-w-2xl bg-blue-950/50 border border-blue-500/30 shadow-lg flex flex-col max-h-[90vh]">
+          <CardHeader className="p-6 shrink-0">
             <div className="flex justify-between items-center">
               <CardTitle className="text-2xl font-bold text-white font-urbanist">{getStepTitle()}</CardTitle>
               <Button 
@@ -233,8 +222,8 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
             />
           </CardHeader>
           
-          <form onSubmit={handleSubmit}>
-            <CardContent className="font-urbanist p-6">
+          <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+            <CardContent className="font-urbanist p-6 overflow-y-auto">
               {error && (
                 <Alert variant="destructive" className="mb-6 bg-red-500/20 border border-red-500/50 text-red-300">
                   <AlertDescription>{error}</AlertDescription>
@@ -300,25 +289,56 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
                     {!timeLog.imageFile ? (
                       <>
                         <p className="text-blue-300 mb-4">Upload a photo from your adventure</p>
-                        <Label htmlFor="image-upload" className="cursor-pointer inline-block px-4 py-2 bg-black/50 border border-blue-500/30 text-blue-300 hover:bg-black/70 rounded-lg transition-colors">
-                          <span>Choose an image</span>
-                          <Input
-                            id="image-upload"
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                setTimeLog({
-                                  ...timeLog,
-                                  imageFile: file,
-                                  customFileName: file.name.split('.')[0],
-                                });
-                              }
-                            }}
-                            className="hidden"
-                          />
-                        </Label>
+                        <div className="space-y-4">
+                          <div className="flex flex-col space-y-2">
+                            <p className="text-sm text-blue-300">Search for images</p>
+                            <ImageSearch
+                              onImageSelect={async (imageUrl) => {
+                                try {
+                                  const response = await fetch(imageUrl);
+                                  const blob = await response.blob();
+                                  const file = new File([blob], 'search-image.jpg', { type: blob.type });
+                                  setTimeLog({
+                                    ...timeLog,
+                                    imageFile: file,
+                                    customFileName: 'search-image',
+                                  });
+                                } catch (error) {
+                                  toast.error("Failed to load selected image");
+                                }
+                              }}
+                            />
+                          </div>
+                          
+                          <div className="relative">
+                            <div className="absolute inset-0 flex items-center">
+                              <div className="w-full border-t border-blue-500/30"></div>
+                            </div>
+                            <div className="relative flex justify-center">
+                              <span className="px-2 text-blue-300 text-sm bg-blue-950">OR</span>
+                            </div>
+                          </div>
+
+                          <Label htmlFor="image-upload" className="cursor-pointer inline-block px-4 py-2 bg-black/50 border border-blue-500/30 text-blue-300 hover:bg-black/70 rounded-lg transition-colors">
+                            <span>Choose from device</span>
+                            <Input
+                              id="image-upload"
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  setTimeLog({
+                                    ...timeLog,
+                                    imageFile: file,
+                                    customFileName: file.name.split('.')[0],
+                                  });
+                                }
+                              }}
+                              className="hidden"
+                            />
+                          </Label>
+                        </div>
                       </>
                     ) : (
                       <div className="space-y-4">
@@ -359,7 +379,7 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
               )}
             </CardContent>
             
-            <CardFooter className="border-t border-blue-500/30 flex justify-between p-6">
+            <CardFooter className="border-t border-blue-500/30 flex justify-between p-6 shrink-0">
               {step > 1 ? (
                 <Button
                   type="button"

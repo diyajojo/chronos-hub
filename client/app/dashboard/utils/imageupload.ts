@@ -24,3 +24,20 @@ export const handleImageUpload = async (file: File) => {
     throw error;
   }
 };
+
+export const handleUrlToImageUpload = async (imageUrl: string) => {
+  try {
+    // Fetch the image from the URL
+    const response = await fetch(imageUrl);
+    if (!response.ok) throw new Error('Failed to fetch image from URL');
+    
+    const blob = await response.blob();
+    const file = new File([blob], 'url-image.jpg', { type: blob.type });
+
+    // Use the existing upload function
+    return handleImageUpload(file);
+  } catch (error) {
+    console.error('Error processing URL image:', error);
+    throw error;
+  }
+};
