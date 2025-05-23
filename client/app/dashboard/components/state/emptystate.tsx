@@ -1,15 +1,15 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import CreateLogModal from './logs/createmodal';
-import StarBackground from '../../components/design/starbackground';
-import MapModal from './map'; 
+import CreateLogModal from '../logs/createmodal';
+import StarBackground from '../../../components/design/starbackground';
+import MapModal from '../map'; 
 import Image from 'next/image';
-import { ShimmerButton } from '../../../components/magicui/shimmer-button';
-import { SearchUsers } from './searchuser';
-import FriendRequests from './friendrequest';
-import FriendsList from './friendslist';
-import UserGuide from './userguide';
+import { ShimmerButton } from '.../../../components/magicui/shimmer-button';
+import { SearchUsers } from '../searchuser';
+import FriendRequests from '../friends/friendrequest';
+import FriendsList from '../friends/friendslist';
+import UserGuide from '../userguide';
 
 
 interface User {

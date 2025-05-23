@@ -1,16 +1,16 @@
 'use client';
 import { useState, useEffect } from 'react';
-import CreateLogModal from './logs/createmodal';
+import CreateLogModal from '../logs/createmodal';
 import { AnimatePresence, motion } from 'framer-motion';
-import MapModal from './map';
-import { BADGES } from '../utils/badges';
+import MapModal from '../map';
+import { BADGES } from '../../utils/badges';
 import Image from 'next/image';
-import { ShimmerButton } from '../../../components/magicui/shimmer-button';
-import { TypingAnimation } from '../../../components/magicui/typing-animation';
-import { SearchUsers } from './searchuser';
-import FriendRequests from './friendrequest';
-import FriendsList from './friendslist';
-import UserGuide from './userguide';
+import { ShimmerButton } from '.../../../components/magicui/shimmer-button';
+import { TypingAnimation } from '.../../../components/magicui/typing-animation';
+import { SearchUsers } from '../searchuser';
+import FriendRequests from '../friends/friendrequest';
+import FriendsList from '../friends/friendslist';
+import UserGuide from '../userguide';
 
 
 interface TravelLogItem {

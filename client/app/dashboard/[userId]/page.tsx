@@ -1,8 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import Content from '../components/contentstate';
-import EmptyState from '../components/emptystate';
+import Content from '../components/state/contentstate';
+import EmptyState from '../components/state/emptystate';
 import StarBackground from '../../components/design/starbackground';
 import { toast } from "sonner";
 import { SpinningTextLoader } from '../../components/design/loader';

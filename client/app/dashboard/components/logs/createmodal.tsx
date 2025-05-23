@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import BadgeNotification from '../badgenotification';
 import { BadgeName } from '../../utils/badges';
 import { API_BASE_URL } from '@/lib/config';
-import ImageSearch from './imagesearch';
+import ImageSearch from '../imagesearch';
 
 interface CreateLogModalProps {
   onClose: () => void;
