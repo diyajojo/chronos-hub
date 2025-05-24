@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import BadgeNotification from '../badgenotification';
 import { BadgeName } from '../../utils/badges';
 import { API_BASE_URL } from '@/lib/config';
-// import ImageSearch from '../imagesearch';
+ import ImageSearch from '../imagesearch';
 
 interface CreateLogModalProps {
   onClose: () => void;
@@ -291,7 +291,7 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
                         <p className="text-blue-300 mb-4">Upload a photo from your adventure</p>
                         <div className="space-y-4">
                           {/* SEARCH IMAGE SECTION - COMMENTED OUT */}
-                          {/*
+                          
                           <div className="flex flex-col space-y-2">
                             <p className="text-sm text-blue-300">Search for images</p>
                             <ImageSearch
@@ -320,8 +320,7 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
                               <span className="px-2 text-blue-300 text-sm bg-blue-950">OR</span>
                             </div>
                           </div>
-                          */}
-
+                          
                           <Label htmlFor="image-upload" className="cursor-pointer inline-block px-4 py-2 bg-black/50 border border-blue-500/30 text-blue-300 hover:bg-black/70 rounded-lg transition-colors">
                             <span>Choose from device</span>
                             <Input
