@@ -70,7 +70,7 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
       return false;
     }
 
-    if (!timeLog.imageFile) {
+    if (!timeLog.imageFile && !timeLog.imageUrl) {
       setError('Please upload an image');
       return false;
     }
@@ -297,7 +297,7 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
                             <ImageSearch
                               onImageSelect={async (imageUrl) => {
                                 try {
-                                  const response = await fetch(`${API_BASE_URL}/upload-from-url`, {
+                                  const response = await fetch('http://localhost:8000/upload-from-url', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({ imageUrl }),
@@ -413,17 +413,17 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
                 </Button>
               ) : (
                 <Button
-                  type="submit"
-                  variant="default"
-                  disabled={uploading || !timeLog.imageFile}
-                  className={
-                    uploading || !timeLog.imageFile
-                      ? 'bg-gray-600'
-                      : 'bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600'
-                  }
-                >
-                  {uploading ? 'Saving Journey...' : 'Submit Journey'}
-                </Button>
+                type="submit"
+                variant="default"
+                disabled={uploading || (!timeLog.imageFile && !timeLog.imageUrl)}
+                className={
+                  uploading || (!timeLog.imageFile && !timeLog.imageUrl)
+                    ? 'bg-gray-600'
+                    : 'bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600'
+                }
+              >
+                {uploading ? 'Saving Journey...' : 'Submit Journey'}
+              </Button>
               )}
             </CardFooter>
           </form>
