@@ -20,6 +20,7 @@ const {
 } = require('./routes/database/friendship');
 const { forgotPassword } = require('./routes/auth/password/forgot');
 const  { resetPassword }= require('./routes/auth/password/reset');
+const uploadImageFromUrl = require('./routes/uploadimage');
 
 const app = express();
 const port = 8000;
@@ -61,6 +62,8 @@ app.post('/friendship/friends', handleGetFriends);
 
 app.post('/auth/forgot-password', forgotPassword);
 app.post('/auth/reset-password', resetPassword);
+
+app.post('/upload-from-url', uploadImageFromUrl);
 
 app.get('/', (req, res) => {
   res.send('Hello World');

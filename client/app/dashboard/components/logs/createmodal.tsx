@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import BadgeNotification from '../badgenotification';
 import { BadgeName } from '../../utils/badges';
 import { API_BASE_URL } from '@/lib/config';
- import ImageSearch from '../imagesearch';
+import ImageSearch from '../imagesearch';
 
 interface CreateLogModalProps {
   onClose: () => void;
@@ -91,7 +91,9 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
       let finalImageUrl = '';
       setUploading(true);
 
-      if (timeLog.imageFile) {
+      if (timeLog.imageUrl) {
+        finalImageUrl = timeLog.imageUrl;
+      } else if (timeLog.imageFile) {
         try {
           finalImageUrl = await handleImageUpload(timeLog.imageFile);
         } catch (uploadError) {
@@ -286,27 +288,31 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
               {step === 3 && (
                 <div className="space-y-6">
                   <div className="border-2 border-dashed border-blue-500/30 rounded-lg p-8 text-center">
-                    {!timeLog.imageFile ? (
+                    {!timeLog.imageFile && !timeLog.imageUrl ? (
                       <>
                         <p className="text-blue-300 mb-4">Upload a photo from your adventure</p>
                         <div className="space-y-4">
-                          {/* SEARCH IMAGE SECTION - COMMENTED OUT */}
-                          
                           <div className="flex flex-col space-y-2">
                             <p className="text-sm text-blue-300">Search for images</p>
                             <ImageSearch
                               onImageSelect={async (imageUrl) => {
                                 try {
-                                  const response = await fetch(imageUrl);
-                                  const blob = await response.blob();
-                                  const file = new File([blob], 'search-image.jpg', { type: blob.type });
+                                  const response = await fetch(`${API_BASE_URL}/upload-from-url`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ imageUrl }),
+                                    credentials: 'include',
+                                  });
+                                  const data = await response.json();
+                                  if (!response.ok) throw new Error(data.error || 'Failed to upload image');
                                   setTimeLog({
                                     ...timeLog,
-                                    imageFile: file,
-                                    customFileName: 'search-image',
+                                    imageFile: null,
+                                    imageUrl: data.secure_url,
+                                    customFileName: 'cloudinary-image',
                                   });
                                 } catch (error) {
-                                  toast.error("Failed to load selected image");
+                                  toast.error("Failed to upload image from URL");
                                 }
                               }}
                             />
@@ -358,7 +364,7 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
                             <Button
                               type="button"
                               variant="destructive"
-                              onClick={() => setTimeLog({ ...timeLog, imageFile: null, customFileName: '' })}
+                              onClick={() => setTimeLog({ ...timeLog, imageFile: null, imageUrl: '', customFileName: '' })}
                             >
                               Remove
                             </Button>
@@ -366,7 +372,7 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
                         </div>
                         <div className="relative">
                           <img
-                            src={URL.createObjectURL(timeLog.imageFile)}
+                            src={timeLog.imageFile ? URL.createObjectURL(timeLog.imageFile) : timeLog.imageUrl}
                             alt="Preview"
                             className="max-w-full rounded-lg border border-blue-500/30"
                           />
