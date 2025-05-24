@@ -1,6 +1,5 @@
 'use client';
-
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '../components/layout/navbar';
@@ -10,7 +9,37 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 
-export default function ResetPassword() {
+// Loading component for Suspense fallback
+const LoadingFallback = () => (
+  <div className="min-h-screen bg-gradient-to-b from-blue-950 via-blue-900 to-indigo-950 overflow-hidden relative">
+    <StarBackground />
+    <Navbar page="reset-password" />
+    <div className="flex items-center justify-center w-full min-h-[calc(100vh-64px)] py-6 sm:py-0">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
+        <div className="flex flex-col items-center justify-center gap-8">
+          <div className="flex items-center justify-center w-full md:w-1/2">
+            <Card className="p-0 w-full max-w-md shadow-none border-none bg-transparent">
+              <CardHeader className="border-b border-blue-500/20 p-6 space-y-4">
+                <CardTitle className="font-urbanist text-blue-200 text-2xl">Reset Password</CardTitle>
+                <CardDescription className="font-urbanist text-blue-300/70">
+                  Loading...
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-6 space-y-6">
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// Reset Password Content component
+const ResetPasswordContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token') || '';
@@ -103,5 +132,13 @@ export default function ResetPassword() {
         </div>
       </div>
     </div>
+  );
+};
+
+export default function ResetPassword() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }
