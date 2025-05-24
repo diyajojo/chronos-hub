@@ -223,6 +223,9 @@ export default function Login() {
                             required
                             className="font-urbanist bg-blue-950/40 border-blue-500/30 text-blue-200"
                           />
+                          <div className="flex justify-end mt-1">
+                            <Link href="/forgot-password" className="text-blue-400 hover:text-blue-300 text-xs font-urbanist">Forgot Password?</Link>
+                          </div>
                         </div>
                       </div>
                       <Button type="submit" className="font-urbanist w-full cursor-pointer bg-blue-800/30 hover:bg-blue-800/50 text-blue-200 border border-blue-500/30" disabled={isLoading}>

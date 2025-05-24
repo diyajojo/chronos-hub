@@ -18,6 +18,8 @@ const {
   handleGetFriendshipStatus,
   handleGetFriends
 } = require('./routes/database/friendship');
+const { forgotPassword } = require('./routes/auth/password/forgot');
+const  { resetPassword }= require('./routes/auth/password/reset');
 
 const app = express();
 const port = 8000;
@@ -56,6 +58,9 @@ app.post('/friendship/reject-request', handleRejectRequest);
 app.post('/friendship/friend-requests', handleGetFriendRequests);
 app.post('/friendship/status', handleGetFriendshipStatus);
 app.post('/friendship/friends', handleGetFriends);
+
+app.post('/auth/forgot-password', forgotPassword);
+app.post('/auth/reset-password', resetPassword);
 
 app.get('/', (req, res) => {
   res.send('Hello World');
