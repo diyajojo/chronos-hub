@@ -1,7 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
+
 const signup = require('./routes/auth/signup');
 const login = require('./routes/auth/login');
 const { addLog, fetchUserLogs } = require('./routes/database/logs');
@@ -26,20 +28,40 @@ const app = express();
 const port = 8000;
 
 // Middleware
+const allowedOrigins = ['http://localhost:3000', 'https://chronos-hub.vercel.app'];
+
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://chronos-hub.vercel.app'],
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'],
-  exposedHeaders: ['Access-Control-Allow-Origin']
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 app.use(express.json());
 //used to accept data from requests under req.body etc
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+
+
+const signupLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 3, // limit each IP to 3 requests
+  handler: function (req, res) {
+    res.status(429).json({
+      error: 'Too many signup attempts. Please try again in 10 minutes.'
+    });
+  }
+});
+
+
 //routes
-app.post('/auth/signup', signup);
+app.post('/auth/signup', signupLimiter, signup);
 app.post('/auth/login', login);
 app.post('/addlog', addLog);
 app.post('/fetchLogs', fetchUserLogs);
@@ -59,7 +81,6 @@ app.post('/friendship/reject-request', handleRejectRequest);
 app.post('/friendship/friend-requests', handleGetFriendRequests);
 app.post('/friendship/status', handleGetFriendshipStatus);
 app.post('/friendship/friends', handleGetFriends);
-
 app.post('/auth/forgot-password', forgotPassword);
 app.post('/auth/reset-password', resetPassword);
 

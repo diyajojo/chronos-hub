@@ -14,6 +14,8 @@ import { BadgeName } from '../../utils/badges';
 import { API_BASE_URL } from '@/lib/config';
 import ImageSearch from '../imagesearch';
 
+// new stuff added here
+
 interface CreateLogModalProps {
   onClose: () => void;
   user: {

@@ -2,12 +2,10 @@
 
 export const handleImageUpload = async (file: File) => {
   try {
-    
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('upload_preset', 'chronos-hub');
 
-    const response = await fetch(`https://api.cloudinary.com/v1_1/dj3pdnthr/image/upload`, {
+    const response = await fetch('/api/cloudinary-upload', {
       method: 'POST',
       body: formData,
     });
@@ -15,12 +13,12 @@ export const handleImageUpload = async (file: File) => {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error?.message || 'Error uploading to Cloudinary');
+      throw new Error(data.error || 'Error uploading image');
     }
 
     return data.secure_url;
   } catch (error) {
-    console.error('Error uploading image to Cloudinary:', error);
+    console.error('Error uploading image:', error);
     throw error;
   }
 };

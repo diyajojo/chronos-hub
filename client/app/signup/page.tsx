@@ -42,7 +42,7 @@ export default function SignUp() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+      const response = await fetch('http://localhost:8000/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -50,8 +50,14 @@ export default function SignUp() {
         body: JSON.stringify(formData),
       });
 
+      if (response.status === 429) {
+        setError('Too many signup attempts. Please try again in 10 minutes.');
+        return;
+      }
+
+      const data = await response.json();
+
       if (!response.ok) {
-        const data = await response.json();
         throw new Error(data.error || 'Signup failed');
       }
 
