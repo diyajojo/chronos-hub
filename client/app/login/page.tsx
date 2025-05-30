@@ -56,6 +56,10 @@ export default function Login() {
         body: JSON.stringify(formData),
       });
 
+      if (response.status === 429) {
+        throw new Error('Too many login attempts. Please try again in 10 minutes.');
+      }
+
       const data = await response.json();
       
       if (!response.ok) {

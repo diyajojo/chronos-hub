@@ -92,3 +92,13 @@ model Friendship {
   
   @@unique([user1Id, user2Id])
 }
+
+model PendingVerification {
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String   @unique
+  password   String
+  otp        String
+  otpExpiry  DateTime
+  createdAt  DateTime @default(now())
+}

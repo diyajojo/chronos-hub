@@ -3,7 +3,6 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { UserProfileModal } from '@/app/dashboard/components/userprofile';
 import { SearchIcon, UserIcon } from 'lucide-react';
-import { debounce } from 'lodash';
 import Image from 'next/image';
 import { API_BASE_URL } from '@/lib/config';
 
@@ -34,42 +33,74 @@ export function SearchUsers({
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const observer = useRef<IntersectionObserver | null>(null);
+  const ITEMS_PER_PAGE = 15;
 
-  // Fetch all users on component mount
-  useEffect(() => {
-    const fetchUsers = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(`${API_BASE_URL}/users`, {
-          credentials: 'include',
-        });
-        const data = await response.json();
-        if (data.success) {
-          setUsers(data.users);
-          setFilteredUsers(data.users);
-        }
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      } finally {
-        setIsLoading(false);
+  // Last element callback for infinite scroll
+  const lastUserElementRef = useCallback((node: HTMLDivElement) => {
+    if (isLoading) return;
+    if (observer.current) observer.current.disconnect();
+    
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(prevPage => prevPage + 1);
       }
-    };
+    });
+    
+    if (node) observer.current.observe(node);
+  }, [isLoading, hasMore]);
 
-    fetchUsers();
-  }, []);
-
-  // Filter users locally based on search term
-  useEffect(() => {
-    if (searchTerm.trim() === '') {
-      setFilteredUsers(users);
-    } else {
-      const filtered = users.filter(user => 
-        user.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredUsers(filtered);
+  // Fetch users with pagination
+  const fetchUsers = async (pageNum: number) => {
+    setIsLoading(true);
+    try {
+      const queryParams = new URLSearchParams({
+        page: pageNum.toString(),
+        limit: ITEMS_PER_PAGE.toString(),
+        search: searchTerm
+      });
+      
+      const response = await fetch(`${API_BASE_URL}/users?${queryParams}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        const newUsers = data.users;
+        setUsers(prevUsers => 
+          pageNum === 1 ? newUsers : [...prevUsers, ...newUsers]
+        );
+        setFilteredUsers(prevUsers => 
+          pageNum === 1 ? newUsers : [...prevUsers, ...newUsers]
+        );
+        setHasMore(newUsers.length === ITEMS_PER_PAGE);
+      }
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    } finally {
+      setIsLoading(false);
     }
-  }, [searchTerm, users]);
+  };
+
+  // Initial fetch and search term change
+  useEffect(() => {
+    setPage(1);
+    setUsers([]);
+    setFilteredUsers([]);
+    fetchUsers(1);
+  }, [searchTerm]);
+
+  // Load more when page changes
+  useEffect(() => {
+    if (page > 1) {
+      fetchUsers(page);
+    }
+  }, [page]);
 
   const handleUserClick = (user: User) => {
     if (user.id === currentUserId) return;
@@ -102,7 +133,7 @@ export function SearchUsers({
 
       <div className="mt-2 rounded-md border border-blue-500/30 overflow-hidden bg-black/30">
         {/* Loading state */}
-        {isLoading && (
+        {isLoading && page === 1 && (
           <div className="p-2 sm:p-4 flex justify-center">
             <p className="text-blue-300 text-sm sm:text-base">Loading users...</p>
           </div>
@@ -111,9 +142,10 @@ export function SearchUsers({
         {/* User list */}
         {!isLoading && filteredUsers.length > 0 && (
           <div className="max-h-64 overflow-y-auto">
-            {filteredUsers.map((user) => (
+            {filteredUsers.map((user, index) => (
               <div
                 key={user.id}
+                ref={index === filteredUsers.length - 1 ? lastUserElementRef : null}
                 onClick={() => handleUserClick(user)}
                 className={`
                   flex items-center gap-2 sm:gap-3 p-2 sm:p-3 hover:bg-blue-950/40 cursor-pointer
@@ -138,6 +170,13 @@ export function SearchUsers({
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Loading more indicator */}
+        {isLoading && page > 1 && (
+          <div className="p-2 flex justify-center">
+            <div className="animate-spin h-5 w-5 border-t-2 border-blue-500 rounded-full"></div>
           </div>
         )}
 

@@ -45,7 +45,27 @@ const searchUsers = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
   try {
+    const { page = 1, limit = 15, search = '' } = req.query;
+    
+    const parsedPage = parseInt(page);
+    const parsedLimit = parseInt(limit);
+    const skip = (parsedPage - 1) * parsedLimit;
+
+    // Build where clause based on search term
+    const whereClause = search ? {
+      name: {
+        contains: search,
+        mode: 'insensitive'
+      }
+    } : {};
+
+    // Get total count for pagination
+    const totalUsers = await prisma.user.count({
+      where: whereClause
+    });
+
     const users = await prisma.user.findMany({
+      where: whereClause,
       select: {
         id: true,
         name: true,
@@ -53,12 +73,20 @@ const getAllUsers = async (req, res) => {
       },
       orderBy: {
         name: 'asc'
-      }
+      },
+      skip,
+      take: parsedLimit
     });
 
     return res.status(200).json({ 
       success: true,
-      users: users || []
+      users: users || [],
+      pagination: {
+        total: totalUsers,
+        pages: Math.ceil(totalUsers / parsedLimit),
+        currentPage: parsedPage,
+        limit: parsedLimit
+      }
     });
   } 
   catch (error) {

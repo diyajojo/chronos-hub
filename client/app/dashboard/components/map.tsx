@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ViewModal } from './logs/viewmodal';
+import { API_BASE_URL } from '@/lib/config';
 
 
  interface TravelLogItem {
@@ -58,10 +59,59 @@ const MapModal = ({ logs, user, userLogs = [], onClose }: {
   const [pinScale, setPinScale] = useState(1);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   
-  // Determine which logs to display based on active view
-  const displayLogs = activeView === 'world' ? logs : userLogs;
+  // Add pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [displayLogs, setDisplayLogs] = useState<TravelLogItem[]>([]);
+  const [paginationInfo, setPaginationInfo] = useState({
+    userLogs: { total: 0, pages: 1, currentPage: 1, limit: 20 },
+    otherLogs: { total: 0, pages: 1, currentPage: 1, limit: 20 }
+  });
+
   const isMobile = windowWidth <= 768;
-  
+  const ITEMS_PER_PAGE = 25;
+
+  // Fetch logs with pagination
+  const fetchLogs = async (page: number) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/fetchlogs`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ 
+          userId: user.id,
+          page,
+          limit: ITEMS_PER_PAGE
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch logs');
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        setDisplayLogs(activeView === 'world' ? data.otherLogs : data.userLogs);
+        setPaginationInfo(data.pagination);
+        setTotalPages(activeView === 'world' ? data.pagination.otherLogs.pages : data.pagination.userLogs.pages);
+      }
+    } catch (error) {
+      console.error('Error fetching logs:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Update logs when view changes
+  useEffect(() => {
+    setCurrentPage(1);
+    fetchLogs(1);
+  }, [activeView]);
+
   // Update window width on resize
   useEffect(() => {
     const handleResize = () => {
@@ -114,6 +164,13 @@ const MapModal = ({ logs, user, userLogs = [], onClose }: {
     };
   }, [isDetailsOpen, onClose, expandedYear]);
 
+  // Handle page change
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      fetchLogs(newPage);
+    }
+  };
 
   // Generate positions for year markers that stay within the map boundaries and distribute them better
   const getPositionForYear = (year: number) => {
@@ -503,6 +560,44 @@ const MapModal = ({ logs, user, userLogs = [], onClose }: {
             {groupedLogs.some(log => isPinInDenseArea(log.year)) && (
               <p className="text-blue-300/90 text-2xs mt-0.5 italic">Pins with blue labels are in dense areas</p>
             )}
+          </div>
+        )}
+        
+        {/* Updated pagination controls */}
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-2 bg-gradient-to-r from-amber-900/40 to-blue-900/40 backdrop-blur-sm px-3 py-1.5 rounded-full border border-amber-200/20 shadow-lg">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1 || isLoading}
+            className={`px-2 py-0.5 rounded-full text-xs sm:text-sm transition-all ${
+              currentPage === 1 || isLoading
+                ? 'bg-gray-800/50 text-gray-400 cursor-not-allowed'
+                : 'bg-amber-500/20 text-amber-200 hover:bg-amber-500/30'
+            }`}
+          >
+            {isMobile ? '←' : 'Previous'}
+          </button>
+          
+          <span className="text-amber-200 text-xs sm:text-sm px-2">
+            {currentPage} / {totalPages}
+          </span>
+          
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages || isLoading}
+            className={`px-2 py-0.5 rounded-full text-xs sm:text-sm transition-all ${
+              currentPage === totalPages || isLoading
+                ? 'bg-gray-800/50 text-gray-400 cursor-not-allowed'
+                : 'bg-amber-500/20 text-amber-200 hover:bg-amber-500/30'
+            }`}
+          >
+            {isMobile ? '→' : 'Next'}
+          </button>
+        </div>
+
+        {/* Loading indicator */}
+        {isLoading && (
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+            <div className="animate-spin h-8 w-8 border-t-2 border-amber-500 rounded-full"></div>
           </div>
         )}
         

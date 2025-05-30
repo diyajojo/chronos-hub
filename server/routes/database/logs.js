@@ -262,7 +262,7 @@ const addLog = async (req, res) => {
 
 const fetchUserLogs = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const { userId, page = 1, limit = 25 } = req.body;
     
     if (!userId || isNaN(userId)) {
       return res.status(400).json({ 
@@ -272,49 +272,81 @@ const fetchUserLogs = async (req, res) => {
     }
 
     const parsedUserId = parseInt(userId);
+    const parsedPage = parseInt(page);
+    const parsedLimit = parseInt(limit);
+    const skip = (parsedPage - 1) * parsedLimit;
 
-    const userLogs = await prisma.travelLog.findMany({
-      where: {
-        userId: parsedUserId
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        }
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    });
+    // Get total counts for pagination
+    const [userLogsCount, otherLogsCount] = await Promise.all([
+      prisma.travelLog.count({
+        where: { userId: parsedUserId }
+      }),
+      prisma.travelLog.count({
+        where: { userId: { not: parsedUserId } }
+      })
+    ]);
 
-    const otherLogs = await prisma.travelLog.findMany({
-      where: {
-        userId: {
-          not: parsedUserId
-        }
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true
+    const [userLogs, otherLogs] = await Promise.all([
+      prisma.travelLog.findMany({
+        where: {
+          userId: parsedUserId
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
           }
-        }
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    });
+        },
+        orderBy: {
+          createdAt: 'desc'
+        },
+        skip,
+        take: parsedLimit
+      }),
+      prisma.travelLog.findMany({
+        where: {
+          userId: {
+            not: parsedUserId
+          }
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          }
+        },
+        orderBy: {
+          createdAt: 'desc'
+        },
+        skip,
+        take: parsedLimit
+      })
+    ]);
 
     return res.status(200).json({ 
       success: true,
       userLogs: userLogs || [], 
-      otherLogs: otherLogs || []
+      otherLogs: otherLogs || [],
+      pagination: {
+        userLogs: {
+          total: userLogsCount,
+          pages: Math.ceil(userLogsCount / parsedLimit),
+          currentPage: parsedPage,
+          limit: parsedLimit
+        },
+        otherLogs: {
+          total: otherLogsCount,
+          pages: Math.ceil(otherLogsCount / parsedLimit),
+          currentPage: parsedPage,
+          limit: parsedLimit
+        }
+      }
     });
   } 
   catch (error) {

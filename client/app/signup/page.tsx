@@ -23,14 +23,14 @@ import { Label } from "@/components/ui/label";
 import { API_BASE_URL } from '@/lib/config';
 
 export default function SignUp() {
-  const router = useRouter();
-  const { theme } = useTheme();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: ''
   });
   const [error, setError] = useState('');
+  const [showOTPForm, setShowOTPForm] = useState(false);
+  const [otp, setOtp] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -61,9 +61,39 @@ export default function SignUp() {
         throw new Error(data.error || 'Signup failed');
       }
 
+      // Show OTP form instead of redirecting
+      setShowOTPForm(true);
+    } 
+    catch (err)
+     {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
+    }
+  };
+
+  const handleOTPSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('http://localhost:8000/auth/verify-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          otp: otp
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'OTP verification failed');
+      }
+
+      // Only redirect to login after successful OTP verification
       window.location.href = '/login';
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
+      setError(err instanceof Error ? err.message : 'OTP verification failed');
     }
   };
 
@@ -141,63 +171,95 @@ export default function SignUp() {
                   className="font-urbanist p-0 bg-blue-950/30 backdrop-blur-sm border-blue-500/20 min-h-[500px]"
                 >
                   <CardHeader className="border-b border-blue-500/20 p-6 [.border-b]:pb-6 space-y-4">
-                    <CardTitle className="font-urbanist text-blue-200 text-2xl">Create Your Account</CardTitle>
+                    <CardTitle className="font-urbanist text-blue-200 text-2xl">
+                      {showOTPForm ? 'Verify Your Email' : 'Create Your Account'}
+                    </CardTitle>
                     <CardDescription className="font-urbanist text-blue-300/70">
-                      Join ChronosHub and start your journey
+                      {showOTPForm 
+                        ? 'Enter the OTP sent to your email'
+                        : 'Join ChronosHub and start your journey'
+                      }
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="p-6 space-y-6">
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      <div className="grid gap-5">
-                        {error && (
-                          <div className="p-3 bg-red-500/20 border border-red-500/50 rounded-md">
-                          <p className="font-urbanist text-red-200 text-sm">{error}</p>
+                    {showOTPForm ? (
+                      <form onSubmit={handleOTPSubmit} className="space-y-6">
+                        <div className="grid gap-5">
+                          {error && (
+                            <div className="p-3 bg-red-500/20 border border-red-500/50 rounded-md">
+                              <p className="font-urbanist text-red-200 text-sm">{error}</p>
+                            </div>
+                          )}
+                          <div className="grid gap-3">
+                            <Label htmlFor="otp" className="font-urbanist text-blue-200">Enter OTP</Label>
+                            <Input 
+                              id="otp" 
+                              type="text" 
+                              placeholder="Enter the OTP sent to your email"
+                              value={otp}
+                              onChange={(e) => setOtp(e.target.value)}
+                              required
+                              className="font-urbanist bg-blue-950/40 border-blue-500/30 text-blue-200 placeholder:text-blue-400/50"
+                            />
                           </div>
-                        )}
-                        <div className="grid gap-3">
-                          <Label htmlFor="name" className="font-urbanist text-blue-200">Full Name</Label>
-                          <Input 
-                            id="name" 
-                            name="name"
-                            type="text" 
-                            placeholder="enter your full name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                            className="font-urbanist bg-blue-950/40 border-blue-500/30 text-blue-200 placeholder:text-blue-400/50"
-                          />
                         </div>
-                        <div className="grid gap-3">
-                          <Label htmlFor="email" className="font-urbanist text-blue-200">Email Address</Label>
-                          <Input 
-                            id="email" 
-                            name="email"
-                            type="email" 
-                            placeholder="enter your email id"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                            className="font-urbanist bg-blue-950/40 border-blue-500/30 text-blue-200 placeholder:text-blue-400/50"
-                          />
+                        <Button type="submit" className="font-urbanist w-full cursor-pointer bg-blue-800/30 hover:bg-blue-800/50 text-blue-200 border border-blue-500/30">
+                          Verify OTP
+                        </Button>
+                      </form>
+                    ) : (
+                      <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="grid gap-5">
+                          {error && (
+                            <div className="p-3 bg-red-500/20 border border-red-500/50 rounded-md">
+                              <p className="font-urbanist text-red-200 text-sm">{error}</p>
+                            </div>
+                          )}
+                          <div className="grid gap-3">
+                            <Label htmlFor="name" className="font-urbanist text-blue-200">Full Name</Label>
+                            <Input 
+                              id="name" 
+                              name="name"
+                              type="text" 
+                              placeholder="enter your full name"
+                              value={formData.name}
+                              onChange={handleChange}
+                              required
+                              className="font-urbanist bg-blue-950/40 border-blue-500/30 text-blue-200 placeholder:text-blue-400/50"
+                            />
+                          </div>
+                          <div className="grid gap-3">
+                            <Label htmlFor="email" className="font-urbanist text-blue-200">Email Address</Label>
+                            <Input 
+                              id="email" 
+                              name="email"
+                              type="email" 
+                              placeholder="enter your email id"
+                              value={formData.email}
+                              onChange={handleChange}
+                              required
+                              className="font-urbanist bg-blue-950/40 border-blue-500/30 text-blue-200 placeholder:text-blue-400/50"
+                            />
+                          </div>
+                          <div className="grid gap-3">
+                            <Label htmlFor="password" className="font-urbanist text-blue-200">Password</Label>
+                            <Input 
+                              id="password" 
+                              name="password"
+                              type="password"
+                              placeholder="create a password"
+                              value={formData.password}
+                              onChange={handleChange}
+                              required
+                              className="font-urbanist bg-blue-950/40 border-blue-500/30 text-blue-200"
+                            />
+                          </div>
                         </div>
-                        <div className="grid gap-3">
-                          <Label htmlFor="password" className="font-urbanist text-blue-200">Password</Label>
-                          <Input 
-                            id="password" 
-                            name="password"
-                            type="password"
-                            placeholder="create a password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                            className="font-urbanist bg-blue-950/40 border-blue-500/30 text-blue-200"
-                          />
-                        </div>
-                      </div>
-                      <Button type="submit" className="font-urbanist w-full cursor-pointer bg-blue-800/30 hover:bg-blue-800/50 text-blue-200 border border-blue-500/30">
-                        Sign Up
-                      </Button>
-                    </form>
+                        <Button type="submit" className="font-urbanist w-full cursor-pointer bg-blue-800/30 hover:bg-blue-800/50 text-blue-200 border border-blue-500/30">
+                          Sign Up
+                        </Button>
+                      </form>
+                    )}
                   </CardContent>
                   <CardFooter className="p-6 border-t border-blue-500/20">
                     <p className="font-urbanist text-center text-blue-300/70 text-sm w-full pb-3 sm:pb-0">

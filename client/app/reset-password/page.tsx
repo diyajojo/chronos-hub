@@ -56,11 +56,16 @@ const ResetPasswordContent = () => {
     setError('');
     setIsLoading(true);
     try {
-      const response = await fetch('/api/reset-password', {
+      const response = await fetch('http://localhost:8000/auth/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, password }),
       });
+
+      if (response.status === 429) {
+        throw new Error('Too many password reset attempts. Please try again in 24 hours.');
+      }
+
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.error || 'Failed to reset password');

@@ -1,10 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const rateLimit = require('express-rate-limit');
 require('dotenv').config();
-
 const signup = require('./routes/auth/signup');
+const verifyOTP = require('./services/verifyOTP');
 const login = require('./routes/auth/login');
 const { addLog, fetchUserLogs } = require('./routes/database/logs');
 const { addComment, fetchComments } = require('./routes/database/comments');
@@ -23,12 +22,16 @@ const {
 const { forgotPassword } = require('./routes/auth/password/forgot');
 const  { resetPassword }= require('./routes/auth/password/reset');
 const uploadImageFromUrl = require('./routes/uploadimage');
+const {rateLimiter, addLogLimiter, passwordLimiter } = require('./services/ratelimiter');
+
+
 
 const app = express();
 const port = 8000;
 
 // Middleware
 const allowedOrigins = ['http://localhost:3000', 'https://chronos-hub.vercel.app'];
+
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -43,50 +46,40 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 app.use(express.json());
-//used to accept data from requests under req.body etc
-app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true })); //used to accept data from requests under req.body etc
 
 
 
-const signupLimiter = rateLimit({
-  windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 3, // limit each IP to 3 requests
-  handler: function (req, res) {
-    res.status(429).json({
-      error: 'Too many signup attempts. Please try again in 10 minutes.'
-    });
-  }
-});
+
 
 
 //routes
-app.post('/auth/signup', signupLimiter, signup);
-app.post('/auth/login', login);
-app.post('/addlog', addLog);
+app.post('/auth/signup', rateLimiter, signup);
+app.post('/auth/verify-otp', verifyOTP);
+app.post('/auth/login', rateLimiter, login);
+app.post('/addlog',addLogLimiter, addLog);
 app.post('/fetchLogs', fetchUserLogs);
-app.post('/addcomment', addComment);
+app.post('/addcomment',rateLimiter,addComment);
 app.post('/fetchcomments', fetchComments);
-app.post('/addreaction', addReaction);
+app.post('/addreaction',rateLimiter, addReaction);
 app.post('/fetchreactions', fetchReactions);
 app.post('/userbadges', fetchUserBadges);
 app.post('/searchUsers', searchUsers);
-app.get('/users', getAllUsers);
-app.get('/user/:userId', getUser);
-
-// Simplified friendship routes
-app.post('/friendship/send-request', handleSendRequest);
-app.post('/friendship/accept-request', handleAcceptRequest);
-app.post('/friendship/reject-request', handleRejectRequest);
+app.post('/friendship/send-request', rateLimiter,handleSendRequest);
+app.post('/friendship/accept-request', rateLimiter, handleAcceptRequest);
+app.post('/friendship/reject-request',rateLimiter, handleRejectRequest);
 app.post('/friendship/friend-requests', handleGetFriendRequests);
 app.post('/friendship/status', handleGetFriendshipStatus);
 app.post('/friendship/friends', handleGetFriends);
-app.post('/auth/forgot-password', forgotPassword);
-app.post('/auth/reset-password', resetPassword);
-
+app.post('/auth/forgot-password', passwordLimiter ,forgotPassword);
+app.post('/auth/reset-password', passwordLimiter , resetPassword);
 app.post('/upload-from-url', uploadImageFromUrl);
 
-app.get('/', (req, res) => {
+app.get('/users', getAllUsers);
+app.get('/user/:userId', getUser);
+
+app.get('/', ( res) => {
   res.send('Hello World');
 });
 

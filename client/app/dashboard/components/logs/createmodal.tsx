@@ -139,6 +139,11 @@ export default function CreateLogModal({ onClose, user, isFirstLog, onLogCreated
 
       if (!response.ok) {
         console.error('Server error details:', data);
+        if (response.status === 429) 
+          {
+          setError('Too many people trying to timetravel together 😔 . Please try again in 10 minutes.');
+          return;
+        }
         throw new Error(data.error || data.details || 'Failed to submit log');
       }
 
