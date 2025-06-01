@@ -2,7 +2,7 @@ const rateLimit = require('express-rate-limit');
 
 const rateLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 3, // limit each IP to 3 requests
+  max: 6, // limit each IP to 3 requests
   handler: function (req, res) {
     console.log(`[Rate Limit Hit] Rate limit exceeded for IP: ${req.ip}`);
     res.status(429).json({

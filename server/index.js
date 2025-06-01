@@ -56,7 +56,7 @@ app.use(express.urlencoded({ extended: true })); //used to accept data from requ
 
 //routes
 app.post('/auth/signup', rateLimiter, signup);
-app.post('/auth/verify-otp', verifyOTP);
+app.post('/verify-otp', verifyOTP);
 app.post('/auth/login', rateLimiter, login);
 app.post('/addlog',addLogLimiter, addLog);
 app.post('/fetchLogs', fetchUserLogs);
