@@ -42,7 +42,7 @@ export default function SignUp() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:8000/auth/signup', {
+      const response = await fetch(`${API_BASE_URL}/auth/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ export default function SignUp() {
   const handleOTPSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:8000/auth/verify-otp', {
+      const response = await fetch(`${API_BASE_URL}/auth/verify-otp`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

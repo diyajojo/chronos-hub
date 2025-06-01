@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { API_BASE_URL } from '@/lib/config';
 
 // Loading component for Suspense fallback
 const LoadingFallback = () => (
@@ -56,7 +57,7 @@ const ResetPasswordContent = () => {
     setError('');
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/auth/reset-password', {
+      const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, password }),
