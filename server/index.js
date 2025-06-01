@@ -79,7 +79,7 @@ app.post('/upload-from-url', uploadImageFromUrl);
 app.get('/users', getAllUsers);
 app.get('/user/:userId', getUser);
 
-app.get('/', ( res) => {
+app.get('/', (req, res) => {
   res.send('Hello World');
 });
 
