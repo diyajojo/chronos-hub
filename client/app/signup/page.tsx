@@ -31,6 +31,7 @@ export default function SignUp() {
   const [error, setError] = useState('');
   const [showOTPForm, setShowOTPForm] = useState(false);
   const [otp, setOtp] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -41,6 +42,8 @@ export default function SignUp() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError('');
     try {
       const response = await fetch(`${API_BASE_URL}/auth/signup`, {
         method: 'POST',
@@ -64,14 +67,17 @@ export default function SignUp() {
       // Show OTP form instead of redirecting
       setShowOTPForm(true);
     } 
-    catch (err)
-     {
+    catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleOTPSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError('');
     try {
       const response = await fetch(`${API_BASE_URL}/auth/verify-otp`, {
         method: 'POST',
@@ -94,6 +100,8 @@ export default function SignUp() {
       window.location.href = '/login';
     } catch (err) {
       setError(err instanceof Error ? err.message : 'OTP verification failed');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -203,8 +211,19 @@ export default function SignUp() {
                             />
                           </div>
                         </div>
-                        <Button type="submit" className="font-urbanist w-full cursor-pointer bg-blue-800/30 hover:bg-blue-800/50 text-blue-200 border border-blue-500/30">
-                          Verify OTP
+                        <Button 
+                          type="submit" 
+                          className="font-urbanist w-full cursor-pointer bg-blue-800/30 hover:bg-blue-800/50 text-blue-200 border border-blue-500/30"
+                          disabled={isLoading}
+                        >
+                          {isLoading ? (
+                            <div className="flex items-center justify-center gap-2">
+                              <div className="w-4 h-4 border-2 border-blue-200 border-t-transparent rounded-full animate-spin"></div>
+                              <span>Processing...</span>
+                            </div>
+                          ) : (
+                            'Verify OTP'
+                          )}
                         </Button>
                       </form>
                     ) : (
@@ -255,8 +274,19 @@ export default function SignUp() {
                             />
                           </div>
                         </div>
-                        <Button type="submit" className="font-urbanist w-full cursor-pointer bg-blue-800/30 hover:bg-blue-800/50 text-blue-200 border border-blue-500/30">
-                          Sign Up
+                        <Button 
+                          type="submit" 
+                          className="font-urbanist w-full cursor-pointer bg-blue-800/30 hover:bg-blue-800/50 text-blue-200 border border-blue-500/30"
+                          disabled={isLoading}
+                        >
+                          {isLoading ? (
+                            <div className="flex items-center justify-center gap-2">
+                              <div className="w-4 h-4 border-2 border-blue-200 border-t-transparent rounded-full animate-spin"></div>
+                              <span>Processing...</span>
+                            </div>
+                          ) : (
+                            'Create Account'
+                          )}
                         </Button>
                       </form>
                     )}
