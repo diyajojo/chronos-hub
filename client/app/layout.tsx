@@ -39,6 +39,7 @@ const noto=Noto_Sans_Cuneiform({
 export const metadata: Metadata = {
   title: "ChronosHub ",
   description: "Log and share your temporal journeys across time and space. Connect with fellow time travelers and build your personal timeline of memories in this immersive social platform.",
+  manifest: '/manifest.json',
 }
     
 
